@@ -10,7 +10,7 @@ import glob
 from netCDF4 import Dataset
 import numpy as np
 
-startdate = 197908
+startdate = 197907
 
 files = glob.glob(os.path.expanduser(os.path.join(sys.argv[1],"*_????_??.nc")))
 xfiles = list(os.path.splitext(os.path.basename(x))[0] for x in files)
