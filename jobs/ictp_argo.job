@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#SBATCH -A esp
+#SBATCH -J mitgcm
+## This is the maximum time allowed.
+#SBATCH -t 24:00:00
+## The partition name
+#SBATCH -p esp
+## This means a total of 40 processors
+#SBATCH -N 12 --ntasks-per-node=20
+
+# load required modules
+module purge
+source /opt-ictp/ESMF/env202407
+
+# run model
+set -e
+{
+  cd /home/ggiulian/scratch/ggiulian/mitgcm
+  mpirun mitgcmuv
+}

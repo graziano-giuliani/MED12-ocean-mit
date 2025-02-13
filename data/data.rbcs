@@ -1,0 +1,20 @@
+# ***************
+# RBCS Parameters
+# ***************
+ &RBCS_PARM01
+ useRBCsalt=.TRUE.,
+ useRBCtemp=.TRUE.,
+ rbcsForcingOffset=-1314000.,
+ tauRelaxT=172800.,
+ tauRelaxS=172800.,
+ relaxTFile='votemper_control_monthly_highres_3D_197908_202412.bin',
+ relaxSFile='vosaline_control_monthly_highres_3D_197908_202412.bin',
+ rbcsForcingPeriod=2628000.,
+ rbcsForcingCycle=270684000.,
+ rbcsIniter = 0,
+ relaxMaskFile(1) ='maskrbcs_TS.bin',
+ relaxMaskFile(2) ='maskrbcs_TS.bin',
+ /
+
+&RBCS_PARM02
+ /

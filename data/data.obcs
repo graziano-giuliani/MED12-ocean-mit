@@ -1,0 +1,21 @@
+# *****************************************
+# Open-boundaries
+# *****************************************
+ &OBCS_PARM01
+#
+ OBWetaFile='sossheig_control_monthly_highres_1D_197908_202412.bin',
+#
+ OB_Iwest=368*1,
+#
+ useOBCSprescribe=.TRUE.,
+#
+ /
+#
+# *****************************************
+# Orlanski Boundary Condition Parameters.
+# *****************************************
+# *****************************************
+# Sponge Layer Parameters.
+# *****************************************
+ &OBCS_PARM03
+ /

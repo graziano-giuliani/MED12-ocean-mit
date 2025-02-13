@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#SBATCH -J oonly
+#SBATCH -A ICT23_ESP
+#SBATCH -p skl_usr_prod
+#SBATCH --qos=qos_prio
+#SBATCH -N 10
+#SBATCH --time 24:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=ggiulian@ictp.it
+
+module purge
+source /marconi/home/userexternal/ggiulian/STACK22/env2022
+MED11=/marconi/home/userexternal/ggiulian/esp/ggiulian/MED_2022/ocn_only
+cd $MED11
+mpirun mitgcmuv

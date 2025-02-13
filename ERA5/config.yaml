@@ -1,0 +1,180 @@
+era5_data: /leonardo_work/ICT24_ESP/OBS/ERA5/monthly
+variables:
+        apressure:
+                description: Atmospheric surface pressure field
+                notes: None
+                units: Pa
+                range_low: 88000
+                range_max: 108000
+                era5factor: 1.0
+                era5offset: 0.0
+                era5fname: ps
+                era5vname: sp
+        evap:
+                description: Evaporation
+                notes: gt 0 for increase in salt (ocean salinity)
+                units: m/s
+                range_low: 0
+                range_max: 2.5e-7
+                era5factor: -0.000011574
+                era5offset: 0.0
+                era5fname: evp
+                era5vname: e
+        lwflux:
+                description: Net upward longwave radiation
+                notes: gt 0 for decrease in theta (ocean cooling)
+                units: W/m^2
+                range_low: -20
+                range_max: 170
+                era5factor: -0.000011574
+                era5offset: 0.0
+                era5fname: nslw
+                era5vname: str
+        swflux:
+                description: Net upward shortwave radiation
+                notes: gt 0 for decrease in theta (ocean cooling)
+                units: W/m^2
+                range_low: -350
+                range_max: 0
+                era5factor: -0.000011574
+                era5offset: 0.0
+                era5fname: nssw
+                era5vname: ssr
+        precip:
+                description: Total Precipitation (rain+snow) in LWE
+                notes: gt 0 for decrease in salt (ocean salinity)
+                units: m/s
+                range_low: 0
+                range_max: 5.e-7
+                era5factor: 0.000011574
+                era5offset: 0.0
+                era5fname: pr
+                era5vname: tp
+        aqh:
+                description: Surface (2m) specific humidity
+                notes: None
+                units: kg/kg
+                range_low: 0
+                range_max: 5.e-7
+                era5factor: 1.0
+                era5offset: 0.0
+                era5fname: sh
+                era5vname: sh
+        runoff:
+                description: River and glacier runoff
+                notes: gt 0 for decrease in salt (ocean salinity)
+                units: m/s
+                range_low: 0
+                range_max: 1
+                era5factor: 0.000011574
+                era5offset: 0.0
+                era5fname: roff
+                era5vname: ro
+        atemp:
+                description: Surface (2-m) air temperature
+                notes: None
+                units: K
+                range_low: 200
+                range_max: 300
+                era5factor: 1.0
+                era5offset: 0.0
+                era5fname: tas
+                era5vname: t2m
+        uwind:
+                description: Surface (10-m) zonal wind velocity
+                notes: West to East
+                units: m/s
+                range_low: -10
+                range_max: 10
+                era5factor: 1.0
+                era5offset: 0.0
+                era5fname: uas
+                era5vname: u10
+        vwind:
+                description: Surface (10-m) meridional wind velocity
+                notes: South to North
+                units: m/s
+                range_low: -10
+                range_max: 10
+                era5factor: 1.0
+                era5offset: 0.0
+                era5fname: vas
+                era5vname: v10
+        #wspeed:
+        #        description: Surface (10-m) wind speed
+        #        notes: sqrt(uwind*uwind+vwind*vwind)
+        #        units: m/s
+        #        range_low: 0
+        #        range_max: 10
+        #hs:
+        #        description: Sensible heat flux INTO ocean
+        #        notes: gt 0 for increase in theta (ocean warming)
+        #        units: W/m^2
+        #        range_low: -300
+        #        range_max: 300
+        #hl:
+        #        description: Latent heat flux INTO ocean
+        #        notes: gt 0 for increase in theta (ocean warming)
+        #        units: W/m^2
+        #        range_low: -300
+        #        range_max: 300
+        #ustress:
+        #        description: Zonal surface wind stress
+        #        notes: gt 0 for increase in uVel West to East
+        #        units: N/m^2
+        #        range_low: -0.5
+        #        range_max: 0.5
+        #vstress:
+        #        description: Meridional surface wind stress
+        #        notes: gt 0 for increase in vVel South to North
+        #        units: N/m^2
+        #        range_low: -0.5
+        #        range_max: 0.5
+        #hflux:
+        #        description: Net upward surface heat flux including shortwave
+        #        notes: latent+sensible+lwflux+swflux gt 0 for decrease in theta
+        #        units: W/m^2
+        #        range_low: -250
+        #        range_max: 600
+        #sflux:
+        #        description: Net upward freshwater flux
+        #        notes: evap-precip-runoff gt 0 for increase in ocean salinity
+        #        units: m/s
+        #        range_low: -1e-7
+        #        range_max: 1e-7
+        #snowprecip:
+        #        description: snow precipitation LWE
+        #        notes: gt 0 for decrease in salt (ocean salinity)
+        #        units: m/s
+        #        range_low: 0
+        #        range_max: 5e-7
+        #saltflx:
+        #        description: Net upward salt flux
+        #        notes: gt 0 for decrease in salt (ocean salinity)
+        #        units: g/m^2/s
+        #        range_low: -100
+        #        range_max: 100
+        #swdown:
+        #        description: Downward shortwave radiation
+        #        notes: gt 0 for increase in theta (ocean warming)
+        #        units: W/m2
+        #        range_low: 0
+        #        range_max: 450
+        #lwdown:
+        #        description: Downward longwave radiation
+        #        notes: gt 0 for increase in theta (ocean warming)
+        #        units: W/m2
+        #        range_low: 50
+        #        range_max: 450
+        #runoftemp:
+        #        description: Temperature of runoff
+        #        notes: None
+        #        units: Celsius
+        #        range_low: -50
+        #        range_max: 50
+        #tidePot:
+        #        description: Tidal geopotential forcing
+        #        notes: None
+        #        units: m^2/s^2
+        #        range_low: -10
+        #        range_max: 10

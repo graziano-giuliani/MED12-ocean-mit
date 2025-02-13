@@ -1,0 +1,18 @@
+#!/bin/sh
+
+#SBATCH --account             ICT23_ESP_1
+#SBATCH --error               %x_%j.err
+#SBATCH --job-name            MED-12_OCN
+#SBATCH --mail-type           ALL
+#SBATCH --mail-user           ggiulian@ictp.it
+#SBATCH --nodes               5
+#SBATCH --ntasks-per-node     96
+#SBATCH --output              %x_%j.out
+#SBATCH --partition           dcgp_usr_prod
+#SBATCH --time                1-00:00:00
+
+module purge
+source /leonardo/home/userexternal/ggiulian/modules
+export OMP_NUM_THREADS=1
+cd /leonardo/home/userexternal/ggiulian/project/COUPLED/ocnonly
+mpirun mitgcmuv
