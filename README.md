@@ -32,7 +32,7 @@
       python3 coordinates2mit.py 1_coordinates_ORCA_R12.nc
 
     Copy all the bin files in the **input** directory.
-    Copy the grid desctiption file in the **bathymetry** directory.
+    Copy the grid desctiption file in the **bathy** directory.
 
 # Model build
 
@@ -67,22 +67,22 @@
 
   * For the med, we use cdo like this:
 
-     cdo remapdis,,128 Mediterranean_basin.nc MIT_MED.nc
+    `cdo remapdis,grid_description.des,128 Mediterranean_basin.nc MIT_MED.nc`
 
   * Fine tuning, binary and mask creation:
 
-     python3 zero_out.py MIT_MED.nc MED_BLACK_BATHY.nc
+     `python3 zero_out.py MIT_MED.nc MED_BLACK_BATHY.nc`
 
   * Copy the bin file in the **input** directory.
     Copy the **mask.nc** file into **ORAS5_MIT** and **ERA5** directories.
 
   * Download ORAS5 dataset in directory ORAS5:
 
-     python3 download.py
+    `python3 download.py
      mkdir sossheig vosaline votemper
      mv votemper*nc votemper
      mv vosaline*nc vosaline
-     mv sossheig*nc sossheig
+     mv sossheig*nc sossheig`
 
   * Interpolate ORAS5 dataset to MIT in directory ORAS5_MIT:
 
