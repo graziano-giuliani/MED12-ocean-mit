@@ -79,39 +79,55 @@
   * Download ORAS5 dataset in directory ORAS5:
 
      > python3 download.py
+
      > mkdir sossheig vosaline votemper
+
      > mv votemper*nc votemper
+
      > mv vosaline*nc vosaline
+
      > mv sossheig*nc sossheig
 
   * Interpolate ORAS5 dataset to MIT in directory ORAS5_MIT:
 
      > python3 process_oras_3d.py ~/project/MITGCM/ORAS5/vosaline
+
      > python3 process_oras_3d.py ~/project/MITGCM/ORAS5/votemper
+
      > python3 process_oras_2d.py ~/project/MITGCM/ORAS5/sossheig
+
      > mv votemper*nc votemper
+
      > mv vosaline*nc vosaline
+
      > mv sossheig*nc sossheig
 
   * Create binary boundary conditions:
 
      > python3 produce_ic.py ~/project/MITGCM/ORAS5_MIT/votemper
+
      > python3 produce_ic.py ~/project/MITGCM/ORAS5_MIT/vosaline
+
      > python3 produce_ic.py ~/project/MITGCM/ORAS5_MIT/sossheig
 
   * Compute August averages for the two decades 1970-1980 for IC:
 
-     > ncrcat ORAS5_MIT/vosaline/vosaline_control_monthly_highres_3D_19[7-8]08* \
+     > ncrcat ORAS5_MIT/vosaline/vosaline_control_monthly_highres_3D_19[7-8]08*
      >           vosaline_august_1970-1980.nc
-     > ncra vosaline_august_1970-1980.nc \
+
+     > ncra vosaline_august_1970-1980.nc
      >       input/vosaline_control_monthly_highres_3D_197x08-198x08_mean.nc
-     > python3 nc_to_bin.py \
+
+     > python3 nc_to_bin.py
      >       input/vosaline_control_monthly_highres_3D_197x08-198x08_mean.nc
-     > ncrcat ORAS5_MIT/vosaline/votemper_control_monthly_highres_3D_19[7-8]08* \
+
+     > ncrcat ORAS5_MIT/vosaline/votemper_control_monthly_highres_3D_19[7-8]08*
      >           votemper_august_1970-1980.nc
-     > ncra votemper_august_1970-1980.nc \
+
+     > ncra votemper_august_1970-1980.nc
      >       input/votemper_control_monthly_highres_3D_197x08-198x08_mean.nc
-     > python3 nc_to_bin.py \
+
+     > python3 nc_to_bin.py
      >       input/votemper_control_monthly_highres_3D_197x08-198x08_mean.nc
 
   * Move all the **.bin** files in the input directory
