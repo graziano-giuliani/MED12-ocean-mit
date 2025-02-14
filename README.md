@@ -139,14 +139,23 @@
   * Create binary external forcings in input directory:
 
      > python3 process_era5_2d.py ~/project/MITGCM/ERA5/apressure
+
      > python3 process_era5_2d.py ~/project/MITGCM/ERA5/aqh
+
      > python3 process_era5_2d.py ~/project/MITGCM/ERA5/atemp
+
      > python3 process_era5_2d.py ~/project/MITGCM/ERA5/evap
+
      > python3 process_era5_2d.py ~/project/MITGCM/ERA5/lwflux
+
      > python3 process_era5_2d.py ~/project/MITGCM/ERA5/precip
+
      > python3 process_era5_2d.py ~/project/MITGCM/ERA5/runoff
+
      > python3 process_era5_2d.py ~/project/MITGCM/ERA5/swflux
+
      > python3 process_era5_2d.py ~/project/MITGCM/ERA5/uwind
+
      > python3 process_era5_2d.py ~/project/MITGCM/ERA5/vwind
 
   * Store all the bin files from the input directory together as the input data.
