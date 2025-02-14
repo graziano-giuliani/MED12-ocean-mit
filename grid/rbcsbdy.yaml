@@ -1,0 +1,6 @@
+rbcs:
+        north: False
+        south: False
+        east: False
+        west: True
+npoints: 63
