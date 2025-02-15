@@ -23,7 +23,7 @@ start_year = config["start_year"]
 start_month = config["start_month"]
 startdate = start_year * 100 + start_month
 
-variables = [ "votemper", "vosaline", "sossheigh" ]
+variables = [ "votemper", "vosaline", "sossheig" ]
 
 for var in variables:
     gpath = os.path.join(oras5dir,var,"*monthly*.nc")
@@ -39,7 +39,7 @@ for var in variables:
             if d >= startdate:
                 values = Dataset(f).variables[var][:].data
                 values.astype('>f4').tofile(fout)
-    else: # sossheigh, keep only West boundary.
+    else: # sossheig, keep only West boundary.
         for o,f,d in zip(xfiles,files,dates):
             if d >= startdate:
                 values = Dataset(f).variables[var][0,:,0].data

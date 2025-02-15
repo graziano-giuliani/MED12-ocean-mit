@@ -3,7 +3,7 @@
 # *****************************************
  &OBCS_PARM01
 #
- OBWetaFile='sossheig_control_monthly_highres_1D_197908_202412.bin',
+ OBWetaFile='sossheig_197908_202412.bin',
 #
  OB_Iwest=368*1,
 #

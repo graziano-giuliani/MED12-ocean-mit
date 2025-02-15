@@ -12,8 +12,8 @@ try:
     ifile = sys.argv[1]
     ofile = sys.argv[2]
 except:
-    ifile = "MED_MIT_BATHY.nc"
-    ofile = "MED_BLACK_BATHY.nc"
+    ifile = "MIT_BATHY.nc"
+    ofile = "BATHYMETRY.nc"
 
 with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
     # copy global attributes all at once via dictionary

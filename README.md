@@ -93,14 +93,6 @@
 
      > python3 process_oras_2d.py ../ORAS5/sossheig
 
-  * Create binary boundary conditions:
-
-     > python3 produce_bc.py
-
-  * Compute August averages for the two decades 1970-1980 for IC:
-
-     > python3 produce_ic.py
-
   * Download ERA5 dataset in directory ERA5:
 
      > python3 download_surface_monthly.py
@@ -112,11 +104,25 @@
 
      > python3 process_era5_2d.py
 
-  * Create binary external forcings in input directory:
+  * We are now ready to prepare the initial and boundary conditions.
+    In the **input** direcory, a yaml config file contains the start
+    year and month of the simulation and the number of decades to
+    average into the initial condition file. Edit it to suit your
+    necessities.
+
+  * Create binary boundary conditions:
+
+     > python3 produce_bc.py
+
+  * Compute monthly decadal averages to be used as initial conditions:
+
+     > python3 produce_ic.py
+
+  * Create external forcings data: 
 
      > python3 produce_extf.py
 
-  * All the binary input files should be now ready.
+  * All the binary input files should now be ready!
 
 # Run the model
 

@@ -15,7 +15,7 @@ except:
 try:
     ofile = sys.argv[2]
 except:
-    ofile = 'MED_MIT_BATHY.nc'
+    ofile = 'MIT_BATHY.nc'
 
 cdo = cdo.Cdo( )
 

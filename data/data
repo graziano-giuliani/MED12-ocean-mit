@@ -92,8 +92,8 @@
  /
 # Input datasets
  &PARM05
- bathyFile='elevation_MED_BLACK_BATHY.bin',
- hydrogSaltFile='vosaline_control_monthly_highres_3D_197x08-198x08_mean.bin',
- hydrogThetaFile='votemper_control_monthly_highres_3D_197x08-198x08_mean.bin',
+ bathyFile='BATHYMETRY.bin',
+ hydrogSaltFile='vosaline_197908_2_decades.bin',
+ hydrogThetaFile='votemper_197908_2_decades.bin',
  /
 
