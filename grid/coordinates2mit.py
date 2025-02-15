@@ -11,7 +11,11 @@ from cdo import *
 with open("rbcsbdy.yaml","r") as f:
     configbdy = yaml.safe_load(f)
 
-ds = Dataset(sys.argv[1],'r')
+try:
+    ds = Dataset(sys.argv[1],'r')
+except:
+    ds = Dataset('1_coordinates_ORCA_R12.nc','r')
+
 LONC = ds.variables['nav_lon'][1:-1,1:-1].data
 LATC = ds.variables['nav_lat'][1:-1,1:-1].data
 
@@ -35,37 +39,37 @@ RAW  = DXC*DYG
 RAS  = DXG*DYC
 RAZ  = DXV*DYU
 
-with open("LONC.bin","wb") as fo:
+with open("../input/LONC.bin","wb") as fo:
     LONC.astype('>f4').tofile(fo)
-with open("LATC.bin","wb") as fo:
+with open("../input/LATC.bin","wb") as fo:
     LATC.astype('>f4').tofile(fo)
-with open("LONG.bin","wb") as fo:
+with open("../input/LONG.bin","wb") as fo:
     LONG.astype('>f4').tofile(fo)
-with open("LATG.bin","wb") as fo:
+with open("../input/LATG.bin","wb") as fo:
     LATG.astype('>f4').tofile(fo)
-with open("DXF.bin","wb") as fo:
+with open("../input/DXF.bin","wb") as fo:
     DXF.astype('>f4').tofile(fo)
-with open("DYF.bin","wb") as fo:
+with open("../input/DYF.bin","wb") as fo:
     DYF.astype('>f4').tofile(fo)
-with open("DXG.bin","wb") as fo:
+with open("../input/DXG.bin","wb") as fo:
     DXG.astype('>f4').tofile(fo)
-with open("DYG.bin","wb") as fo:
+with open("../input/DYG.bin","wb") as fo:
     DYG.astype('>f4').tofile(fo)
-with open("DXC.bin","wb") as fo:
+with open("../input/DXC.bin","wb") as fo:
     DXC.astype('>f4').tofile(fo)
-with open("DYC.bin","wb") as fo:
+with open("../input/DYC.bin","wb") as fo:
     DYC.astype('>f4').tofile(fo)
-with open("DXV.bin","wb") as fo:
+with open("../input/DXV.bin","wb") as fo:
     DXV.astype('>f4').tofile(fo)
-with open("DYU.bin","wb") as fo:
+with open("../input/DYU.bin","wb") as fo:
     DYU.astype('>f4').tofile(fo)
-with open("RA.bin","wb") as fo:
+with open("../input/RA.bin","wb") as fo:
     RA.astype('>f4').tofile(fo)
-with open("RAW.bin","wb") as fo:
+with open("../input/RAW.bin","wb") as fo:
     RAW.astype('>f4').tofile(fo)
-with open("RAS.bin","wb") as fo:
+with open("../input/RAS.bin","wb") as fo:
     RAS.astype('>f4').tofile(fo)
-with open("RAZ.bin","wb") as fo:
+with open("../input/RAZ.bin","wb") as fo:
     RAZ.astype('>f4').tofile(fo)
 
 ds = Dataset("depth.nc",'r')
@@ -121,11 +125,11 @@ da = xr.DataArray(name = "maskrbcs" , data=maskbdy,
                  )
 da.to_netcdf('maskrbcs.nc')
 
-with open("maskrbcs.bin","wb") as fo:
+with open("../input/maskrbcs.bin","wb") as fo:
     maskbdy.astype('>f4').tofile(fo)
 
 cdo = cdo.Cdo( )
 grid_description = cdo.griddes(input="maskrbcs.nc")
-with open("grid_description.des","w") as f:
+with open("../bathy/grid_description.des","w") as f:
     for line in grid_description:
         f.write(line+os.linesep)

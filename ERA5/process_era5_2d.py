@@ -2,14 +2,12 @@
 
 # Remap, interpolate data into a domain defined by the mask.nc file.
 # Usage:
-#        python3 process_oras_2d.py ~/project/MITGCM/ORAS5/sossheigh
+#        python3 process_era5_2d.py
 
 import os
-import sys
 import glob
 import yaml
 from cdo import *
-
 
 cpath = "config.yaml"
 with open(cpath,"r") as f:

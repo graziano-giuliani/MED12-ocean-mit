@@ -12,12 +12,14 @@ import glob
 from cdo import *
 
 cdo = Cdo()
+varname = os.path.basename(sys.argv[1])
 listfiles = glob.glob(os.path.join(os.path.expanduser(sys.argv[1]),"*.nc"))
 levels = cdo.showlevel(input="depth.nc", options="-s")
 strlevels = " ".join((repr(x) for x in levels)).replace(" ",",")
 for f in sorted(listfiles):
+    oname = os.path.join(varname,os.path.basename(f))
     cdo.mul(input="mask.nc -intlevel,"+strlevels+
               " -setmisstonn -vertfillmiss -remapnn,mask.nc "+f,
-            output=os.path.basename(f), options="-L -f nc4 -z zip_4")
-    print(os.path.basename(f))
+            output=oname, options="-L -f nc4 -z zip_4")
+    print(oname)
 print('Done')

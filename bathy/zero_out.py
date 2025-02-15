@@ -8,8 +8,12 @@ from cdo import *
 
 # Fine correction of bathinetric data
 
-ifile = sys.argv[1]
-ofile = sys.argv[2]
+try:
+    ifile = sys.argv[1]
+    ofile = sys.argv[2]
+except:
+    ifile = "MED_MIT_BATHY.nc"
+    ofile = "MED_BLACK_BATHY.nc"
 
 with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
     # copy global attributes all at once via dictionary
@@ -127,7 +131,7 @@ with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
     smask.coordinates = "lat lon"
     dst.variables['mask'][:] = np.where(bathy > -1,0,1) 
 
-    binfile = os.path.splitext(ofile)[0]+".bin"
+    binfile = os.path.join('../input',os.path.splitext(ofile)[0]+".bin")
     with open(binfile,"w") as fbin:
         bathy.astype('>f4').tofile(fbin)
 
