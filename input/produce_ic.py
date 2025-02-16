@@ -38,7 +38,7 @@ for var in variables:
     files = " ".join(sorted(glob.glob(os.path.expanduser(gpath))))
     outname = (var + '_' + repr(start_year) + tmonth +
               '_' + repr(ic_decades) + '_decades.bin')
-    fout = open(outname, "ab")
+    fout = open(outname, "wb")
     values = cdo.timmean(input=" -mergetime "+files,returnArray=var).data
     values.astype('>f4').tofile(fout)
 

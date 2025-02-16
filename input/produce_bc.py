@@ -27,11 +27,16 @@ variables = [ "votemper", "vosaline", "sossheig" ]
 
 for var in variables:
     gpath = os.path.join(oras5dir,var,"*monthly*.nc")
-    files = glob.glob(os.path.expanduser(gpath))
+    files = sorted(glob.glob(os.path.expanduser(gpath)))
     xfiles = list(os.path.splitext(os.path.basename(x))[0] for x in files)
     dates = list(int(y[5]) for y in (x.split('_') for x in xfiles))
 
     outname = var + '_' + repr(startdate) + '_' + repr(max(dates)) + '.bin'
+    try:
+        os.unlink(outname)
+    except:
+        pass
+
     fout = open(outname, "ab")
 
     if var in ["votemper", "vosaline"]: # full 3d field

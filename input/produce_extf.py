@@ -34,12 +34,16 @@ variables = [ "apressure", "aqh", "atemp", "evap", "lwflux", "precip",
 
 for var in variables:
     gpath = os.path.join(era5dir,var,"*_????_??.nc")
-    files = glob.glob(os.path.expanduser(gpath))
+    files = sorted(glob.glob(os.path.expanduser(gpath)))
     xfiles = list(os.path.splitext(os.path.basename(x))[0] for x in files)
     dates = list(int(y[1]+y[2]) for y in (x.split('_') for x in xfiles))
 
     outname = ("ERA5_"+ var+ '_' + repr(startdate) +
                              '_' + repr(max(dates)) + '.bin')
+    try:
+        os.unlink(oname)
+    except:
+        pass
 
     fout = open(outname, "ab")
     for f,d in zip(files,dates):

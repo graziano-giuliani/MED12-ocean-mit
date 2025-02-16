@@ -5,6 +5,5 @@
  useGGL90   =.TRUE.,
  useRBCS    =.TRUE.,
  useCAL     =.TRUE.,
- useMNC     =.TRUE.,
  useDIAGNOSTICS= .TRUE.,
  /
