@@ -55,7 +55,7 @@ variables:
                 notes: None
                 units: kg/kg
                 range_low: 0
-                range_max: 5.e-7
+                range_max: 0.02
                 era5factor: 1.0
                 era5offset: 0.0
                 era5fname: sh
