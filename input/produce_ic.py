@@ -28,9 +28,12 @@ ic_decades = config["ic_decades"]
 
 base = repr(start_year//100)
 sdecade = (start_year//10) % 10 - (ic_decades//2 - 1) - (ic_decades % 2)
-edecade = sdecade + (ic_decades//2)
+edecade = (start_year//10) % 10 + (ic_decades//2)
 tmonth = f'{start_month:02d}'
-pattern = base+"["+repr(sdecade)+'-'+repr(edecade)+"][0-9]"+tmonth
+if sdecade == edecade:
+    pattern = base+repr(sdecade)+"[0-9]"+tmonth
+else:
+    pattern = base+"["+repr(sdecade)+'-'+repr(edecade)+"][0-9]"+tmonth
 
 variables = [ "votemper", "vosaline" ]
 
