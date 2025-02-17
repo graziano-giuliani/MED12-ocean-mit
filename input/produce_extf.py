@@ -45,10 +45,10 @@ for var in variables:
     dates = list(int(y[1]+y[2]) for y in (x.split('_') for x in xfiles))
 
     if enddate < 0:
-        enddate = dates[-1] + 1
+        enddate = dates[-1]
 
     outname = ("ERA5_"+ var+ '_' + repr(startdate) +
-                             '_' + repr(enddate-1) + '.bin')
+                             '_' + repr(enddate) + '.bin')
     try:
         os.unlink(oname)
     except:
@@ -56,6 +56,7 @@ for var in variables:
 
     fout = open(outname, "ab")
     for f,d in zip(files,dates):
-        if d >= startdate and d < enddate:
+        if d >= startdate and d <= enddate:
+            print(var+": "+repr(d))
             values = Dataset(f).variables[var][:].data
             values.astype('>f4').tofile(fout)

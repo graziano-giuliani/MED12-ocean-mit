@@ -39,24 +39,25 @@ for var in variables:
     dates = list(int(y[5]) for y in (x.split('_') for x in xfiles))
 
     if enddate < 0:
-        enddate = dates[-1] + 1
+        enddate = dates[-1]
 
-    outname = var + '_' + repr(startdate) + '_' + repr(enddate-1) + '.bin'
+    outname = var + '_' + repr(startdate) + '_' + repr(enddate) + '.bin'
     try:
         os.unlink(outname)
     except:
         pass
 
     fout = open(outname, "ab")
-
     if var in ["votemper", "vosaline"]: # full 3d field
         for o,f,d in zip(xfiles,files,dates):
-            if d >= startdate and d < enddate:
+            if d >= startdate and d <= enddate:
+                print(var+": "+repr(d))
                 values = Dataset(f).variables[var][:].data
                 values.astype('>f4').tofile(fout)
     else: # sossheig, keep only West boundary.
         for o,f,d in zip(xfiles,files,dates):
-            if d >= startdate and d < enddate:
+            if d >= startdate and d <= enddate:
+                print(var+": "+repr(d))
                 values = Dataset(f).variables[var][0,:,0].data
                 values.astype('>f4').tofile(fout)
 
