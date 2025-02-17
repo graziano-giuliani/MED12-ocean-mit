@@ -21,7 +21,14 @@ with open(cpath,"r") as f:
     config = yaml.safe_load(f)
 start_year = config["start_year"]
 start_month = config["start_month"]
+end_year = config["end_year"]
+end_month = config["end_month"]
+
 startdate = start_year * 100 + start_month
+if end_year > 0:
+    enddate = end_year * 100 + end_month
+else:
+    enddate = -1
 
 variables = [ "votemper", "vosaline", "sossheig" ]
 
@@ -31,7 +38,10 @@ for var in variables:
     xfiles = list(os.path.splitext(os.path.basename(x))[0] for x in files)
     dates = list(int(y[5]) for y in (x.split('_') for x in xfiles))
 
-    outname = var + '_' + repr(startdate) + '_' + repr(max(dates)) + '.bin'
+    if enddate < 0:
+        enddate = dates[-1] + 1
+
+    outname = var + '_' + repr(startdate) + '_' + repr(enddate-1) + '.bin'
     try:
         os.unlink(outname)
     except:
@@ -41,12 +51,12 @@ for var in variables:
 
     if var in ["votemper", "vosaline"]: # full 3d field
         for o,f,d in zip(xfiles,files,dates):
-            if d >= startdate:
+            if d >= startdate and d < enddate:
                 values = Dataset(f).variables[var][:].data
                 values.astype('>f4').tofile(fout)
     else: # sossheig, keep only West boundary.
         for o,f,d in zip(xfiles,files,dates):
-            if d >= startdate:
+            if d >= startdate and d < enddate:
                 values = Dataset(f).variables[var][0,:,0].data
                 values.astype('>f4').tofile(fout)
 

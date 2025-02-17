@@ -22,11 +22,13 @@ with open(cpath,"r") as f:
     config = yaml.safe_load(f)
 start_year = config["start_year"]
 start_month = config["start_month"]
+end_year = config["end_year"]
+end_month = config["end_month"]
 ic_decades = config["ic_decades"]
 
 base = repr(start_year//100)
-sdecade = (start_year//10) % 10
-edecade = sdecade+ic_decades-1
+sdecade = (start_year//10) % 10 - (ic_decades//2 - 1) - (ic_decades % 2)
+edecade = sdecade + (ic_decades//2)
 tmonth = f'{start_month:02d}'
 pattern = base+"["+repr(sdecade)+'-'+repr(edecade)+"][0-9]"+tmonth
 

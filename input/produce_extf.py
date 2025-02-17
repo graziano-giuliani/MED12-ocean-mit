@@ -20,6 +20,8 @@ cpath = "config.yaml"
 with open(cpath,"r") as f:
     config = yaml.safe_load(f)
 start_year = config["start_year"]
+end_year = config["end_year"]
+end_month = config["end_month"]
 
 # ERA5 reference date is middle month.
 start_month = config["start_month"] - 1
@@ -28,6 +30,10 @@ if start_month == 0:
     start_month = 12
 
 startdate = start_year * 100 + start_month
+if end_year > 0:
+    enddate = end_year * 100 + end_month
+else:
+    enddate = -1
 
 variables = [ "apressure", "aqh", "atemp", "evap", "lwflux", "precip",
               "runoff", "swflux", "uwind", "vwind" ]
@@ -38,8 +44,11 @@ for var in variables:
     xfiles = list(os.path.splitext(os.path.basename(x))[0] for x in files)
     dates = list(int(y[1]+y[2]) for y in (x.split('_') for x in xfiles))
 
+    if enddate < 0:
+        enddate = dates[-1] + 1
+
     outname = ("ERA5_"+ var+ '_' + repr(startdate) +
-                             '_' + repr(max(dates)) + '.bin')
+                             '_' + repr(enddate-1) + '.bin')
     try:
         os.unlink(oname)
     except:
@@ -47,6 +56,6 @@ for var in variables:
 
     fout = open(outname, "ab")
     for f,d in zip(files,dates):
-        if d >= startdate:
+        if d >= startdate and d < enddate:
             values = Dataset(f).variables[var][:].data
             values.astype('>f4').tofile(fout)
