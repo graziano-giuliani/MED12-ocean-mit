@@ -125,7 +125,10 @@ with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
 
     dst.variables['elevation'][:] = bathy
 
-    smask = dst.createVariable("mask","u1",("lon","lat"))
+    try:
+        smask = dst.createVariable("mask","u1",("lon","lat"))
+    except:
+        smask = dst.createVariable("mask","u1",("y","x"))
     smask.standard_name = "sea_binary_mask"
     smask.units = "1"
     smask.coordinates = "lat lon"

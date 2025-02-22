@@ -19,8 +19,11 @@ except:
 LONC = ds.variables['nav_lon'][1:-1,1:-1].data
 LATC = ds.variables['nav_lat'][1:-1,1:-1].data
 
-LONG = ds.variables['glamu'][0,1:-1,0:-2].data
-LATG = ds.variables['gphiv'][0,0:-2,1:-1].data
+GLAMU = ds.variables['glamu'][:].data # long
+GPHIV = ds.variables['gphiv'][:].data # latg
+
+LONG = GLAMU[0,1:-1,0:-2]
+LATG = GPHIV[0,0:-2,1:-1]
 
 DXF  = ds.variables['e1t'][0,1:-1,1:-1].data
 DYF  = ds.variables['e2t'][0,1:-1,1:-1].data
@@ -127,6 +130,42 @@ da.to_netcdf('maskrbcs.nc')
 
 with open("../input/maskrbcs.bin","wb") as fo:
     maskbdy.astype('>f4').tofile(fo)
+
+ds = Dataset('../bathy/scrip_griddes.nc','w')
+ds.title = 'MIT GCM grid'
+grid_size = ds.createDimension("grid_size",nx*ny)
+grid_size = ds.createDimension("grid_corners",4)
+grid_size = ds.createDimension("grid_rank",2)
+grid_dims = ds.createVariable("grid_dims","i4",("grid_rank",))
+grid_center_lat = ds.createVariable("grid_center_lat","f8",("grid_size",))
+grid_center_lat.units = "degrees"
+grid_center_lat.bounds = "grid_corner_lat"
+grid_center_lon = ds.createVariable("grid_center_lon","f8",("grid_size",))
+grid_center_lon.units = "degrees"
+grid_center_lon.bounds = "grid_corner_lon"
+grid_imask = ds.createVariable("grid_imask","i4",("grid_size",))
+grid_imask.units = "unitless"
+grid_imask.coordinates = "grid_center_lon grid_center_lat"
+grid_corner_lat = ds.createVariable("grid_corner_lat","f8",
+                      ("grid_size","grid_corners"))
+grid_corner_lat.units = "degrees"
+grid_corner_lon = ds.createVariable("grid_corner_lon","f8",
+                      ("grid_size","grid_corners"))
+grid_corner_lon.units = "degrees"
+
+grid_dims[:] = (ny,nx)
+grid_center_lat[:] = LATC.ravel( )
+grid_center_lon[:] = LONC.ravel( )
+grid_imask[:] = 1
+grid_corner_lat[:,0] = GPHIV[0,0:-2,0:-2].ravel( )
+grid_corner_lat[:,1] = GPHIV[0,0:-2,1:-1].ravel( )
+grid_corner_lat[:,2] = GPHIV[0,1:-1,1:-1].ravel( )
+grid_corner_lat[:,3] = GPHIV[0,1:-1,0:-2].ravel( )
+grid_corner_lon[:,0] = GLAMU[0,0:-2,0:-2].ravel( )
+grid_corner_lon[:,1] = GLAMU[0,0:-2,1:-1].ravel( )
+grid_corner_lon[:,2] = GLAMU[0,1:-1,1:-1].ravel( )
+grid_corner_lon[:,3] = GLAMU[0,1:-1,0:-2].ravel( )
+ds.close( )
 
 cdo = cdo.Cdo( )
 grid_description = cdo.griddes(input="maskrbcs.nc")
