@@ -8,10 +8,10 @@
 /    
 
 &nesting    
-    nn_imin = 3319
-    nn_imax = 4001
-    nn_jmin = 1829
-    nn_jmax = 2413
+    nn_imin = 3365
+    nn_imax = 3980
+    nn_jmin = 1840
+    nn_jmax = 2455
     nn_rhox  = 1
     nn_rhoy = 1
 /
