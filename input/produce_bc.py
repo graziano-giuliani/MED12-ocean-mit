@@ -47,7 +47,7 @@ for var in variables:
     except:
         pass
 
-    fout = open(outname, "ab")
+    fout = open(outname, "wb")
     if var in ["votemper", "vosaline"]: # full 3d field
         for o,f,d in zip(xfiles,files,dates):
             if d >= startdate and d <= enddate:

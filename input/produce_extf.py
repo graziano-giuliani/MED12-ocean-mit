@@ -54,7 +54,7 @@ for var in variables:
     except:
         pass
 
-    fout = open(outname, "ab")
+    fout = open(outname, "wb")
     for f,d in zip(files,dates):
         if d >= startdate and d <= enddate:
             print(var+": "+repr(d))
