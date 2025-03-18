@@ -60,7 +60,7 @@ CBOP
 C !ROUTINE: MAIN
 
 C !INTERFACE:
-      SUBROUTINE MPI_INIT(mpic, iloop, myTime, myIter, myThid)
+      SUBROUTINE MIT_INIT(mpic, iloop, myTime, myIter, myThid)
 
 C !DESCRIPTION:
 C     *==========================================================*

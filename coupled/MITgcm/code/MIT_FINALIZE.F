@@ -60,7 +60,7 @@ CBOP
 C !ROUTINE: MAIN
 
 C !INTERFACE:
-      SUBROUTINE MPI_FINALIZE
+      SUBROUTINE MIT_FINALIZE
 
 C !DESCRIPTION:
 C     *==========================================================*

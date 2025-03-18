@@ -143,7 +143,4 @@ c#ifdef PACKAGES_CONFIG_H
 c# include "ECCO_CPPOPTIONS.h"
 c#endif
 
-#define ENEA_COUPLER
-#define MED_12_ATLANTIC
-
 #endif /* CPP_OPTIONS_H */
