@@ -1,12 +1,10 @@
 #!/bin/bash
-MIT=/leonardo/home/userexternal/ggiulian/MITgcm
 
-PRJ=$MIT/verification/MED_standalone
+MIT=/leonardo_work/ICT24_ESP/MITGCM/MED12-ocean-mit/MITgcm
+
+PRJ=$PWD
 
 source $HOME/modules
-
-rm -rf $PRJ/build
-mkdir $PRJ/build
 cd $PRJ/build
 
 $MIT/tools/genmake2 -rootdir=$MIT \
