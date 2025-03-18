@@ -1,0 +1,125 @@
+ &dimparam
+ iy     = 275,
+ jx     = 405,
+ kz     = 32,
+ /
+
+ &coreparam
+ idynamic = 3,
+ /
+
+ &geoparam
+ iproj = 'ROTLLR',
+ ds = -0.11,
+ clat = 42.02,
+ clon = 15.75,
+ plat = 39.25,
+ plon = 198.0,
+ /
+
+ &terrainparam
+ domname  = 'MED-12',
+ lsmoist = .true.,
+ h2opct = 50.,
+ h2ohgt = .false.,
+ dirter = '/leonardo_scratch/large/userexternal/ggiulian/run/input/',
+ inpter = '/leonardo_work/ICT24_ESP/RCMDATA',
+ lclm45lake = .true.
+ /
+
+ &boundaryparam
+ nspgx  = 40,
+ nspgd  = 40,
+ high_nudge =    8.0D0,
+ medium_nudge =  6.0D0,
+ low_nudge =     4.0D0,
+ /
+
+ &globdatparam
+ ssttyp = 'ERA5D',
+ dattyp = 'ERA5',
+ gdate1 = 1979080100,
+ gdate2 = 1987080100,
+ calendar = 'gregorian',
+ dirglob = '/leonardo_scratch/large/userexternal/ggiulian/run/input',
+ inpglob = '/leonardo_work/ICT24_ESP/RCMDATA',
+ /
+
+ &restartparam
+ ifrest  = .false.,
+ mdate0  = 1979080100,
+ mdate1  = 1979080100,
+ mdate2  = 1987080100,
+ /
+
+ &timeparam
+ dt     =    120,
+ /
+
+ &outparam
+ ifcordex = .true.,
+ dirout  = '/leonardo_scratch/large/userexternal/ggiulian/run/output',
+ do_parallel_netcdf_in  = .true.,
+ do_parallel_netcdf_out = .false.,
+ /
+
+ &physicsparam
+ iboudy  =          5,
+ ibltyp  =          1,
+ icup_lnd =          5,
+ icup_ocn =          5,
+ ipptls  =          2,
+ iocnflx =          2,
+   iocnrough =      4,
+   iocnzoq =        4,
+ scenario =   'SSP370',
+ idcsst   =          0,
+ iseaice  =          1,
+ iconvlwp =          0,
+ icldfrac =          0,
+ irrtm    =          0,
+ iclimao3 =          1,
+ isolconst =         0,
+ iclimaaer =         2,
+ radclimpath = '/leonardo_work/ICT24_ESP/RCMDATA/MERRA2/OPPMONTH',
+ /
+
+ &cldparam
+ ncld = 0,
+ rhmax = 1.0,
+ rhmin = 0.001,
+ cftotmax = 1.0,
+ larcticcorr = .false.,
+ rh0land = 0.85,
+ rh0oce = 0.93,
+ tc0 = 100,
+ /
+
+ &subexparam
+ /
+
+ &tiedtkeparam
+ /
+
+ &holtslagparam
+ /
+
+ &clm_inparm
+ fpftcon = 'pft-physiology.c130503.nc',
+ fsnowoptics = 'snicar_optics_5bnd_c090915.nc',
+ fsnowaging = 'snicar_drdt_bst_fit_60_c070416.nc',
+ urban_hac = 'ON_WASTEHEAT',
+ hist_nhtfrq = 0, 24
+ hist_fincl2(1:13) = 'EFLX_LH_TOT_U', 'FGR_U', 'FIRA_U', 'FSA_U', 'FSH_U',
+                     'FSM_U', 'QRUNOFF_U', 'RH2M_U', 'SoilAlpha_U', 'TG_U',
+                     'TREFMNAV_U', 'TREFMXAV_U', 'TSA_U'
+ /
+
+ &clm_soilhydrology_inparm
+ h2osfcflag = 1,
+ origflag = 0,
+ /
+
+ &clm_hydrology1_inparm
+ oldfflag = 0,
+ /
