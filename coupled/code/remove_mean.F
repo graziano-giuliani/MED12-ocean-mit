@@ -225,6 +225,7 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ENEA_COUPLER
 #ifdef MED_12_ATLANTIC
+      _RL arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
       _RS theMean_A
       _RS theVol_A
       _RS theMean_M
@@ -322,7 +323,7 @@ C-    end type correction selection
            iG = myXGlobalLo-1+(bi-1)*sNx+I
            IF (iG.le.IG_BEGIN_ATLANTIC) then
             tmpVal = arr(I,J,K,bi,bj)
-            IF (arrMask(I,J,K,bi,bj).NE.0.) THEN
+            IF (arrMask(I,J,bi,bj).NE.0.) THEN
              tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
              theVol_A = theVol_A   + tmpVol
              theMean_A = theMean_A + tmpVol*tmpVal
@@ -330,7 +331,7 @@ C-    end type correction selection
            ENDIF
            IF (iG.gt.IG_BEGIN_ATLANTIC) then
             tmpVal = arr(I,J,K,bi,bj)
-            IF (arrMask(I,J,K,bi,bj).NE.0.) THEN
+            IF (arrMask(I,J,bi,bj).NE.0.) THEN
              tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
              theVol_M = theVol_M   + tmpVol
              theMean_M = theMean_M + tmpVol*tmpVal
@@ -355,7 +356,7 @@ C-    end type correction selection
             jG = myYGlobalLo-1+(bj-1)*sNy+J
             iG = myXGlobalLo-1+(bi-1)*sNx+I
             IF (iG.le.IG_BEGIN_ATLANTIC) then
-             IF (arrMask(I,J,K,bi,bj).NE.0.) THEN
+             IF (arrMask(I,J,bi,bj).NE.0.) THEN
               arr(I,J,K,bi,bj) = arr(I,J,K,bi,bj) - theMean
              ENDIF
             ENDIF
