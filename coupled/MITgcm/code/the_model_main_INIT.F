@@ -526,7 +526,7 @@ CBOP
 C     !ROUTINE: THE_MODEL_MAIN
 
 C     !INTERFACE:
-      SUBROUTINE THE_MODEL_MAIN_INIT(myThid)
+      SUBROUTINE THE_MODEL_MAIN_INIT(iloop,myTime,myIter,myThid)
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
