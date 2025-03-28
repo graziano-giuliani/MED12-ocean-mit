@@ -521,7 +521,6 @@ CEOI
 # include "CTRL_OPTIONS.h"
 #endif
 
-#ifdef ENEA_COUPLER
 CBOP
 C     !ROUTINE: THE_MODEL_MAIN
 
@@ -615,6 +614,159 @@ C--   set default:
       costFinalExist = .TRUE.
       lastdiva = .TRUE.
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('THE_MODEL_MAIN',myThid)
+#endif
+
+#if ( defined USE_PAPI || defined USE_PCL_FLOPS_SFP || defined USE_PCL_FLOPS || defined USE_PCL )
+      CALL TIMER_CONTROL('','INIT','THE_MODEL_MAIN',myThid)
+#endif
+C--   This timer encompasses the whole code
+      CALL TIMER_START('ALL                    [THE_MODEL_MAIN]',myThid)
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INITIALISE_FIXED',myThid)
+#endif
+C--   Set model configuration (fixed arrays)
+      CALL TIMER_START('INITIALISE_FIXED       [THE_MODEL_MAIN]',myThid)
+      CALL INITIALISE_FIXED( myThid )
+      CALL TIMER_STOP ('INITIALISE_FIXED       [THE_MODEL_MAIN]',myThid)
+
+      myTime = startTime
+      myIter = nIter0
+
+#ifdef ALLOW_ADMTLM
+
+      STOP 'should never get here; ADMTLM_DSVD calls ADMTLM_DRIVER'
+
+#elif ( defined ALLOW_AUTODIFF )
+
+# ifdef ALLOW_CTRL
+      IF ( useCTRL ) THEN
+#  ifndef EXCLUDE_CTRL_PACK
+        INQUIRE( FILE='costfinal', EXIST=costFinalExist )
+        IF ( .NOT.costFinalExist ) THEN
+          IF ( (optimcycle.NE.0 .OR. .NOT.doinitxx)
+     &         .AND. doMainUnpack ) THEN
+            CALL TIMER_START('CTRL_UNPACK   [THE_MODEL_MAIN]',myThid)
+            CALL CTRL_UNPACK( .TRUE. , myThid )
+            CALL TIMER_STOP ('CTRL_UNPACK   [THE_MODEL_MAIN]',myThid)
+          ENDIF
+        ENDIF
+#  elif ( defined ALLOW_DIVIDED_ADJOINT )
+        INQUIRE( FILE='costfinal', EXIST=costFinalExist )
+#  endif /* EXCLUDE_CTRL_PACK & ALLOW_DIVIDED_ADJOINT */
+      ENDIF
+# endif /* ALLOW_CTRL */
+
+# ifdef ALLOW_COST
+      CALL COST_DEPENDENT_INIT ( myThid )
+# endif
+
+# if ( defined ALLOW_TANGENTLINEAR_RUN )
+
+#  ifndef ALLOW_TAPENADE
+#   ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('G_THE_MAIN_LOOP',myThid)
+#   endif
+      CALL TIMER_START('G_THE_MAIN_LOOP           [TANGENT RUN]',myThid)
+      CALL G_THE_MAIN_LOOP ( myTime, myIter, myThid )
+      CALL TIMER_STOP ('G_THE_MAIN_LOOP           [TANGENT RUN]',myThid)
+#  endif /* ndef ALLOW_TAPENADE */
+
+# elif ( defined ALLOW_ADJOINT_RUN )
+
+#  ifdef ALLOW_TAPENADE
+      CALL THE_MAIN_LOOP_B( myTime, myIter, myThid )
+#  else /* ALLOW_TAPENADE */
+
+#   ifdef ALLOW_DIVIDED_ADJOINT
+C-- The following assumes the TAF option '-pure'
+      IF ( .NOT.costFinalExist ) THEN
+#    ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('MDTHE_MAIN_LOOP',myThid)
+#    endif
+        CALL TIMER_START('MDTHE_MAIN_LOOP            [MD RUN]', myThid)
+        CALL MDTHE_MAIN_LOOP ( myTime, myIter, myThid )
+        CALL TIMER_STOP ('MDTHE_MAIN_LOOP            [MD RUN]', myThid)
+        CALL COST_FINAL_STORE ( lastdiva, myThid )
+      ELSE
+C-- for DIVA, avoid forward-related output in adjoint part
+        CALL TURNOFF_MODEL_IO( 1, myThid )
+#    ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('ADTHE_MAIN_LOOP',myThid)
+#    endif
+        CALL TIMER_START('ADTHE_MAIN_LOOP       [ADJOINT RUN]', myThid)
+        CALL ADTHE_MAIN_LOOP (  myThid )
+        CALL TIMER_STOP ('ADTHE_MAIN_LOOP       [ADJOINT RUN]', myThid)
+        CALL COST_FINAL_RESTORE ( lastdiva, myThid )
+      ENDIF
+
+#   else /* ALLOW_DIVIDED_ADJOINT undef */
+#    ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('ADTHE_MAIN_LOOP',myThid)
+#    endif
+      CALL TIMER_START('ADTHE_MAIN_LOOP          [ADJOINT RUN]', myThid)
+      CALL ADTHE_MAIN_LOOP ( myThid )
+      CALL TIMER_STOP ('ADTHE_MAIN_LOOP          [ADJOINT RUN]', myThid)
+#   endif /* ALLOW_DIVIDED_ADJOINT */
+
+#  endif /* ALLOW_TAPENADE */
+
+# else /* forward run only within AD setting */
+
+#  ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('THE_MAIN_LOOP',myThid)
+#  endif
+C--   Call time stepping loop of full model
+      CALL TIMER_START('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
+      CALL THE_MAIN_LOOP_FINALIZE( myTime, myIter, myThid )
+      CALL TIMER_STOP ('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
+
+# endif /* forward run only within AD setting */
+
+# ifdef ALLOW_CTRL
+#  ifndef EXCLUDE_CTRL_PACK
+      IF ( useCTRL .AND. lastdiva .AND. doMainPack ) THEN
+        CALL TIMER_START('CTRL_PACK           [THE_MODEL_MAIN]',myThid)
+        CALL CTRL_PACK( .FALSE. , myThid )
+        CALL TIMER_STOP ('CTRL_PACK           [THE_MODEL_MAIN]',myThid)
+        IF ( ( optimcycle.EQ.0 .OR. (.NOT. doMainUnpack) )
+     &       .AND. myIter.EQ.nIter0 ) THEN
+          CALL TIMER_START('CTRL_PACK     [THE_MODEL_MAIN]',myThid)
+          CALL CTRL_PACK( .TRUE. , myThid )
+          CALL TIMER_STOP ('CTRL_PACK     [THE_MODEL_MAIN]',myThid)
+        ENDIF
+      ENDIF
+#  endif /* EXCLUDE_CTRL_PACK */
+# endif /* ALLOW_CTRL */
+
+# ifdef ALLOW_GRDCHK
+      IF ( useGrdchk .AND. lastdiva ) THEN
+        CALL TIMER_START('GRDCHK_MAIN         [THE_MODEL_MAIN]',myThid)
+        CALL GRDCHK_MAIN( myThid )
+        CALL TIMER_STOP ('GRDCHK_MAIN         [THE_MODEL_MAIN]',myThid)
+      ENDIF
+# endif
+
+#else /* ALL AD-related undef */
+
+# ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('THE_MAIN_LOOP',myThid)
+# endif
+C--   Call time stepping loop of full model
+      CALL TIMER_START('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
+      CALL THE_MAIN_LOOP( myTime, myIter, myThid )
+      CALL TIMER_STOP ('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
+
+#endif /* ALLOW_TANGENTLINEAR_RUN ALLOW_ADJOINT_RUN ALLOW_ADMTLM */
+
+#ifdef ALLOW_STREAMICE
+      IF ( useStreamIce ) THEN
+        CALL STREAMICE_FINALIZE_PETSC
+      ENDIF
+#endif
+
 #ifdef ALLOW_MNC
       IF ( useMNC ) THEN
 C       Close all open NetCDF files
@@ -642,4 +794,3 @@ C--   Check threads synchronization :
 
       RETURN
       END
-#endif
