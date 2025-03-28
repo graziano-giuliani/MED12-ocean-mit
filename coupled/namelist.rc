@@ -70,7 +70,8 @@ UnmappedFill: 1
 #     '4' : '3' + write exchange fileds into ASCII
 #-----------------------------------------------------------------------
 #
-DebugLevel: 0 
+DebugLevel: 0
+EnablePerfCheck: .false.
 #
 #-----------------------------------------------------------------------
 #     Coupled model run information
@@ -85,7 +86,7 @@ DebugLevel: 0
 Calendar:    gregorian
 StartTime:   1979 08 01 00 00 00
 RestartTime: 1979 08 01 00 00 00 
-StopTime:    1989 08 31 00 00 00
+StopTime:    1987 08 01 00 00 00
 TimeStep:    0000 00 01 00 00 00
 #
 #-----------------------------------------------------------------------

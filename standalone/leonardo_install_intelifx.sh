@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MIT=/leonardo_work/ICT24_ESP/MITGCM/MED12-ocean-mit/MITgcm/
+MIT=/leonardo_work/ICT25_ESP_0/MITGCM/MED12-ocean-mit/MITgcm/
 
 PRJ=$PWD
 
