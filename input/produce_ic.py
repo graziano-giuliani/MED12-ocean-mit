@@ -12,14 +12,13 @@ import yaml
 from netCDF4 import Dataset
 import numpy as np
 
-try:
-    oras5dir = sys.argv[1]
-except:
-    oras5dir = "../ORAS5_MIT"
-
 cpath = "config.yaml"
 with open(cpath,"r") as f:
     config = yaml.safe_load(f)
+source = config["source"]
+srcdir = config[source]["path"]
+variables = config[source]["variables"].split( )
+
 start_year = config["start_year"]
 start_month = config["start_month"]
 end_year = config["end_year"]
@@ -30,16 +29,24 @@ base = repr(start_year//100)
 sdecade = (start_year//10) % 10 - (ic_decades//2 - 1) - (ic_decades % 2)
 edecade = (start_year//10) % 10 + (ic_decades//2)
 tmonth = f'{start_month:02d}'
-if sdecade == edecade:
-    pattern = base+repr(sdecade)+"[0-9]"+tmonth
+if source == 'oras5':
+    if sdecade == edecade:
+        pattern = base+repr(sdecade)+"[0-9]"+tmonth
+    else:
+        pattern = base+"["+repr(sdecade)+'-'+repr(edecade)+"][0-9]"+tmonth
 else:
-    pattern = base+"["+repr(sdecade)+'-'+repr(edecade)+"][0-9]"+tmonth
-
-variables = [ "votemper", "vosaline" ]
+    if sdecade == edecade:
+        pattern = base+repr(sdecade)+"[0-9]"+"_ok_mon"+tmonth
+    else:
+        pattern = (base+"["+repr(sdecade)+'-'+
+                repr(edecade)+"][0-9]"+"_ok_mon"+tmonth)
 
 cdo = cdo.Cdo( )
 for var in variables:
-    gpath = os.path.join(oras5dir,var,var+"*_"+pattern+"_*.nc")
+    if source == 'oras5':
+        gpath = os.path.join(srcdir,var,var+"*_"+pattern+"_*.nc")
+    else:
+        gpath = os.path.join(srcdir,var,"*_"+pattern+".nc")
     files = " ".join(sorted(glob.glob(os.path.expanduser(gpath))))
     outname = (var + '_' + repr(start_year) + tmonth +
               '_' + repr(ic_decades) + '_decades.bin')

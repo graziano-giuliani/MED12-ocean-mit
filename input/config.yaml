@@ -1,5 +1,12 @@
+source: medhymap
+oras5:
+        path: ../ORAS5_MIT
+        variables: votemper vosaline
+medhymap:
+        path: ../MEDHYMAP_MIT
+        variables: temperature salinity
 start_year: 1979
 end_year: 0
 start_month: 8
 end_month: 8
-ic_decades: 2
+ic_decades: 1
