@@ -54,7 +54,7 @@
  /
 # Time stepping parameters
  &PARM03
- startTime  = 0.,
+ startTime  =         0.,
  endTime    = 244684800.,
 #----------------------
  deltaT=150.,
@@ -93,7 +93,7 @@
 # Input datasets
  &PARM05
  bathyFile='BATHYMETRY.bin',
- hydrogSaltFile='vosaline_197908_2_decades.bin',
- hydrogThetaFile='votemper_197908_2_decades.bin',
+ hydrogSaltFile='salinity_197908_1_decades.bin',
+ hydrogThetaFile='temperature_197908_1_decades.bin',
  /
 

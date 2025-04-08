@@ -23,7 +23,7 @@
  h2opct = 50.,
  h2ohgt = .false.,
  dirter = '/leonardo_scratch/large/userexternal/ggiulian/run/input/',
- inpter = '/leonardo_work/ICT25_ESP_0/RCMDATA',
+ inpter = '/leonardo_work/ICT25_ESP/RCMDATA',
  lclm45lake = .true.
  /
 
@@ -42,7 +42,7 @@
  gdate2 = 1987080100,
  calendar = 'gregorian',
  dirglob = '/leonardo_scratch/large/userexternal/ggiulian/run/input',
- inpglob = '/leonardo_work/ICT25_ESP_0/RCMDATA',
+ inpglob = '/leonardo_work/ICT25_ESP/RCMDATA',
  /
 
  &restartparam
@@ -58,7 +58,7 @@
 
  &outparam
  ifcordex = .true.,
- dirout  = '/leonardo_work/ICT25_ESP_0/COUPLED/coupled/output',
+ dirout  = '/leonardo_work/ICT25_ESP/COUPLED/coupled/output',
  do_parallel_netcdf_in  = .true.,
  do_parallel_netcdf_out = .false.,
  /
@@ -82,7 +82,7 @@
  iclimao3 =          1,
  isolconst =         0,
  iclimaaer =         2,
- radclimpath = '/leonardo_work/ICT25_ESP_0/RCMDATA/MERRA2/OPPMONTH',
+ radclimpath = '/leonardo_work/ICT25_ESP/RCMDATA/MERRA2/OPPMONTH',
  /
 
  &cldparam
