@@ -60,5 +60,17 @@ for var in variables:
                 print(var+": "+repr(d))
                 values = Dataset(f).variables[var][0,:,0].data
                 values.astype('>f4').tofile(fout)
+    if var in ["votemper", "vosaline"]: # full 3d field
+        for o,f,d in zip(xfiles,files,dates):
+            if d == startdate:
+                print(var+": "+repr(d))
+                values = Dataset(f).variables[var][:].data
+                values.astype('>f4').tofile(fout)
+    else: # sossheig, keep only West boundary.
+        for o,f,d in zip(xfiles,files,dates):
+            if d == startdate:
+                print(var+": "+repr(d))
+                values = Dataset(f).variables[var][0,:,0].data
+                values.astype('>f4').tofile(fout)
 
 print('Done')
