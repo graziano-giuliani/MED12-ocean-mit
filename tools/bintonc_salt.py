@@ -32,52 +32,52 @@ NX = 660
 NY = 368
 NZ = len(depth)
 
-binfile = sys.argv[1]
-name = os.path.basename(os.path.splitext(binfile)[0])
-ncfile = name + '.nc'
-vname,vdate = name.split('.')
+for binfile in sys.argv[1:]:
+    name = os.path.basename(os.path.splitext(binfile)[0])
+    ncfile = name + '.nc'
+    vname,vdate = name.split('.')
 
-time = float(vdate)*timestep
+    time = float(vdate)*timestep
 
-lonfile = 'LONC.bin'
-latfile = 'LATC.bin'
+    lonfile = 'LONC.bin'
+    latfile = 'LATC.bin'
 
-lon = np.fromfile(lonfile, '>f4').reshape(NY,NX)
-lat = np.fromfile(latfile, '>f4').reshape(NY,NX)
+    lon = np.fromfile(lonfile, '>f4').reshape(NY,NX)
+    lat = np.fromfile(latfile, '>f4').reshape(NY,NX)
 
-xlon = xr.DataArray(name = "lon",
-                    data = lon, 
-                    dims = ["lon","lat"],
-                    attrs = dict(standard_name = "longitude",
-                                 units = "degrees_east"))
-xlat = xr.DataArray(name = "lat",
-                    data = lat, 
-                    dims = ["lon","lat"],
-                    attrs = dict(standard_name = "latitude",
-                                 units = "degrees_north"))
-xdepth = xr.DataArray(name = "depth",
-                    data = depth, 
-                    dims = ["depth"],
-                    attrs = dict(standard_name = "depth",
-                                 units = "m"))
-xtime = xr.DataArray(name = "time",
-                     data = np.array((time,)),
-                     dims = ["time"],
-                     attrs = dict(standard_name = "time",
-                                  units = "seconds since "+start_simulation))
+    xlon = xr.DataArray(name = "lon",
+                        data = lon, 
+                        dims = ["lon","lat"],
+                        attrs = dict(standard_name = "longitude",
+                                     units = "degrees_east"))
+    xlat = xr.DataArray(name = "lat",
+                        data = lat, 
+                        dims = ["lon","lat"],
+                        attrs = dict(standard_name = "latitude",
+                                     units = "degrees_north"))
+    xdepth = xr.DataArray(name = "depth",
+                        data = depth, 
+                        dims = ["depth"],
+                        attrs = dict(standard_name = "depth",
+                                     units = "m"))
+    xtime = xr.DataArray(name = "time",
+                         data = np.array((time,)),
+                         dims = ["time"],
+                         attrs = dict(standard_name = "time",
+                                      units = "seconds since "+start_simulation))
 
-count = NZ*NY*NX
-h = np.fromfile(sys.argv[1], '>f4',
-                count = count).reshape(1,NZ,NY,NX)
-da = xr.DataArray(name = vname , data=h, 
-                  dims = ["time","depth","lon","lat"],
-                  coords = dict(lon = xlon,
-                                lat = xlat,
-                                depth = xdepth,
-                                time = xtime),
-                  attrs = dict(standard_name = "Salinity",
-                               long_name = "Ocean Salinity",
-                               units = "ppm",
-                               coordinates = "lat lon"),
-                 )
-da.to_netcdf(ncfile)
+    count = NZ*NY*NX
+    h = np.fromfile(binfile, '>f4',
+                    count = count).reshape(1,NZ,NY,NX)
+    da = xr.DataArray(name = vname , data=h, 
+                      dims = ["time","depth","lon","lat"],
+                      coords = dict(lon = xlon,
+                                    lat = xlat,
+                                    depth = xdepth,
+                                    time = xtime),
+                      attrs = dict(standard_name = "Salinity",
+                                   long_name = "Ocean Salinity",
+                                   units = "ppm",
+                                   coordinates = "lat lon"),
+                     )
+    da.to_netcdf(ncfile)
