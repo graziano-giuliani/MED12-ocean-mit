@@ -151,8 +151,26 @@ C
      &                  atemp_ESMF,aqh_ESMF,lwflux_ESMF,
      &                  evap_ESMF,precip_ESMF,snowprecip_ESMF,
      &                  swdown_ESMF,lwdown_ESMF,apressure_ESMF,
-     &                  runoff_ESMF
-
+     &                  runoff_ESMF,what_is_in_ESMF
+      INTEGER , PARAMETER :: HAS_ESMF_USTRESS = 1
+      INTEGER , PARAMETER :: HAS_ESMF_VSTRESS = 2
+      INTEGER , PARAMETER :: HAS_ESMF_HFLUX = 3
+      INTEGER , PARAMETER :: HAS_ESMF_SFLUX = 4
+      INTEGER , PARAMETER :: HAS_ESMF_SWFLUX = 5
+      INTEGER , PARAMETER :: HAS_ESMF_UWIND = 6
+      INTEGER , PARAMETER :: HAS_ESMF_VWIND = 7
+      INTEGER , PARAMETER :: HAS_ESMF_WSPEED = 8
+      INTEGER , PARAMETER :: HAS_ESMF_ATEMP = 9
+      INTEGER , PARAMETER :: HAS_ESMF_AQH = 10
+      INTEGER , PARAMETER :: HAS_ESMF_LWFLUX = 11
+      INTEGER , PARAMETER :: HAS_ESMF_EVAP = 12
+      INTEGER , PARAMETER :: HAS_ESMF_PRECIP = 13
+      INTEGER , PARAMETER :: HAS_ESMF_SNOWPRECIP = 14
+      INTEGER , PARAMETER :: HAS_ESMF_SWDOWN = 15
+      INTEGER , PARAMETER :: HAS_ESMF_LWDOWN = 16
+      INTEGER , PARAMETER :: HAS_ESMF_APRESSURE = 17
+      INTEGER , PARAMETER :: HAS_ESMF_RUNOFF = 18
+      LOGICAL, DIMENSION(18) :: WHAT_IS_IN_ESMF
       _RL ustress_ESMF   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vstress_ESMF   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL   hflux_ESMF   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

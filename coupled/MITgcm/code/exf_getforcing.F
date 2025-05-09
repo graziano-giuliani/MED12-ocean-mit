@@ -205,10 +205,27 @@ C     Get values of climatological fields.
 
 C     Get the surface forcing fields.
       CALL EXF_GETFFIELDS( myTime, myIter, myThid )
+
       IF ( .NOT.useAtmWind ) THEN
+#ifdef ENEA_COUPLER
+       IF ( WHAT_IS_IN_ESMF(HAS_ESMF_USTRESS) .and.
+     &      WHAT_IS_IN_ESMF(HAS_ESMF_VSTRESS) ) THEN
+        DO bj = mybylo(mythid),mybyhi(mythid)
+         DO bi = mybxlo(mythid),mybxhi(mythid)
+          DO j = 1-oly,sny+oly
+           DO i = 1-olx,snx+olx
+            ustress(i,j,bi,bj) = ustress_ESMF(i,j,bi,bj)
+            vstress(i,j,bi,bj) = vstress_ESMF(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+#else
        IF ( stressIsOnCgrid .AND. ustressfile.NE.' '
      &                      .AND. vstressfile.NE.' ' )
      &  CALL EXCH_UV_XY_RL( ustress, vstress, .TRUE., myThid )
+#endif
       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -266,12 +283,125 @@ CADJ STORE areamask   = comlev1, key=ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_DOWNWARD_RADIATION
+# ifdef ENEA_COUPLER
+      IF ( WHAT_IS_IN_ESMF(HAS_ESMF_SWDOWN) .and.
+     &     WHAT_IS_IN_ESMF(HAS_ESMF_LWDOWN) ) THEN
+       DO bj = mybylo(mythid),mybyhi(mythid)
+        DO bi = mybxlo(mythid),mybxhi(mythid)
+         DO j = 1-oly,sny+oly
+          DO i = 1-olx,snx+olx
+           swdown(i,j,bi,bj) = swdown_ESMF(i,j,bi,bj)
+           lwdown(i,j,bi,bj) = lwdown_ESMF(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
 C     Set radiative fluxes
       CALL EXF_RADIATION( exf_Tsf, myTime, myIter, myThid )
+# endif
+#endif
+
+#ifdef ENEA_COUPLER
+      IF ( WHAT_IS_IN_ESMF(HAS_ESMF_UWIND) .and.
+     &     WHAT_IS_IN_ESMF(HAS_ESMF_VWIND) ) THEN
+       DO bj = mybylo(mythid),mybyhi(mythid)
+        DO bi = mybxlo(mythid),mybxhi(mythid)
+         DO j = 1-oly,sny+oly
+          DO i = 1-olx,snx+olx
+           uwindESMF(i,j,bi,bj) = uwind_ESMF(i,j,bi,bj)
+           vwindESMF(i,j,bi,bj) = vwind_ESMF(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+       CALL ROTATE_WIND_RL(
+     &           uwind, vwind,
+     &           uwindESMF, vwindESMF,
+     &           .FALSE., .FALSE. , .TRUE.,  mythid
+     &                    )
+      ENDIF
+      IF ( WHAT_IS_IN_ESMF(HAS_ESMF_WSPEED) ) THEN
+       DO bj = mybylo(mythid),mybyhi(mythid)
+        DO bi = mybxlo(mythid),mybxhi(mythid)
+         DO j = 1-oly,sny+oly
+          DO i = 1-olx,snx+olx
+           wspeed(i,j,bi,bj) = wspeed_ESMF(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+      IF ( stressIsOnCgrid ) THEN
+       CALL EXCH_UV_XY_RL( uwind, vwind, .TRUE., myThid )
+      ELSE
+       CALL EXCH_UV_AGRID_3D_RL(uwind, vwind, .TRUE., 1, myThid)
+      ENDIF
 #endif
 
 C     Set wind fields
       CALL EXF_WIND( myTime, myIter, myThid )
+
+#ifdef EXF_READ_EVAP
+# ifdef ENEA_COUPLER
+      IF ( WHAT_IS_IN_ESMF(HAS_ESMF_EVAP) ) THEN
+       DO bj = mybylo(mythid),mybyhi(mythid)
+        DO bi = mybxlo(mythid),mybxhi(mythid)
+         DO j = 1-oly,sny+oly
+          DO i = 1-olx,snx+olx
+           evap(i,j,bi,bj) = evap_ESMF(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+# endif
+#endif
+
+#ifdef ENEA_COUPLER
+      IF ( WHAT_IS_IN_ESMF(HAS_ESMF_PRECIP) ) THEN
+       DO bj = mybylo(mythid),mybyhi(mythid)
+        DO bi = mybxlo(mythid),mybxhi(mythid)
+         DO j = 1-oly,sny+oly
+          DO i = 1-olx,snx+olx
+           precip(i,j,bi,bj) =
+     &        max(precip_ESMF(i,j,bi,bj),snowprecip_ESMF(i,j,bi,bj)) 
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+#endif
+
+#ifdef ENEA_COUPLER
+       IF ( WHAT_IS_IN_ESMF(HAS_ESMF_APRESSURE) ) THEN
+        DO bj = mybylo(mythid),mybyhi(mythid)
+         DO bi = mybxlo(mythid),mybxhi(mythid)
+          DO j = 1,sny
+           DO i = 1,snx
+            apressure(i,j,bi,bj) = apressure_ESMF(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+#endif
+
+#ifdef ENEA_COUPLER
+      IF ( WHAT_IS_IN_ESMF(HAS_ESMF_HFLUX) .and.
+     &     WHAT_IS_IN_ESMF(HAS_ESMF_SFLUX) ) THEN
+       DO bj = mybylo(mythid),mybyhi(mythid)
+        DO bi = mybxlo(mythid),mybxhi(mythid)
+         DO j = 1-oly,sny+oly
+          DO i = 1-olx,snx+olx
+           sflux(i,j,bi,bj) = sflux_ESMF(i,j,bi,bj)*maskC(i,j,ks,bi,bj)
+           hflux(i,j,bi,bj) = hflux_ESMF(i,j,bi,bj)*maskC(i,j,ks,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+#endif
 
 #ifdef ALLOW_ATM_TEMP
 # ifdef ALLOW_BULKFORMULAE
@@ -286,25 +416,31 @@ CADJ STORE vstress      = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE wstress      = comlev1, key=ikey_dynamics, kind=isbyte
 #  endif
 #  ifdef ENEA_COUPLER
-      DO bj = mybylo(mythid),mybyhi(mythid)
-       DO bi = mybxlo(mythid),mybxhi(mythid)
-        DO j = 1-oly,sny+oly
-         DO i = 1-olx,snx+olx
-          uwindESMF(i,j,bi,bj) = uwind_ESMF(i,j,bi,bj)
-          vwindESMF(i,j,bi,bj) = vwind_ESMF(i,j,bi,bj)
+      IF ( WHAT_IS_IN_ESMF(HAS_ESMF_SWFLUX) .and.
+     &     WHAT_IS_IN_ESMF(HAS_ESMF_LWFLUX) ) THEN
+       DO bj = mybylo(mythid),mybyhi(mythid)
+        DO bi = mybxlo(mythid),mybxhi(mythid)
+         DO j = 1-oly,sny+oly
+          DO i = 1-olx,snx+olx
+           swflux(i,j,bi,bj) = swflux_ESMF(i,j,bi,bj)
+           lwflux(i,j,bi,bj) = lwflux_ESMF(i,j,bi,bj)
+          ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
-      CALL ROTATE_WIND_RL(
-     &          uwind, vwind,
-     &          uwindESMF, vwindESMF,
-     &          .FALSE., .FALSE. , .TRUE.,  mythid
-     &                     )
-      IF ( stressIsOnCgrid ) THEN
-       CALL EXCH_UV_XY_RL( uwind, vwind, .TRUE., myThid )
-      ELSE
-       CALL EXCH_UV_AGRID_3D_RL(uwind, vwind, .TRUE., 1, myThid)
+      ENDIF
+      IF ( WHAT_IS_IN_ESMF(HAS_ESMF_ATEMP) .and.
+     &     WHAT_IS_IN_ESMF(HAS_ESMF_AQH) ) THEN
+       DO bj = mybylo(mythid),mybyhi(mythid)
+        DO bi = mybxlo(mythid),mybxhi(mythid)
+         DO j = 1-oly,sny+oly
+          DO i = 1-olx,snx+olx
+           atemp(i,j,bi,bj) = atemp_ESMF(i,j,bi,bj)
+           aqh(i,j,bi,bj) = aqh_ESMF(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
       ENDIF
 #  endif /* ENEA_COUPLER */
 C     Compute turbulent fluxes (and surface stress) from bulk formulae
@@ -314,6 +450,20 @@ CADJ STORE evap         = comlev1, key=ikey_dynamics, kind=isbyte
 #  endif /* ALLOW_AUTODIFF_TAMC */
 # endif /* ALLOW_BULKFORMULAE */
 #endif /* ALLOW_ATM_TEMP */
+
+#ifdef ENEA_COUPLER
+       IF ( WHAT_IS_IN_ESMF(HAS_ESMF_RUNOFF) ) THEN
+        DO bj = mybylo(mythid),mybyhi(mythid)
+         DO bi = mybxlo(mythid),mybxhi(mythid)
+          DO j = 1,sny
+           DO i = 1,snx
+            runoff(i,j,bi,bj) = runoff_ESMF(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+#endif
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -341,20 +491,14 @@ C     Apply runoff, masks and exchanges
          DO i = 1,sNx
 #ifdef ALLOW_RUNOFF
 # ifdef ENEA_COUPLER
-          sflux(i,j,bi,bj) = (sflux_ESMF(i,j,bi,bj)-runoff_ESMF(i,j,bi,bj))
+          sflux(i,j,bi,bj) = (sflux_ESMF(i,j,bi,bj)-runoff(i,j,bi,bj))
      &                          *EmPmR_msk(i,j,bi,bj)
-          runoff(i,j,bi,bj) = runoff_ESMF(i,j,bi,bj)
 # else
           sflux(i,j,bi,bj) = sflux(i,j,bi,bj) - runoff(i,j,bi,bj)
 # endif /* ENEA_COUPLER */
 #endif /* ALLOW_RUNOFF */
-#ifdef ENEA_COUPLER
-          hflux(i,j,bi,bj) = hflux_ESMF(i,j,bi,bj)*maskC(i,j,ks,bi,bj)
-          sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskC(i,j,ks,bi,bj)
-#else
           hflux(i,j,bi,bj) = hflux(i,j,bi,bj)*maskC(i,j,ks,bi,bj)
           sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskC(i,j,ks,bi,bj)
-#endif /* ENEA_COUPLER */
          ENDDO
         ENDDO
 
@@ -371,20 +515,12 @@ c     _EXCH_XY_RL(sflux,   myThid)
       ELSE
        CALL EXCH_UV_AGRID_3D_RL(ustress, vstress, .TRUE., 1, myThid)
       ENDIF
+
 #ifdef SHORTWAVE_HEATING
 c     _EXCH_XY_RL(swflux, myThid)
 #endif
 #ifdef ATMOSPHERIC_LOADING
 c     _EXCH_XY_RL(apressure, myThid)
-       DO bj = mybylo(mythid),mybyhi(mythid)
-        DO bi = mybxlo(mythid),mybxhi(mythid)
-         DO j = 1,sny
-          DO i = 1,snx
-           apressure(i,j,bi,bj) = apressure_ESMF(i,j,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
 #endif
 #ifdef EXF_SEAICE_FRACTION
 c     _EXCH_XY_RL(areamask, myThid)
@@ -415,12 +551,7 @@ C     Therefore, we DO it exactly here:
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j = 1-OLy,sNy+OLy
          DO i = 1-OLx,sNx+OLx
-#  ifdef ENEA_COUPLER
-          hflux(i,j,bi,bj) =
-     &        hflux_ESMF(i,j,bi,bj)+swflux_ESMF(i,j,bi,bj)
-#  else
           hflux(i,j,bi,bj) = hflux(i,j,bi,bj) + swflux(i,j,bi,bj)
-#  endif /* ENEA_COUPLER */
          ENDDO
         ENDDO
        ENDDO
