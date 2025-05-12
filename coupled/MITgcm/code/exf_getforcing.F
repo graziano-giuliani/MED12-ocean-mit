@@ -156,6 +156,7 @@ C     == local variables ==
 #ifdef ENEA_COUPLER
       _RL uwindESMF (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vwindESMF (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif /* ENEA_COUPLER */
 #if ( defined ALLOW_DOWNWARD_RADIATION ) || \
       ( defined ALLOW_ATM_TEMP && defined ALLOW_BULKFORMULAE )
@@ -220,6 +221,12 @@ C     Get the surface forcing fields.
           ENDDO
          ENDDO
         ENDDO
+       ELSE
+        WRITE(msgBuf,'(A)')
+     &       'COUPLER_CHECK: useAtmWind is false but no STRESS present.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( myThid )
+        STOP 'ABNORMAL END: S/R COUPLER_CHECK'
        ENDIF
 #else
        IF ( stressIsOnCgrid .AND. ustressfile.NE.' '
@@ -296,6 +303,12 @@ CADJ STORE areamask   = comlev1, key=ikey_dynamics, kind=isbyte
          ENDDO
         ENDDO
        ENDDO
+      ELSE
+       WRITE(msgBuf,'(A)')
+     &      'COUPLER_CHECK: downward radiation not present.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       CALL ALL_PROC_DIE( myThid )
+       STOP 'ABNORMAL END: S/R COUPLER_CHECK'
       ENDIF
 C     Set radiative fluxes
       CALL EXF_RADIATION( exf_Tsf, myTime, myIter, myThid )
@@ -320,6 +333,12 @@ C     Set radiative fluxes
      &           uwindESMF, vwindESMF,
      &           .FALSE., .FALSE. , .TRUE.,  mythid
      &                    )
+      ELSE
+       WRITE(msgBuf,'(A)')
+     &      'COUPLER_CHECK: No wind provided. Cannot work'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       CALL ALL_PROC_DIE( myThid )
+       STOP 'ABNORMAL END: S/R COUPLER_CHECK'
       ENDIF
       IF ( WHAT_IS_IN_ESMF(HAS_ESMF_WSPEED) ) THEN
        DO bj = mybylo(mythid),mybyhi(mythid)
@@ -354,6 +373,12 @@ C     Set wind fields
          ENDDO
         ENDDO
        ENDDO
+      ELSE
+       WRITE(msgBuf,'(A)')
+     &      'COUPLER_CHECK: EVAP expected but not provided'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       CALL ALL_PROC_DIE( myThid )
+       STOP 'ABNORMAL END: S/R COUPLER_CHECK'
       ENDIF
 # endif
 #endif
@@ -441,6 +466,12 @@ CADJ STORE wstress      = comlev1, key=ikey_dynamics, kind=isbyte
          ENDDO
         ENDDO
        ENDDO
+      ELSE
+       WRITE(msgBuf,'(A)')
+     &      'COUPLER_CHECK: bulkformulae need atemp, aqh'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       CALL ALL_PROC_DIE( myThid )
+       STOP 'ABNORMAL END: S/R COUPLER_CHECK'
       ENDIF
 #  endif /* ENEA_COUPLER */
 C     Compute turbulent fluxes (and surface stress) from bulk formulae
@@ -451,7 +482,8 @@ CADJ STORE evap         = comlev1, key=ikey_dynamics, kind=isbyte
 # endif /* ALLOW_BULKFORMULAE */
 #endif /* ALLOW_ATM_TEMP */
 
-#ifdef ENEA_COUPLER
+#ifdef ALLOW_RUNOFF
+# ifdef ENEA_COUPLER
        IF ( WHAT_IS_IN_ESMF(HAS_ESMF_RUNOFF) ) THEN
         DO bj = mybylo(mythid),mybyhi(mythid)
          DO bi = mybxlo(mythid),mybxhi(mythid)
@@ -462,7 +494,14 @@ CADJ STORE evap         = comlev1, key=ikey_dynamics, kind=isbyte
           ENDDO
          ENDDO
         ENDDO
+       ELSE
+        WRITE(msgBuf,'(A)')
+     &       'COUPLER_CHECK: runoff requested but not provided'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( myThid )
+        STOP 'ABNORMAL END: S/R COUPLER_CHECK'
        ENDIF
+# endif
 #endif
 
       DO bj = myByLo(myThid), myByHi(myThid)
