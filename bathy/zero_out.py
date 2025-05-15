@@ -99,6 +99,17 @@ with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
     bathy[169,287] = 0.0
     bathy[163,430] = 0.0
     bathy[317:,495:500] = 0.0
+    bathy[205,348] = 0.0
+    bathy[204,347:350] = 0.0
+    bathy[240,301] = 0.0
+    bathy[239,302] = 0.0
+    bathy[238,302:304] = 0.0
+    bathy[237,304] = 0.0
+    bathy[211,335] = 0.0
+    bathy[165,442] = 0.0
+    bathy[166,442] = 0.0
+    bathy[203,347:349] = 0.0
+    bathy[110,556:558] = 0.0
     bathy[352:359,572:579] = 0.0
 
     for nt in range(0,3):
