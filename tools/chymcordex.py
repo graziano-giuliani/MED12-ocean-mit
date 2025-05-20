@@ -1,0 +1,136 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import datetime
+import dateutil
+import uuid
+import numpy as np
+import f90nml
+from netCDF4 import Dataset
+
+# Need to be setup.
+domain = 'MED-12'
+myinst = 'ICTP'
+ginst = 'ECMWF'
+gmodel = 'ERA5'
+gmemb = 'r1i1p1f1'
+experiment = 'evaluation'
+start_simulation = '1979-08-01 00:00:00'
+outpath = 'output'
+# End Setup
+
+names = { 'dis'        : { 'esgf_name'     : 'rdis',
+                           'standard_name' : 'water_volume_transport_in_river_channel',
+                           'long_name'     : 'River volumetric water transport',
+                           'units'         : 'm3 s-1',
+                           'coordinates'   : 'lat lon',
+                          },
+        }
+
+for ncfile in sys.argv[1:]:
+    dsin = Dataset(ncfile, 'r')
+    for var in names.keys( ):
+        if not var in dsin.variables:
+            continue
+
+        infname = names[var]['esgf_name']
+        ftime = dsin.variables['time'][:]
+        stime = int(ftime[0])
+        etime = int(ftime[-1])
+        s_ymd = (datetime.datetime.fromisoformat(start_simulation)+
+                 datetime.timedelta(days=stime))
+        e_ymd = (datetime.datetime.fromisoformat(start_simulation)+
+                 datetime.timedelta(days=etime))
+
+        lon = dsin.variables['lon'][:]
+        lat = dsin.variables['lat'][:]
+
+        opath = os.path.join(outpath,'CMIP6','DD',domain,myinst,
+                gmodel,experiment,gmemb,'RegESM1-1','v1-r1','day',
+                infname)
+        os.makedirs(opath,exist_ok=True)
+        ncfile = os.path.join(opath, infname + '_' + domain + '_' + gmodel +
+                '_' + experiment + '_' + gmemb + '_' + myinst +
+                '_RegESM1-1_v1-r1_' + s_ymd.strftime('%Y%m%d') + '-' +
+                e_ymd.strftime('%Y%m%d') + '.nc')
+        dsout = Dataset(ncfile,'w')
+        for name, dimension in dsin.dimensions.items():
+            dsout.createDimension(
+                name, (len(dimension) if not dimension.isunlimited() else None))
+        xlon = dsout.createVariable('lon','f8',('lat','lon'))
+        xlon.standard_name = 'longitude'
+        xlon.long_name = 'Longitude'
+        xlon.units = 'degrees_east'
+        xlat = dsout.createVariable('lat','f8',('lat','lon'))
+        xlat.standard_name = 'latitude'
+        xlat.long_name = 'Latitude'
+        xlat.units = 'degrees_north'
+        xtime = dsout.createVariable('time','f8',('time'))
+        xtime.setncatts(dsin.variables['time'].__dict__)
+        xvar = dsout.createVariable(infname,'f4',('time','lat','lon'),
+                compression='zlib',complevel=6,significant_digits=4)
+        xvar.standard_name = names[var]['standard_name']
+        xvar.long_name = names[var]['long_name']
+        xvar.units = names[var]['units']
+        xvar.coordinates = names[var]['coordinates']
+
+        xlon[:] = lon
+        xlat[:] = lat
+
+        now = datetime.datetime.now( ).isoformat( )
+        dsout.Conventions = "CF-1.9"
+        dsout.creation_date = now
+        dsout.tracking_id = str(uuid.uuid1( ))
+        dsout.description = domain+' simulation'
+        dsout.title = 'Coupled RegESM-1 simulation. River Component is CHyM model. Output prepared for CORDEX experiment'
+        dsout.activity_id = 'CORDEX'
+        dsout.contact = 'ggiulian@ictp.it'
+        dsout.experiment_id = experiment
+        dsout.domain = 'Mediterranean'
+        dsout.domain_id = domain
+        dsout.grid = 'NEMO ORCA tripolar resolution 1/12 deg'
+        if experiment == 'evaluation':
+            dsout.driving_experiment = 'reanalysis simulation of the recent past'
+        elif experiment == 'historical':
+            dsout.driving_experiment = 'scenario simulation of the recent past'
+        else:
+            dsout.driving_experiment = 'future scenario simulation'
+        dsout.driving_experiment_id = experiment
+        dsout.driving_institution_id = ginst
+        dsout.driving_source_id = gmodel
+        dsout.driving_variant_label = gmemb
+        dsout.institution = 'International Centre for Theoretical Physics'
+        dsout.institution_id = myinst
+        dsout.license = 'Creative Commons Attribution 4.0 International License (CC BY 4.0; https://creativecommons.org/licenses/by/4.0).'
+        dsout.mip_era = 'CMIP6'
+        dsout.product = 'model-output'
+        dsout.project_id = 'CORDEX'
+        dsout.source = 'The Regional Earth System Model RegCM-ES version 1.1 based on RegCM v5.0, MITgcm v69 and CHyM'
+        dsout.source_id = 'RegCM-ES1-1'
+        dsout.source_type = 'AORCM'
+        dsout.realm = 'land'
+        dsout.version_realization = 'v1-r1'
+        dsout.version_realization_info = 'none'
+        dsout.activity_participation = 'DD'
+        dsout.cohort = 'Registered'
+        dsout.further_info_url = 'https://www.medcordex.eu/Med-CORDEX-2_baseline-runs_protocol.pdf'
+        dsout.label = 'RegCM-ES1-1'
+        dsout.label_extended = 'The Regional Earth System Model RegCM-ES version 1.1 based on RegCM v5.0, MITgcm v69 and CHyM'
+        dsout.release_year = '2025'
+        dsout.title = 'ICTP Regional Climatic Coupled model V1.1'
+        dsout.references = 'https://github.com/graziano-giuliani/MED12-ocean-mit'
+        dsout.model_revision = '1.1'
+        dsout.history = now+': Created by RegESM model run'
+
+        att1 = f90nml.read('chym.namelist')
+        for a in att1['iniparam'].keys( ):
+            dsout.setncattr(a, str(att1['iniparam'][a]))
+
+        for it in range(len(dsin.dimensions['time'])):
+            xtime[it] = ftime[it]
+            xvar[it,Ellipsis] = dsin.variables[var][it,Ellipsis]
+
+        dsout.close( )
+
+    dsin.close( )
