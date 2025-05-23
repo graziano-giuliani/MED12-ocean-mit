@@ -22,7 +22,7 @@ ginst = 'ECMWF'
 gmodel = 'ERA5'
 gmemb = 'r1i1p1f1'
 experiment = 'evaluation'
-outpath = 'output'
+outpath = '.'
 # End Setup
 
 names = { 'SALT'        : { 'esgf_name'     : 'so',
@@ -129,14 +129,14 @@ names = { 'SALT'        : { 'esgf_name'     : 'so',
                             'stagger'       : 'c',
                             'coordinates'   : 'lat lon',
                           },
-          #'T_SFLUX'     : { 'esgf_name'     : 'stsltf',
-          #                  'standard_name' : 'surface_total_salinity_flux',
-          #                  'long_name'     : 'Surface Total Salinity Flux',
-          #                  'units'         : 'g m-2 s-1',
-          #                  'dimensions'    : 2,
-          #                  'stagger'       : 'c',
-          #                  'coordinates'   : 'lat lon',
-          #                },
+          'T_SFLUX'     : { 'esgf_name'     : 'stsltf',
+                            'standard_name' : 'surface_total_salinity_flux',
+                            'long_name'     : 'Surface Total Salinity Flux',
+                            'units'         : 'g m-2 s-1',
+                            'dimensions'    : 2,
+                            'stagger'       : 'c',
+                            'coordinates'   : 'lat lon',
+                          },
           'T_TFLUX'     : { 'esgf_name'     : 'thltf',
                             'standard_name' : 'surface_total_theta_flux',
                             'long_name'     : 'Surface Total Theta Flux',
@@ -304,6 +304,8 @@ for binfile in sys.argv[1:]:
             datetime.timedelta(seconds=stime))
     s_ym = e_ym + dateutil.relativedelta.relativedelta(months=-1)
 
+    print(vname,s_ym)
+
     if names[vname]['stagger'] == 'c':
       lonfile = 'LONC.bin'
       latfile = 'LATC.bin'
@@ -389,7 +391,7 @@ for binfile in sys.argv[1:]:
     ds.attrs['creation_date'] = now
     ds.attrs['tracking_id'] = str(uuid.uuid1( ))
     ds.attrs['description'] = domain+' simulation'
-    ds.attrs['title'] = 'Coupled RegESM-1 simulation. Ocean Component is MITgcm checkpoint69e. Output prepared for CORDEX experiment'
+    ds.attrs['title'] = 'Coupled RegCM-ES1-1 simulation. Ocean Component is MITgcm checkpoint69e. Output prepared for CORDEX experiment'
     ds.attrs['activity_id'] = 'CORDEX'
     ds.attrs['contact'] = 'ggiulian@ictp.it'
     ds.attrs['experiment_id'] = experiment
@@ -430,21 +432,26 @@ for binfile in sys.argv[1:]:
     ds.attrs['title'] = 'ICTP Regional Climatic Coupled model V1.1'
     ds.attrs['references'] = 'https://github.com/graziano-giuliani/MED12-ocean-mit'
     ds.attrs['model_revision'] = '1.1'
-    ds.attrs['history'] = now+': Created by RegESM model run'
+    ds.attrs['history'] = now+': Created by RegCM-ES model run'
 
-    for ff in ['data', 'data.ggl90', 'data.rbcs', 'data.obcs']:
+    for ff in ['data', 'data.pkg', 'data.cal', 'data.ggl90',
+               'data.rbcs', 'data.obcs']:
         att1 = f90nml.read(ff)
+        if ff == "data":
+            aa = "mit"
+        else:
+            aa = os.path.splitext(ff)[1][1:]
         for v in att1.keys( ):
             for a in att1[v].keys( ):
-                ds.attrs[a] = str(att1[v][a])
+                ds.attrs[aa+'_'+a] = str(att1[v][a])
 
-    opath = os.path.join(outpath,'CMIP6','DD',domain,myinst,
-            gmodel,experiment,gmemb,'RegESM1-1','v1-r1','mon',
+    opath = os.path.join(outpath,'CORDEX-CMIP6','DD',domain,myinst,
+            gmodel,experiment,gmemb,'RegCM-ES1-1','v1-r1','mon',
             infname)
     os.makedirs(opath,exist_ok=True)
     ncfile = os.path.join(opath, infname + '_' + domain + '_' + gmodel +
             '_' + experiment + '_' + gmemb + '_' + myinst +
-            '_RegESM1-1_v1-r1_' + s_ym.strftime('%Y%m') + '-' +
+            '_RegCM-ES1-1_v1-r1_' + s_ym.strftime('%Y%m') + '-' +
             e_ym.strftime('%Y%m') + '.nc')
     encode = { infname : { 'zlib': True,
                            'complevel' : 6,
@@ -454,6 +461,7 @@ for binfile in sys.argv[1:]:
     try:
         ds.to_netcdf(ncfile, format = 'NETCDF4', encoding = encode)
     except:
+        print('Error for ',ncfile)
         continue
     metafile = os.path.splitext(binfile)[0]+'.meta'
     try:

@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+
+import sys
+import datetime
+import dateutil
+
+default_start = datetime.datetime(1979,8,1,0,0,0)
+default_timestep = 150
+
+def parsedate(d):
+    if len(str(d)) < 4:
+        print('Time in format YYYY[MM[DD]]')
+        sys.exit(-1)
+    elif len(str(d)) == 4:
+        d = d+'0801'
+    elif len(str(d)) == 6:
+        d = d+'01'
+    try:
+        retval = dateutil.parser.parse(str(d)[:8])
+    except:
+        print('Cannot parse input strin '+d+' into a valid time')
+        sys.exit(-1)
+    return retval
+
+def distsec(b,a):
+    return (b-a).total_seconds( )
+
+if len(sys.argv) < 2:
+    print('Usage: {} YYYY[MM[DD]]'.format(sys.argv[0]))
+    sys.exit(-1)
+start_date = parsedate(sys.argv[1])
+sectime = distsec(start_date,default_start)
+print('Reference date: '+str(default_start))
+print('Timestep      : '+str(default_timestep))
+print('Result        : '+str(sectime)+"  "+str(int(sectime)//default_timestep))
