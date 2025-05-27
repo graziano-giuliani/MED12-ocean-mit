@@ -17,7 +17,7 @@ gmodel = 'ERA5'
 gmemb = 'r1i1p1f1'
 experiment = 'evaluation'
 start_simulation = '1979-08-01 00:00:00'
-outpath = 'output'
+outpath = '.'
 # End Setup
 
 names = { 'dis'        : { 'esgf_name'     : 'rdis',
@@ -46,13 +46,13 @@ for ncfile in sys.argv[1:]:
         lon = dsin.variables['lon'][:]
         lat = dsin.variables['lat'][:]
 
-        opath = os.path.join(outpath,'CMIP6','DD',domain,myinst,
-                gmodel,experiment,gmemb,'RegESM1-1','v1-r1','day',
+        opath = os.path.join(outpath,'CORDEX-CMIP6','DD',domain,myinst,
+                gmodel,experiment,gmemb,'RegCM-ES1-1','v1-r1','day',
                 infname)
         os.makedirs(opath,exist_ok=True)
         ncfile = os.path.join(opath, infname + '_' + domain + '_' + gmodel +
                 '_' + experiment + '_' + gmemb + '_' + myinst +
-                '_RegESM1-1_v1-r1_' + s_ymd.strftime('%Y%m%d') + '-' +
+                '_RegCM-ES1-1_v1-r1_' + s_ymd.strftime('%Y%m%d') + '-' +
                 e_ymd.strftime('%Y%m%d') + '.nc')
         dsout = Dataset(ncfile,'w')
         for name, dimension in dsin.dimensions.items():
@@ -83,7 +83,7 @@ for ncfile in sys.argv[1:]:
         dsout.creation_date = now
         dsout.tracking_id = str(uuid.uuid1( ))
         dsout.description = domain+' simulation'
-        dsout.title = 'Coupled RegESM-1 simulation. River Component is CHyM model. Output prepared for CORDEX experiment'
+        dsout.title = 'Coupled RegCM-ES1-1 simulation. River Component is CHyM model. Output prepared for CORDEX experiment'
         dsout.activity_id = 'CORDEX'
         dsout.contact = 'ggiulian@ictp.it'
         dsout.experiment_id = experiment
@@ -121,7 +121,7 @@ for ncfile in sys.argv[1:]:
         dsout.title = 'ICTP Regional Climatic Coupled model V1.1'
         dsout.references = 'https://github.com/graziano-giuliani/MED12-ocean-mit'
         dsout.model_revision = '1.1'
-        dsout.history = now+': Created by RegESM model run'
+        dsout.history = now+': Created by RegCM-ES1-1 model run'
 
         att1 = f90nml.read('chym.namelist')
         for a in att1['iniparam'].keys( ):

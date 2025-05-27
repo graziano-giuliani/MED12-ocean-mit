@@ -233,16 +233,20 @@ names = { 'SALT'        : { 'esgf_name'     : 'so',
                             'stagger'       : 'v',
                             'coordinates'   : 'lat lon',
                           },
-          #'pickup'      : { 'standard_name' : 'pickup',
+          #'pickup'      : { 'esgf_name'     : 'pickup',
+          #                  'standard_name' : 'pickup',
           #                  'long_name'     : 'Pickup field',
           #                  'units'         : '1',
           #                  'dimensions'    : NFPICKUP,
+          #                  'stagger'       : 'none',
           #                  'coordinates'   : 'lat lon',
           #                },
-          #'pickup_ggl90': { 'standard_name' : 'pickup_ggl90',
+          #'pickup_ggl90': { 'esgf_name'     : 'pickup_ggl90',
+          #                  'standard_name' : 'pickup_ggl90',
           #                  'long_name'     : 'Pickup field for ggl90',
           #                  'units'         : '1',
           #                  'dimensions'    : 3,
+          #                  'stagger'       : 'none',
           #                  'coordinates'   : 'lat lon',
           #                },
           }
@@ -287,6 +291,7 @@ depthl = np.array((1.05073322, 2.21363620, 3.50447860, 4.94121011,
                    4082.32369, 4215.36259, 4348.68128, 4482.24582,
                    4616.02625, 4749.99621, 4884.13248))
 
+bathy = np.fromfile('BATHYMETRY.bin','>f4').reshape((NY,NX))
 
 for binfile in sys.argv[1:]:
     name = os.path.basename(os.path.splitext(binfile)[0])
@@ -306,34 +311,55 @@ for binfile in sys.argv[1:]:
 
     print(vname,s_ym)
 
+
     if names[vname]['stagger'] == 'c':
       lonfile = 'LONC.bin'
       latfile = 'LATC.bin'
+      nnx = NX-1
+      nny = NY-1
       zc = depth
+      mask = (bathy < 0.0)
     elif names[vname]['stagger'] == 'u':
       lonfile = 'LONG.bin'
       latfile = 'LATC.bin'
+      nnx = NX
+      nny = NY-1
       zc = depth
+      mask[:,:] = (bathy > 0.0)
     elif names[vname]['stagger'] == 'v':
-      lonfile = 'LONG.bin'
-      latfile = 'LATC.bin'
+      lonfile = 'LONC.bin'
+      latfile = 'LATG.bin'
+      nnx = NX-1
+      nny = NY
       zc = depth
+      mask[:,:] = (bathy > 0.0)
     elif names[vname]['stagger'] == 'z':
       lonfile = 'LONC.bin'
       latfile = 'LATC.bin'
+      nnx = NX-1
+      nny = NY-1
       zc = depthl
+      mask = (bathy < 0.0)
+    else:
+      lonfile = 'LONC.bin'
+      latfile = 'LATC.bin'
+      nnx = NX
+      nny = NY
+      zc = depth
+      mask[:,:] = (bathy > 0.0)
 
-    lon = np.fromfile(lonfile, '>f4').reshape(NY,NX)
-    lat = np.fromfile(latfile, '>f4').reshape(NY,NX)
+    lon = np.fromfile(lonfile, '>f4').reshape((NY,NX))
+    lat = np.fromfile(latfile, '>f4').reshape((NY,NX))
+
 
     xlon = xr.DataArray(name = "lon",
-                        data = lon, 
-                        dims = ["lon","lat"],
+                        data = lon[0:nny,0:nnx],
+                        dims = ["lat","lon"],
                         attrs = dict(standard_name = "longitude",
                                      units = "degrees_east"))
     xlat = xr.DataArray(name = "lat",
-                        data = lat, 
-                        dims = ["lon","lat"],
+                        data = lat[0:nny,0:nnx],
+                        dims = ["lat","lon"],
                         attrs = dict(standard_name = "latitude",
                                      units = "degrees_north"))
     xdepth = xr.DataArray(name = "depth",
@@ -352,17 +378,19 @@ for binfile in sys.argv[1:]:
                          attrs = dict(standard_name = "time",
                                       units = "seconds since "+
                                       start_simulation+' UTC'))
-
     if names[vname]['dimensions'] == 3:
-        dims = ["time","depth","lon","lat"]
         coords = dict(lon = xlon, lat = xlat, depth = xdepth, time = xtime)
         count = NZ*NY*NX
         if 'pickup' in vname:
+            dims = ["time","field","lat","lon"]
             h = np.fromfile(binfile, '>f8',
                         count = count).reshape(1,NZ,NY,NX)
         else:
-            h = np.fromfile(binfile, '>f4',
+            dims = ["time","depth","lat","lon"]
+            rv = np.fromfile(binfile, '>f4',
                         count = count).reshape(1,NZ,NY,NX)
+            field_mask = np.broadcast_to(mask, rv.shape)
+            h = np.where(field_mask,rv,np.nan)
     elif names[vname]['dimensions'] == NFPICKUP:
         dims = ["time","field","lon","lat"]
         coords = dict(lon = xlon, lat = xlat, field = xfield, time = xtime)
@@ -370,16 +398,19 @@ for binfile in sys.argv[1:]:
         h = np.fromfile(binfile, '>f8',
                     count = count).reshape(1,NFPICKUP,NY,NX)
     else:
-        dims = ["time","lon","lat"]
+        dims = ["time","lat","lon"]
         coords = dict(lon = xlon, lat = xlat, time = xtime)
         count = NY*NX
-        h = np.fromfile(binfile, '>f4',
-                    count = count).reshape(1,NY,NX)
+        rv = np.fromfile(binfile, '>f4', count = count).reshape(1,NY,NX)
+        field_mask = np.broadcast_to(mask, rv.shape)
+        h = np.where(field_mask,rv,np.nan)
     try:
         infname = names[vname]['esgf_name']
     except:
         infname = vname
-    da = xr.DataArray(name = infname, data=h, dims = dims, coords = coords,
+
+    da = xr.DataArray(name = infname, data = h[Ellipsis,0:nny,0:nnx],
+                      dims = dims, coords = coords,
                       attrs = dict(standard_name = names[vname]['standard_name'],
                                    long_name = names[vname]['long_name'],
                                    units = names[vname]['units'],
@@ -451,7 +482,7 @@ for binfile in sys.argv[1:]:
     os.makedirs(opath,exist_ok=True)
     ncfile = os.path.join(opath, infname + '_' + domain + '_' + gmodel +
             '_' + experiment + '_' + gmemb + '_' + myinst +
-            '_RegCM-ES1-1_v1-r1_' + s_ym.strftime('%Y%m') + '-' +
+            '_RegCM-ES1-1_v1-r1_mon_' + s_ym.strftime('%Y%m') + '-' +
             e_ym.strftime('%Y%m') + '.nc')
     encode = { infname : { 'zlib': True,
                            'complevel' : 6,
