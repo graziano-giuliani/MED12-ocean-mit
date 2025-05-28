@@ -315,36 +315,46 @@ for binfile in sys.argv[1:]:
     if names[vname]['stagger'] == 'c':
       lonfile = 'LONC.bin'
       latfile = 'LATC.bin'
-      nnx = NX-1
-      nny = NY-1
+      nnx1 = 20
+      nnx2 = 631
+      nny1 = 1
+      nny2 = 362
       zc = depth
       mask = (bathy < 0.0)
     elif names[vname]['stagger'] == 'u':
       lonfile = 'LONG.bin'
       latfile = 'LATC.bin'
-      nnx = NX
-      nny = NY-1
+      nnx1 = 20
+      nnx2 = 631
+      nny1 = 1
+      nny2 = 362
       zc = depth
       mask[:,:] = (bathy > 0.0)
     elif names[vname]['stagger'] == 'v':
       lonfile = 'LONC.bin'
       latfile = 'LATG.bin'
-      nnx = NX-1
-      nny = NY
+      nnx1 = 20
+      nnx2 = 631
+      nny1 = 1
+      nny2 = 362
       zc = depth
       mask[:,:] = (bathy > 0.0)
     elif names[vname]['stagger'] == 'z':
       lonfile = 'LONC.bin'
       latfile = 'LATC.bin'
-      nnx = NX-1
-      nny = NY-1
+      nnx1 = 20
+      nnx2 = 631
+      nny1 = 1
+      nny2 = 362
       zc = depthl
       mask = (bathy < 0.0)
     else:
       lonfile = 'LONC.bin'
       latfile = 'LATC.bin'
-      nnx = NX
-      nny = NY
+      nnx1 = 0
+      nnx2 = NX
+      nny1 = 0
+      nny2 = NY
       zc = depth
       mask[:,:] = (bathy > 0.0)
 
@@ -353,12 +363,12 @@ for binfile in sys.argv[1:]:
 
 
     xlon = xr.DataArray(name = "lon",
-                        data = lon[0:nny,0:nnx],
+                        data = lon[nny1:nny2,nnx1:nnx2],
                         dims = ["lat","lon"],
                         attrs = dict(standard_name = "longitude",
                                      units = "degrees_east"))
     xlat = xr.DataArray(name = "lat",
-                        data = lat[0:nny,0:nnx],
+                        data = lat[nny1:nny2,nnx1:nnx2],
                         dims = ["lat","lon"],
                         attrs = dict(standard_name = "latitude",
                                      units = "degrees_north"))
@@ -409,7 +419,7 @@ for binfile in sys.argv[1:]:
     except:
         infname = vname
 
-    da = xr.DataArray(name = infname, data = h[Ellipsis,0:nny,0:nnx],
+    da = xr.DataArray(name = infname, data = h[Ellipsis,nny1:nny2,nnx1:nnx2],
                       dims = dims, coords = coords,
                       attrs = dict(standard_name = names[vname]['standard_name'],
                                    long_name = names[vname]['long_name'],
