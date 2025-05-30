@@ -5,6 +5,8 @@ import regionmask
 import geopandas
 import matplotlib.pyplot as plt
 import matplotlib.patheffects as pe
+import cartopy.crs as ccrs
+from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 
 plt.rcParams['figure.figsize'] = (30.0, 10.0)
 text_kws = dict(
@@ -21,6 +23,12 @@ regions.plot(add_ocean=True,
              resolution="50m",
              label="name",
              text_kws=text_kws)
+ax = plt.gca()
+ax.set_extent((-8,42,30,45))
+gl = ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
+                  linewidth=1, color='gray', alpha=0.5, linestyle='-')
+gl.xformatter = LONGITUDE_FORMATTER
+gl.yformatter = LATITUDE_FORMATTER
 plt.title('Mediterranenan Regions')
 plt.savefig('Mediterranean_regions.png', bbox_inches='tight')
 
