@@ -329,7 +329,7 @@ for binfile in sys.argv[1:]:
       nny1 = 1
       nny2 = 362
       zc = depth
-      mask[:,:] = (bathy > 0.0)
+      mask = (bathy > 0.0)
     elif names[vname]['stagger'] == 'v':
       lonfile = 'LONC.bin'
       latfile = 'LATG.bin'
@@ -338,7 +338,7 @@ for binfile in sys.argv[1:]:
       nny1 = 1
       nny2 = 362
       zc = depth
-      mask[:,:] = (bathy > 0.0)
+      mask = (bathy > 0.0)
     elif names[vname]['stagger'] == 'z':
       lonfile = 'LONC.bin'
       latfile = 'LATC.bin'
@@ -356,7 +356,7 @@ for binfile in sys.argv[1:]:
       nny1 = 0
       nny2 = NY
       zc = depth
-      mask[:,:] = (bathy > 0.0)
+      mask = (bathy > 0.0)
 
     lon = np.fromfile(lonfile, '>f4').reshape((NY,NX))
     lat = np.fromfile(latfile, '>f4').reshape((NY,NX))
