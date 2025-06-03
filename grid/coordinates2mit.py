@@ -103,12 +103,12 @@ if configbdy["rbcs"]["west"]:
 
 xlon = xr.DataArray(name = "lon",
                     data = LONC,
-                    dims = ["lon","lat"],
+                    dims = ["lat","lon"],
                     attrs = dict(standard_name = "longitude",
                                  units = "degrees_east"))
 xlat = xr.DataArray(name = "lat",
                     data = LATC,
-                    dims = ["lon","lat"],
+                    dims = ["lat","lon"],
                     attrs = dict(standard_name = "latitude",
                                  units = "degrees_north"))
 xdepth = xr.DataArray(name = "depth",
@@ -118,13 +118,13 @@ xdepth = xr.DataArray(name = "depth",
                                    units = "m"))
 
 da = xr.DataArray(name = "maskrbcs" , data=maskbdy,
-                  dims = ["depth","lon","lat"],
+                  dims = ["depth","lat","lon"],
                   coords = dict(lon = xlon,
                                 lat = xlat,
                                 depth = xdepth),
                   attrs = dict(standard_name = "maskrbcs",
                                units = "1",
-                               coordinates = "depth lat lon"),
+                               coordinates = "lat lon"),
                  )
 da.to_netcdf('maskrbcs.nc')
 

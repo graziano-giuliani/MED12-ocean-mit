@@ -4,16 +4,13 @@ import os
 import sys
 import datetime
 import dateutil
+import glob
 import uuid
 import numpy as np
 import xarray as xr
+from MITgcmutils import mds
 import f90nml
 
-# Need to be setup.
-NX = 660
-NY = 368
-NZ = 75
-NFPICKUP = 453
 timestep = 150
 start_simulation = "1979-08-01 00:00:00"
 domain = 'MED-12'
@@ -24,6 +21,15 @@ gmemb = 'r1i1p1f1'
 experiment = 'evaluation'
 outpath = '.'
 # End Setup
+
+metainfo = mds.parsemeta('hFacC.meta')
+NX = metainfo['dimList'][0]
+NY = metainfo['dimList'][3]
+NZ = metainfo['dimList'][6]
+avpickup = glob.glob('pickup.*.meta')[0]
+metainfo = mds.parsemeta(avpickup)
+NFPICKUP = metainfo['nrecords'][0]
+pickup_flds = metainfo['fldList']
 
 names = { 'SALT'        : { 'esgf_name'     : 'so',
                             'standard_name' : 'sea_water_absolute_salinity',
@@ -251,47 +257,7 @@ names = { 'SALT'        : { 'esgf_name'     : 'so',
           #                },
           }
 
-depth = np.array((0.525366611563235, 1.63218471391611, 2.85905740165649, 
-    4.22284435423749, 5.74273041043513, 7.44053341546443, 9.34104895575542, 
-    11.472435216752, 13.8666410979201, 16.5598804577976, 19.5931548848141, 
-    23.0128266283666, 26.8712421967803, 31.2274055372057, 36.1476975462358, 
-    41.706635797057, 47.9876646822709, 55.0839615396682, 63.0992386518988, 
-    72.1485142374656, 82.3588177073313, 93.8697857000613, 106.834096056691, 
-    121.417677516769, 137.79962436194, 156.171738686131, 176.737619951045, 
-    199.71122379278, 225.31482162003, 253.776311213825, 285.325857647152, 
-    320.191883783609, 358.596479331253, 400.750353996665, 446.847518727332, 
-    497.059932526908, 551.532392928262, 610.377968057859, 673.67426112225, 
-    741.46076112225, 813.737468057859, 890.464892928262, 971.565432526908, 
-    1056.92601872733, 1146.40185399667, 1239.82097933125, 1336.98938378361, 
-    1437.69635764715, 1541.71981121382, 1648.83132162003, 1758.80072379278, 
-    1871.40011995104, 1986.40723868613, 2103.60812436194, 2222.79917751677, 
-    2343.78859605669, 2466.39728570006, 2590.45931770733, 2715.82201423747, 
-    2842.3457386519, 2969.90346153967, 3098.38016468227, 3227.67213579706, 
-    3357.68619754624, 3488.33890553721, 3619.55574219678, 3751.27032662837, 
-    3883.42365488481, 4015.9633804578, 4148.84314109792, 4282.02193521675, 
-    4415.46354895576, 4549.13603341546, 4683.01123041044, 4817.06434435424))
-
-depthl = np.array((1.05073322, 2.21363620, 3.50447860, 4.94121011,
-                   6.54425071, 8.33681612, 10.3452818, 12.5995886,
-                   15.1336936, 17.9860674, 21.2002424, 24.8254108,
-                   28.9170735, 33.5377375, 38.7576576, 44.6556140,
-                   51.3197153, 58.8482077, 67.3502696, 76.9467589,
-                   87.7708765, 99.9686949, 113.699497, 129.135858,
-                   146.463391, 165.880086, 187.595153, 211.827294,
-                   238.802349, 268.750273, 301.901442, 338.482326,
-                   378.710633, 422.790075, 470.904963, 523.214903,
-                   579.849883, 640.906053, 706.442469, 776.479053,
-                   850.995883, 929.933903, 1013.19696, 1100.65507,
-                   1192.14863, 1287.49333, 1386.48544, 1488.90727,
-                   1594.53235, 1703.13029, 1814.47115, 1928.32909,
-                   2044.48539, 2162.73086, 2282.86750, 2404.70969,
-                   2528.08488, 2652.83376, 2778.81027, 2905.88121,
-                   3033.92572, 3162.83461, 3292.50966, 3422.86274,
-                   3553.81507, 3685.29641, 3817.24424, 3949.60307,
-                   4082.32369, 4215.36259, 4348.68128, 4482.24582,
-                   4616.02625, 4749.99621, 4884.13248))
-
-bathy = np.fromfile('BATHYMETRY.bin','>f4').reshape((NY,NX))
+mask = np.fromfile('hFacC.data','>f4').reshape((1,NZ,NY,NX)) > 0.0
 
 for binfile in sys.argv[1:]:
     name = os.path.basename(os.path.splitext(binfile)[0])
@@ -311,56 +277,49 @@ for binfile in sys.argv[1:]:
 
     print(vname,s_ym)
 
-
     if names[vname]['stagger'] == 'c':
-      lonfile = 'LONC.bin'
-      latfile = 'LATC.bin'
+      lonfile = 'XC.data'
+      latfile = 'YC.data'
       nnx1 = 20
       nnx2 = 631
       nny1 = 1
       nny2 = 362
-      zc = depth
-      mask = (bathy < 0.0)
+      zc = np.fromfile('RC.data', '>f4')
     elif names[vname]['stagger'] == 'u':
-      lonfile = 'LONG.bin'
-      latfile = 'LATC.bin'
+      lonfile = 'XG.data'
+      latfile = 'YC.data'
       nnx1 = 20
       nnx2 = 631
       nny1 = 1
       nny2 = 362
-      zc = depth
-      mask = (bathy > 0.0)
+      zc = np.fromfile('RC.data', '>f4')
     elif names[vname]['stagger'] == 'v':
-      lonfile = 'LONC.bin'
-      latfile = 'LATG.bin'
+      lonfile = 'XC.data'
+      latfile = 'YG.data'
       nnx1 = 20
       nnx2 = 631
       nny1 = 1
       nny2 = 362
-      zc = depth
-      mask = (bathy > 0.0)
+      zc = np.fromfile('RC.data', '>f4')
     elif names[vname]['stagger'] == 'z':
-      lonfile = 'LONC.bin'
-      latfile = 'LATC.bin'
+      lonfile = 'XC.data'
+      latfile = 'YC.data'
       nnx1 = 20
       nnx2 = 631
       nny1 = 1
       nny2 = 362
-      zc = depthl
-      mask = (bathy < 0.0)
+      zc = np.fromfile('RF.data', '>f4')[0:-1]
     else:
-      lonfile = 'LONC.bin'
-      latfile = 'LATC.bin'
+      lonfile = 'XC.data'
+      latfile = 'YC.data'
       nnx1 = 0
       nnx2 = NX
       nny1 = 0
       nny2 = NY
-      zc = depth
-      mask = (bathy > 0.0)
+      zc = np.fromfile('RC.data', '>f4')
 
     lon = np.fromfile(lonfile, '>f4').reshape((NY,NX))
     lat = np.fromfile(latfile, '>f4').reshape((NY,NX))
-
 
     xlon = xr.DataArray(name = "lon",
                         data = lon[nny1:nny2,nnx1:nnx2],
@@ -388,7 +347,13 @@ for binfile in sys.argv[1:]:
                          attrs = dict(standard_name = "time",
                                       units = "seconds since "+
                                       start_simulation+' UTC'))
-    if names[vname]['dimensions'] == 3:
+    if names[vname]['dimensions'] == 2:
+        dims = ["time","lat","lon"]
+        coords = dict(lon = xlon, lat = xlat, time = xtime)
+        count = NY*NX
+        rv = np.fromfile(binfile, '>f4', count = count).reshape(1,NY,NX)
+        h = np.where(mask[0,0,:,:],rv,np.nan)
+    elif names[vname]['dimensions'] == 3:
         coords = dict(lon = xlon, lat = xlat, depth = xdepth, time = xtime)
         count = NZ*NY*NX
         if 'pickup' in vname:
@@ -399,21 +364,17 @@ for binfile in sys.argv[1:]:
             dims = ["time","depth","lat","lon"]
             rv = np.fromfile(binfile, '>f4',
                         count = count).reshape(1,NZ,NY,NX)
-            field_mask = np.broadcast_to(mask, rv.shape)
-            h = np.where(field_mask,rv,np.nan)
-    elif names[vname]['dimensions'] == NFPICKUP:
-        dims = ["time","field","lon","lat"]
-        coords = dict(lon = xlon, lat = xlat, field = xfield, time = xtime)
-        count = NFPICKUP*NY*NX
-        h = np.fromfile(binfile, '>f8',
-                    count = count).reshape(1,NFPICKUP,NY,NX)
+            h = np.where(mask,rv,np.nan)
     else:
-        dims = ["time","lat","lon"]
-        coords = dict(lon = xlon, lat = xlat, time = xtime)
-        count = NY*NX
-        rv = np.fromfile(binfile, '>f4', count = count).reshape(1,NY,NX)
-        field_mask = np.broadcast_to(mask, rv.shape)
-        h = np.where(field_mask,rv,np.nan)
+        if vname == 'pickup':
+            dims = ["time","field","lon","lat"]
+            coords = dict(lon = xlon, lat = xlat, field = xfield, time = xtime)
+            count = NFPICKUP*NY*NX
+            h = np.fromfile(binfile, '>f8',
+                        count = count).reshape(1,NFPICKUP,NY,NX)
+        else:
+            print('Unrecognized number of dimensions for ',vname)
+            continue
     try:
         infname = names[vname]['esgf_name']
     except:
@@ -474,6 +435,8 @@ for binfile in sys.argv[1:]:
     ds.attrs['references'] = 'https://github.com/graziano-giuliani/MED12-ocean-mit'
     ds.attrs['model_revision'] = '1.1'
     ds.attrs['history'] = now+': Created by RegCM-ES model run'
+    if vname == 'pickup':
+        ds.attrs['FieldList'] = pickup_flds
 
     for ff in ['data', 'data.pkg', 'data.cal', 'data.ggl90',
                'data.rbcs', 'data.obcs']:
