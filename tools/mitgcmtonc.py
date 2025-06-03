@@ -284,7 +284,7 @@ for binfile in sys.argv[1:]:
       nnx2 = 631
       nny1 = 1
       nny2 = 362
-      zc = np.fromfile('RC.data', '>f4')
+      zc = - np.fromfile('RC.data', '>f4')
     elif names[vname]['stagger'] == 'u':
       lonfile = 'XG.data'
       latfile = 'YC.data'
@@ -292,7 +292,7 @@ for binfile in sys.argv[1:]:
       nnx2 = 631
       nny1 = 1
       nny2 = 362
-      zc = np.fromfile('RC.data', '>f4')
+      zc = - np.fromfile('RC.data', '>f4')
     elif names[vname]['stagger'] == 'v':
       lonfile = 'XC.data'
       latfile = 'YG.data'
@@ -300,7 +300,7 @@ for binfile in sys.argv[1:]:
       nnx2 = 631
       nny1 = 1
       nny2 = 362
-      zc = np.fromfile('RC.data', '>f4')
+      zc = - np.fromfile('RC.data', '>f4')
     elif names[vname]['stagger'] == 'z':
       lonfile = 'XC.data'
       latfile = 'YC.data'
@@ -308,7 +308,7 @@ for binfile in sys.argv[1:]:
       nnx2 = 631
       nny1 = 1
       nny2 = 362
-      zc = np.fromfile('RF.data', '>f4')[0:-1]
+      zc = - np.fromfile('RF.data', '>f4')[0:-1]
     else:
       lonfile = 'XC.data'
       latfile = 'YC.data'
@@ -316,7 +316,7 @@ for binfile in sys.argv[1:]:
       nnx2 = NX
       nny1 = 0
       nny2 = NY
-      zc = np.fromfile('RC.data', '>f4')
+      zc = - np.fromfile('RC.data', '>f4')
 
     lon = np.fromfile(lonfile, '>f4').reshape((NY,NX))
     lat = np.fromfile(latfile, '>f4').reshape((NY,NX))
