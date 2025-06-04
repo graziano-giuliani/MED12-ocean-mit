@@ -45,15 +45,16 @@ except:
 
 regions = regionmask.from_geopandas(gdf, names='SUB_REGION',
                        abbrevs='_from_name')
-regionmask = regions.mask(lon, lat)
+mask2d = regions.mask_3D(lon, lat)
 
 for i, med_region in enumerate(gdf.itertuples()):
     subregion = med_region.SUB_REGION
-    plt.title(subregion+' '+long_name+' ['+units+']')
-    clipped = var.where(regionmask == i, np.nan, drop=True)
-    clipped = clipped.where(clipped > 0, np.nan)
-    clipped = clipped.mean(dim=('lat','lon'),keep_attrs=True)
-    clipped.dropna(dim='depth').plot(cmap = colors[variable])
+    clipped = var.where(mask2d.isel(region=i), other=np.nan)
+    clipped = clipped.mean(dim=('lat','lon'), keep_attrs=True)
+    p = clipped.dropna(dim="depth").plot(x="time",y="depth",
+                       cmap = colors[variable])
+    p.axes.yaxis.set_inverted(True)
+    plt.title(subregion.lower( ).capitalize( )+' '+long_name+' ['+units+']')
     oname = variable+'-'+'_'.join(subregion.lower( ).split())+'.png'
     oname = oname.translate(str.maketrans(',','_'))
     plt.savefig(oname)

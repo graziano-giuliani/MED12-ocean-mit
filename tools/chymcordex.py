@@ -20,9 +20,9 @@ start_simulation = '1979-08-01 00:00:00'
 outpath = '.'
 # End Setup
 
-names = { 'dis'        : { 'esgf_name'     : 'rdis',
-                           'standard_name' : 'water_volume_transport_in_river_channel',
-                           'long_name'     : 'River volumetric water transport',
+names = { 'dis'        : { 'esgf_name'     : 'rivo',
+                           'standard_name' : 'water_flux_to_downstream ',
+                           'long_name'     : 'River Discharge',
                            'units'         : 'm3 s-1',
                            'coordinates'   : 'lat lon',
                           },
