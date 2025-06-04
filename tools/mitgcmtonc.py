@@ -31,6 +31,12 @@ metainfo = mds.parsemeta(avpickup)
 NFPICKUP = metainfo['nrecords'][0]
 pickup_flds = metainfo['fldList']
 
+zc = - np.fromfile('RC.data', '>f4')
+zf = - np.fromfile('RF.data', '>f4')
+zz = np.empty((len(zc),2), dtype='f4')
+zz[:,0] = zf[0:-1]
+zz[:,1] = zf[1:]
+
 names = { 'SALT'        : { 'esgf_name'     : 'so',
                             'standard_name' : 'sea_water_absolute_salinity',
                             'long_name'     : 'Ocean salinity',
@@ -284,7 +290,6 @@ for binfile in sys.argv[1:]:
       nnx2 = 631
       nny1 = 1
       nny2 = 362
-      zc = - np.fromfile('RC.data', '>f4')
     elif names[vname]['stagger'] == 'u':
       lonfile = 'XG.data'
       latfile = 'YC.data'
@@ -292,7 +297,6 @@ for binfile in sys.argv[1:]:
       nnx2 = 631
       nny1 = 1
       nny2 = 362
-      zc = - np.fromfile('RC.data', '>f4')
     elif names[vname]['stagger'] == 'v':
       lonfile = 'XC.data'
       latfile = 'YG.data'
@@ -300,7 +304,6 @@ for binfile in sys.argv[1:]:
       nnx2 = 631
       nny1 = 1
       nny2 = 362
-      zc = - np.fromfile('RC.data', '>f4')
     elif names[vname]['stagger'] == 'z':
       lonfile = 'XC.data'
       latfile = 'YC.data'
@@ -308,7 +311,6 @@ for binfile in sys.argv[1:]:
       nnx2 = 631
       nny1 = 1
       nny2 = 362
-      zc = - np.fromfile('RF.data', '>f4')[0:-1]
     else:
       lonfile = 'XC.data'
       latfile = 'YC.data'
@@ -316,7 +318,6 @@ for binfile in sys.argv[1:]:
       nnx2 = NX
       nny1 = 0
       nny2 = NY
-      zc = - np.fromfile('RC.data', '>f4')
 
     lon = np.fromfile(lonfile, '>f4').reshape((NY,NX))
     lat = np.fromfile(latfile, '>f4').reshape((NY,NX))
@@ -331,10 +332,16 @@ for binfile in sys.argv[1:]:
                         dims = ["lat","lon"],
                         attrs = dict(standard_name = "latitude",
                                      units = "degrees_north"))
+    xbnds = xr.DataArray(name = "depth_bnds",
+                         data = zz,
+                         dims = ["depth","bnds"],
+                         attrs = dict(standard_name = "depth_bounds",
+                                      units = "m"))
     xdepth = xr.DataArray(name = "depth",
                           data = zc, 
                           dims = ["depth"],
                           attrs = dict(standard_name = "depth",
+                                       bounds = "depth_bnds",
                                        units = "m"))
     xfield = xr.DataArray(name = "field",
                           data = np.linspace(1,NFPICKUP,NFPICKUP), 
@@ -388,6 +395,7 @@ for binfile in sys.argv[1:]:
                                    coordinates = names[vname]['coordinates']),
                      )
     ds = da.to_dataset( )
+    ds["depth_bnds"] = xbnds
     now = datetime.datetime.now( ).isoformat( )
     ds.attrs['Conventions'] = "CF-1.9"
     ds.attrs['creation_date'] = now
