@@ -395,7 +395,8 @@ for binfile in sys.argv[1:]:
                                    coordinates = names[vname]['coordinates']),
                      )
     ds = da.to_dataset( )
-    ds["depth_bnds"] = xbnds
+    if names[vname]['dimensions'] == 3:
+        ds["depth_bnds"] = xbnds
     now = datetime.datetime.now( ).isoformat( )
     ds.attrs['Conventions'] = "CF-1.9"
     ds.attrs['creation_date'] = now
@@ -468,10 +469,11 @@ for binfile in sys.argv[1:]:
     encode = { infname : { 'zlib': True,
                            'complevel' : 6,
                            'significant_digits' : 4,
-                         }
+                         },
              }
     try:
-        ds.to_netcdf(ncfile, format = 'NETCDF4', encoding = encode)
+        ds.to_netcdf(ncfile, format = 'NETCDF4', encoding = encode,
+                unlimited_dims = ('time'))
     except:
         print('Error for ',ncfile)
         continue
