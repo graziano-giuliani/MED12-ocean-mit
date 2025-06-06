@@ -13,6 +13,7 @@ import f90nml
 
 timestep = 150
 start_simulation = "1979-08-01 00:00:00"
+calendar = "standard"
 domain = 'MED-12'
 myinst = 'ICTP'
 ginst = 'ECMWF'
@@ -103,7 +104,7 @@ names = { 'SALT'        : { 'esgf_name'     : 'so',
           #                },
           'MLD'         : { 'esgf_name'     : 'mlot',
                             'standard_name' : 'ocean_mixed_layer_thickness',
-                            'long_name'     : 'Ocean Mixed Layer Thicknes',
+                            'long_name'     : 'Ocean Mixed Layer Thickness',
                             'units'         : 'm',
                             'dimensions'    : 2,
                             'stagger'       : 'c',
@@ -352,6 +353,7 @@ for binfile in sys.argv[1:]:
                          data = np.array((stime,)),
                          dims = ["time"],
                          attrs = dict(standard_name = "time",
+                                      calendar = calendar,
                                       units = "seconds since "+
                                       start_simulation+' UTC'))
     if names[vname]['dimensions'] == 2:

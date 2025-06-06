@@ -30,10 +30,14 @@ levels = { "so"     : (10,16,17,18,18.5,19.5,20,20.5,21,
                        38.1,38.2,38.3,38.4,38.5,38.6,
                        38.7,38.8,38.9,39,39.1,39.2),
            "thetao" : np.linspace(10,36,53),
+           "mlot"   : (0.0,10.0,50,100,200,250,300,
+                       350,300,450,500,550,600,650,
+                       700,750,800,850,900),
          }
 
 colors = { "so"     : cmocean.cm.haline,
            "thetao" : cmocean.cm.thermal,
+           "mlot"   : cmocean.cm.deep,
          }
 
 for ncf in sys.argv[1:]:
@@ -41,7 +45,7 @@ for ncf in sys.argv[1:]:
     vname = os.path.basename(ncf).split('_')[0]
 
     ds = xr.load_dataset(ncf)
-    p = ds[vname][0,0,:].plot(x = "lon", y = "lat",
+    p = ds[vname][0,:,:].plot(x = "lon", y = "lat",
                               subplot_kws = subplot_kws,
                               cbar_kwargs = cbar_kws,
                               levels = levels[vname],
