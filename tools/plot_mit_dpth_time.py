@@ -53,8 +53,8 @@ for i, med_region in enumerate(gdf.itertuples()):
     subregion = med_region.SUB_REGION
     clipped = var.where(mask2d.isel(region=i), other=np.nan)
     clipped = clipped.mean(dim=('lat','lon'))
-    p = clipped.dropna(dim="depth").plot(x="time",y="depth",
-                       cmap = colors[variable])
+    p = clipped.dropna(dim="depth").sel(depth=slice(None,200.0)).plot(
+            x="time",y="depth",cmap=colors[variable])
     p.axes.yaxis.set_inverted(True)
     plt.title(subregion.lower( ).capitalize( )+' '+long_name+' ['+units+']')
     oname = variable+'-'+'_'.join(subregion.lower( ).split())+'.png'
