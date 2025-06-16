@@ -1,0 +1,38 @@
+#
+# Excahnge fields
+#
+#    N X2Y T
+#    A:B:C:D:E:F:G:H:I:L:M
+#
+# N : Number of fields
+# X : Source model
+# Y : Destination model
+# T : extrapolation flag
+# A : Variable name (defined in RegESM)
+# B : Variable standard name (used in diagnostic output)
+# C : Dimensionality (2d or 3D for visualization plugin)
+# D : interpolation type (bilinear or nearest source to destination)
+# E : Input grid type (cross or dot for staggering)
+# F : Output grid type (cross or dot for staggering)
+# G : Input unit of measure
+# H : Output unit of measure
+# I : Scale factor for units conversion
+# L : Add offset for units conversion
+# M : Conservation flag to keep total integral over domain
+#
+8 atm2ocn T
+psfc:surface_air_pressure:2d:bilinear:cross:cross:Pa:Pa:1.0:0.0:F
+tsfc:surface_air_temperature:2d:bilinear:cross:cross:K:K:1.0:0.0:F
+qsfc:surface_air_specific_humidity:2d:bilinear:cross:cross:kg/kg:kg/kg:1.0:0.0:F
+swrd:shortwave_radiation:2d:bilinear:cross:cross:W/m^2:W/m^2:-1.0:0.0:T
+lwrd:longwave_radiation:2d:bilinear:cross:cross:W/m^2:W/m^2:1.0:0.0:T
+prec:total_precipitation:2d:bilinear:cross:cross:kg/m^2s:m/s:0.001:0.0:F
+wndu:eastward_10m_wind:2d:bilinear:cross:cross:m/s:m/s:1.0:0.0:F
+wndv:northward_10m_wind:2d:bilinear:cross:cross:m/s:m/s:1.0:0.0:F
+1 ocn2atm T
+sst:sea_surface_temperature:2d:bilinear:cross:cross:C:K:1.0:273.16:F
+1 atm2rtm T
+rnof:total_runoff:2d:bilinear:cross:cross:mm/s:m/s:0.001:0.0:F
+2 rtm2ocn F
+rmsk:river_mask:2d:nearstod:cross:cross:1:1:1.0:0.0:F
+rdis:river_discharge:2d:nearstod:cross:cross:m^3:m^3:1.0:0.0:F

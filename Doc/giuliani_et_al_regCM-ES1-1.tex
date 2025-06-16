@@ -1,0 +1,664 @@
+%% Copernicus Publications Manuscript Preparation Template for LaTeX Submissions
+%% ---------------------------------
+%% This template should be used for copernicus.cls
+%% The class file and some style files are bundled in the Copernicus Latex Package, which can be downloaded from the different journal webpages.
+%% For further assistance please contact Copernicus Publications at: production@copernicus.org
+%% https://publications.copernicus.org/for_authors/manuscript_preparation.html
+
+
+%% Please use the following documentclass and journal abbreviations for preprints and final revised papers.
+
+%% 2-column papers and preprints
+\documentclass[journal abbreviation, manuscript]{copernicus}
+
+
+
+%% Journal abbreviations (please use the same for preprints and final revised papers)
+
+
+% Advances in Geosciences (adgeo)
+% Advances in Radio Science (ars)
+% Advances in Science and Research (asr)
+% Advances in Statistical Climatology, Meteorology and Oceanography (ascmo)
+% Aerosol Research (ar)
+% Annales Geophysicae (angeo)
+% Archives Animal Breeding (aab)
+% Atmospheric Chemistry and Physics (acp)
+% Atmospheric Measurement Techniques (amt)
+% Biogeosciences (bg)
+% Climate of the Past (cp)
+% DEUQUA Special Publications (deuquasp)
+% Earth Surface Dynamics (esurf)
+% Earth System Dynamics (esd)
+% Earth System Science Data (essd)
+% E&G Quaternary Science Journal (egqsj)
+% EGUsphere (egusphere) | This is only for EGUsphere preprints submitted without relation to an EGU journal.
+% European Journal of Mineralogy (ejm)
+% Fossil Record (fr)
+% Geochronology (gchron)
+% Geographica Helvetica (gh)
+% Geoscience Communication (gc)
+% Geoscientific Instrumentation, Methods and Data Systems (gi)
+% Geoscientific Model Development (gmd)
+% History of Geo- and Space Sciences (hgss)
+% Hydrology and Earth System Sciences (hess)
+% Journal of Bone and Joint Infection (jbji)
+% Journal of Micropalaeontology (jm)
+% Journal of Sensors and Sensor Systems (jsss)
+% Magnetic Resonance (mr)
+% Mechanical Sciences (ms)
+% Natural Hazards and Earth System Sciences (nhess)
+% Nonlinear Processes in Geophysics (npg)
+% Ocean Science (os)
+% Polarforschung - Journal of the German Society for Polar Research (polf)
+% Primate Biology (pb)
+% Proceedings of the International Association of Hydrological Sciences (piahs)
+% Safety of Nuclear Waste Disposal (sand)
+% Scientific Drilling (sd)
+% SOIL (soil)
+% Solid Earth (se)
+% State of the Planet (sp)
+% The Cryosphere (tc)
+% Weather and Climate Dynamics (wcd)
+% Web Ecology (we)
+% Wind Energy Science (wes)
+
+
+%% \usepackage commands included in the copernicus.cls:
+%\usepackage[german, english]{babel}
+%\usepackage{tabularx}
+%\usepackage{cancel}
+%\usepackage{multirow}
+%\usepackage{supertabular}
+%\usepackage{algorithmic}
+%\usepackage{algorithm}
+%\usepackage{amsthm}
+%\usepackage{float}
+%\usepackage{subfig}
+%\usepackage{rotating}
+
+
+\begin{document}
+
+\title{RegCM-ES v1.1 Regional Earth System Model: model components update and
+performance evaluation over the MED-cordex region}
+
+
+% \Author[affil]{given_name}{surname}
+
+\Author[1][ggiulian@ictp.it]{Graziano}{Giuliani} %% correspondence author
+\Author[2][]{Marco}{Reale}
+\Author[1][]{Tapajyoti}{Chakraborty}
+\Author[1][]{Erika}{Coppola}
+\Author[2][]{Stefano}{Salon}
+
+\affil[1]{Earth System Physics Section, The Abdus Salam International Centre for Theoretical Physics, Trieste, Italy}
+\affil[2]{National Institute of Oceanography and Applied Geophysics—OGS, Triete, Italy}
+
+%% The [] brackets identify the author with the corresponding affiliation. 1, 2, 3, etc. should be inserted.
+
+
+%% If authors contributed equally, please add \equalcontrib{$Author numbers$} (e.g. \equalcontrib{1,3}) at the end of the affiliations. The author number depends on the placement of the author in the author list, e.g. the third author has number 3.
+
+
+\runningtitle{RegCM-ES1-1 Regional Earth System Model}
+
+\runningauthor{Graziano Giuliani}
+
+\received{}
+\pubdiscuss{} %% only important for two-stage journals
+\revised{}
+\accepted{}
+\published{}
+
+%% These dates will be inserted by Copernicus Publications during the typesetting process.
+
+
+\firstpage{1}
+
+\maketitle
+
+
+
+\begin{abstract}
+The need to understand the long term evolution and complex interactions of
+    the Earth's climate system physical components, Atmosphere, Ocean, Land
+    and Cryosphere, and investigate the impacts of the human generated
+    modifications to the energy equilibrium state and the planet biosphere,
+    is fulfilled with interacting models simulations orchestrated in coupled
+    Earth System Models (ESM).
+    The necessity is still compelling at regional scales, in the areas where
+    the specific climate is known to be driven by the interaction of the
+    different subsystems, like the Mediterranenan basin.
+    In the framework of the MED-Cordex experiment, we have seen the
+    implementation of Regional Coupled Atmosphere, Ocean and River
+    Climate Models (AORCM) to obtain a more accurate representation of the
+    Earth System.
+    One of the model used is the ICTP RegCM-ES.
+    We will describe in this paper the recent changes to the different model
+    components implemented jointly by the Abdus Salam International Centre
+    of Theoretical Physics (ICTP) and the Italian National Institute of
+    Oceanography and Applied Geophysics (INOGS).
+    The aim is to describe the effort in updating the codebase of the
+    three models, with a focus on the resulting better integration of the
+    different parts into the RegESM coupler, and the new baseline
+    performances of the updated model over the whole Mediterranean
+    and Black Sea region.
+\end{abstract}
+
+
+\copyrightstatement{This work is distributed under the Creative Commons Attribution 4.0 License.} %% This section is optional and can be used for copyright transfers.
+
+
+\introduction  %% \introduction[modified heading if necessary]
+A coupled Earth System Model (ESM) is not just a computer program, but a
+successful interaction of multiple scientific communities agreeing to
+participate in a joint effort with the goal to describe the physical
+state and behavior of the most complex system scientists can put their hands
+on: our planet.
+
+Throughout the last decades, broad communities have jointly participated in
+the writing of multiple flexible and high performance software libraries
+which have permitted the building of ESMs from interoperable components.
+
+One of these software libraries is the Earth System Modeling Framework ESMF,
+\citet{esmf}.
+It has been developed by the United States University Corporation for
+Atmospheric Research (UCAR) through a joint specification team of
+researchers from various institutions, including the National Center for
+Atmospheric Research (NCAR), the National Oceanic and Atmospheric
+Administration (NOAA), the Geophysical Fluid Dynamics Laboratory (GFDL).
+
+The platform functionalities have been successfully exploited through the
+ESMF National Unified Operational Prediction Capability (NUOPC)
+interoperability layer to create the model coupler RegESM,
+\citep{ufuk-gmd-2013,ufuk-cd-2017}, to provide an efficient framework for
+the integration of single component models into a Regional Earth System Model.
+
+Following the common and well described conventions, the RegESM permits the
+integration of multiple components by defining the synchronization and data
+exchange of their interactions, to reflect the different timescales of the
+phisical processes they describe. It manages all the required interpolations
+and unit of measure harmonization needed for the flow of mass, momentum and
+energy fluxes between the component models.
+
+With minor modifications required into the single model codebases, the
+RegESM has created a complete integration framework for the creation of
+"a la carte" composition of multiple pluggable models for
+the different Atmosphere, Ocean, River and Wave components, with the
+possibility to use high performance visualization tools
+to analyze on-the-fly the produced results \citep{ufuk-gmd-2019}.
+
+Different research groups are successfully using the RegESM framework to
+create coupled regional Earth System Models: in Italy the ENEA with their
+ENEA-Reg \citep{anav-gmd-2021} coupling the Atmosphere and Land model
+WRF \citep{wrf-2017} with the MITgcm Ocean model
+\citep{marshall-1997,adcroft-2004} and the HD river \citep{hagemann-1997},
+in Turkey the ITU \citep{surenkok-2015} which have implemented the coupling
+with the WAM \citep{wamdi-1988} wave model.
+
+In ICTP and OGS, this capability has been successfully exploited in past years
+by creating the RegCM-ES model, composed by coupling together, with the help
+of the RegESM, the RegCM 4 atmospheric model with the CLM4.5 land model
+\citep{giorgi-2012,oleson-2013}, the MITgcm Ocean model with
+the eventual Biogeophisics component \citep{cossarini-gmd-2017},
+and the HD river model.
+
+You can find in \citet{sitz-2017} the first description of the ICTP RegCM-ES
+model, and in \citet{reale-2020} the description of the model performances over
+the Mediterranean region when coupled with the Biogeochemical Marine flux
+model for the study of the marine ecosystem.
+
+We describe in this paper the updated ICTP RegCM-ES model, which is now
+composed by:
+
+\begin{enumerate}
+    \item The Atmospheric model RegCM version 5 \citep{giorgi-2023}
+        internally coupled with the CLM4.5 land model \citep{oleson-2013}
+    \item The Ocean model MITgcm version 69 \citep{marshall-1997,adcroft-2004}
+    \item The CETEMPS River routing CHyM with runoff input, implemented
+        for the ESM coupling \citep{coppola-2007}
+\end{enumerate}
+
+The so composed ICTP AORCM Regional Earth System Model will be referred in the
+following as the RegCM-ES-1-1 and will be used by the ICTP in
+the Coordinated Regional Climate Downscaling Experiment (CORDEX) for the
+Phase 2 Mediterranean domain Med-CORDEX experiment \citep{somot-2020}.
+
+\section{Coupled model compoenents}
+
+We give here a description of the RegCM-ES-1-1 model components used in the
+evaluation of the model performances, describing eventual changes from the
+those presented in previous literature and the limits of the coupling
+system.
+
+\subsection{Coupler}
+
+The RegESM coupled modeling system is based on the ESMF framework and is
+mostly following the design described in previous papers. The major
+modifications in the code are:
+
+\begin{enumerate}
+    \item The update to use the more recent ESMF library version 8.8.1
+    \item The addition of the interface with a special version of the CHyM
+        model into the list of the supported River Routing models.
+    \item The update to support the most recent version of the RegCM model
+    \item The update to support the most recent version of the MITgcm model
+\end{enumerate}
+
+The updated code is available on GitHub (see below in the \ref{code_and_data}
+section). The RegESM framework creates a single model executable file by
+linking together Fortran module objects from all the component models, each
+wrapped as a static library and selected at the configure step by the user
+by specifying the paths to the already compiled and coupling configured
+model components. A simple check of the source files is performed to recognize
+at this stage which model component has been selected among the possible
+options for the atmosphere, ocean and river, and the relevant interface
+modules are compiled. The documentation available in the GitHub page and
+the scripts made available should guide any user in compiling and setting
+up a successful coupled model simulation. Due to a possible misconfiguration
+of the target system used in the simulation run, we have been limited to use
+the sequential execution scheme in the experiment below described.
+In listing \ref{lst:exfields} the reader can find the defined exchange
+set variables between the models.
+
+\lstinputlisting[caption=Exchange Table, label={lst:exfields}, language=C]{exfield.tbl}
+
+The set of variables is chosen to keep the radiation balance internal to
+the atmospheric model by providing to the ocean the surface net short and
+long wave components.
+We allow instead for an independent computation in both the atmosphere and
+the ocean model of the bulk energy and mass transfer, by feeding to the ocean
+the input wind zonal and meridional components already scaled to anemometric
+height, togheter with the air temperature and specific humidity at $2m$ height.
+The set of variables from the atmosphere to the ocean is completed with the
+precipitation and surface air pressure.
+The ocean reaceives these fields with hourly time resolution (following the
+MED-Cordex protocol). The river discharge from the routing model is updated
+instead with daily frequency to the ocean model. The atmosphere provides
+to the CHyM as input the daily average total runoff. The exchange feedback
+is closed with the hourly sst from the ocean to the atmosphere.
+The timing of the interactions is specified in the input file for the RegESM
+as reported in the excerpt in listing \ref{lst:namelistrc}.
+
+\lstinputlisting[caption=Exchange timing, label={lst:namelistrc}, language=bash]{namelist.rc}
+
+\subsection{Atmosphere Model}
+
+The RegCM model is widely considered the first Regional Climate model
+documented in the literature \citep{giorgi-1989}, and has seen throughout
+the years constant development efforts
+\citep{giorgi-1993,giorgi-1999,pal-2007,giorgi-2012,coppola-2021,giorgi-2023},
+leading to successive model releases with the latest revision being the
+RegCM version 5 model.
+
+The Atmospheric model supports a number of different dynamical and physical
+packages \citep{giorgi-2023}, which create a flexible tool used by multiple
+research groups all over the world for the study of regional climate by
+running long term simulations in the framework of the World Climate
+Research Program (WCRP) CORDEX experiment, process analyses to understand
+the regional climate, or as the atmospheric component in different
+coupled atmosphere and ocean studies
+\citep{perrie-2001,ufuk-gmd-2013,wei-2014,ratnam-2009,sitz-2017,
+       disante-2019,reale-2020,mishra-2021}.
+
+The model has hydrostatic \citep{anthes-1987} and two non-hydrostatic dynamical
+descriptions (MM5, \citet{grell-1994} and MOLOCH, \citet{davolio-2020}) of
+the basic time evolution of the atmosphere status. The surface status is
+described by using different land models (BATS \citet{dickinson-1993}
+and CLM4.5 \citet{oleson-2013}).
+The boundary layer cascade energy transfer is possible with local and
+non-local schemes \citep{holtslag-1989,park-2009}.
+The parametrized convection is available using multiple possible schemes
+\citep{emanuel-1991,tiedtke-1989,kain-2004}, while the microphysical
+description is possible using different packages
+\citep{pal-2000,lim-2005,noto-gmd-2016}.
+The cloud fraction scheme can be chosen among the \citet{sundqvist-1989}
+and the \citet{xu-1996}.
+The bulk parameterization of the Air-Sea fluxes uses either the COARE
+\citep{fairall-2003} algorithm or the \citet{zeng-2005} scheme.
+Two different radiation transmission schemes are available, one from the
+CCM3 \citep{kiehl-1996}, the other being the ubiquitous RRTMG
+\citep{mlawer-1997,iacono-2008}.
+An optional aerosol \citep{zakey-2006,zakey-2008,solmon-2008} and
+full chemistry package \citep{shalaby-2012} is available.
+The model has full integration with Input4MIPS \citep{durack-2017}
+dataset to be used to downscale to the regional scale the Global
+Climate Models (GCMs) participating in the CMIP5 \citep{taylor-2012}
+and CMIP6 \citep{eyring-2016} experiments.
+
+Input packages permit the interpolation as lateral boundary conditions
+at configurable time frequencies of idifferent reanalysis dataset, ERA5
+\citep{hershbach-2020} among them, and multiple GCM global models.
+The coupling of the model to be part of an AORCM is possible using both
+the ESMF through the RegESM and the OASIS \citep{craig-2017} frameworks.
+The model has been successfully used to obtain future regiobal climate
+projections in the framework of the CORDEX \citep{gutowski-2016}
+and CORDEX-CORE (evaluated in \citet{remedio-2019}) experiments.
+
+The model has a large user community spanning at least six continents, and its
+development is currently coordinated by the UNESCO ICTP in Trieste.
+
+In the framework of past CORDEX experiment, the model has been used to simulate
+future climate over most of the experiment defined regional domains, with the
+exception of the high latitude Arctic and Antartic regions.
+
+\begin{table}[]
+    \begin{tabular}{|l|l|}
+        \hline
+        Package & Scheme \\
+        \hline
+        Dynamic & MOLOCH non hydrostatic \\
+        Land & CLM4.5 \\
+        Radiation & CCSM3 \\
+        Microphysics & Nogherotto-Tompkins \\
+        Convection & Tiedtke \\
+        Planet BL & Holtslag \\
+        Clouds & Sundqvist \\
+        Ocean Bulk flux & Zeng \\
+        \hline
+  \end{tabular}
+    \caption{RegCM model configuration}
+    \label{table:regcm_conf}
+\end{table}
+
+The Med-Cordex experiment settings here reported in the description of the
+RegCM-ES-1-1 are in table \ref{table:regcm_conf}.
+
+The RegCM5, in the framework of the Med-CORDEX experiment, is using a partial
+set of Input4MIPS data (GHG concentrations, O3, Solar radiation). For the
+evaluation in this paper, the model is using a reanalysis dataset of Aerosol
+optical properties from the Modern-Era Retrospective analysis for Research
+and Applications, Version 2 (MERRA2) \citep{randles-2017,buchard-2017},
+while the CLM4.5 input dataset is not changing throughout the simulation
+timeframe.
+
+\subsection{Ocean}
+
+The MITgcm (MIT General Circulation Model) is a numerical model designed for
+study of the atmosphere, ocean, and climate. The Ocean component has been
+coupled to the RegCM using the
+
+
+\subsection{River}
+
+The ICTP CHyM model used is ...
+
+\conclusions  %% \conclusions[modified heading if necessary]
+
+Magari ci arriviamo pure...
+
+%% The following commands are for the statements about the availability of data sets and/or software code corresponding to the manuscript.
+%% It is strongly recommended to make use of these sections in case data sets and/or software code have been part of your research the article is based on.
+
+\codeavailability{TEXT} %% use this section when having only software code available
+
+
+\dataavailability{TEXT} %% use this section when having only data sets available
+
+
+\codedataavailability{
+\label{code_and_data}
+
+The different models' code used in the described RegCM-ES-1-1 are all available
+on GitHub under different type of License. The scientific software libraries
+used by the different model components are not here listed and reported: it
+is left to the user to look into the ESMF library documentation for the list
+of all required and optional dependencies.
+
+\begin{enumerate}
+    \item RegESM model framework. The code has been forked from the reference
+        repository and the updated code is available at the following URL:
+        \url{https://github.com/graziano-giuliani/RegESM}. It is distributed
+        under the MIT license.
+    \item RegCM atmosphere and land model component. The code used in the
+        experiment is from a branch of the ICTP repository used for the
+        CORDEX experiment, and is available at the following URL:
+        \url{https://github.com/ICTP/RegCM/tree/CORDEX-5}. The interface is
+        compatible with the latest model version, distributed under the MIT
+        license.
+    \item MITgcm ocean model component. The code used in the experiment is
+        available from the MITgcm GitHub page at the following URL:
+        \url{https://github.com/MITgcm/MITgcm}. The data preprocessing
+        scripts and the copling code modifications are available in a
+        dedicated repository at the following URL:
+        \url{https://github.com/graziano-giuliani/MED12-ocean-mit}.
+        The model us distributed under the MIT license.
+    \item CHyM river routing in couplig configuration is available at the
+        following URL: \url{https://github.com/graziano-giuliani/CHyM\_cpl}.
+        The model static data creation is performed using the uncoupled
+        model version code available at the following URL:
+        \url{https://github.com/graziano-giuliani/CHyM-roff}. Both models
+        are distributed under the GPL v3 license.
+    \item All the scripts used for plotting and rendering of the results
+        presented in this paper are available at the following GitHub URL:
+        \url{https://github.com/graziano-giuliani/MED12-ocean-mit}.
+\end{enumerate}
+}
+
+\sampleavailability{TEXT} %% use this section when having geoscientific samples available
+
+
+\videosupplement{TEXT} %% use this section when having video supplements available
+
+
+\appendix
+\section{}    %% Appendix A
+
+\subsection{}     %% Appendix A1, A2, etc.
+
+
+\noappendix       %% use this to mark the end of the appendix section. Otherwise the figures might be numbered incorrectly (e.g. 10 instead of 1).
+
+%% Regarding figures and tables in appendices, the following two options are possible depending on your general handling of figures and tables in the manuscript environment:
+
+%% Option 1: If you sorted all figures and tables into the sections of the text, please also sort the appendix figures and appendix tables into the respective appendix sections.
+%% They will be correctly named automatically.
+
+%% Option 2: If you put all figures after the reference list, please insert appendix tables and figures after the normal tables and figures.
+%% To rename them correctly to A1, A2, etc., please add the following commands in front of them:
+
+\appendixfigures  %% needs to be added in front of appendix figures
+
+\appendixtables   %% needs to be added in front of appendix tables
+
+%% Please add \clearpage between each table and/or figure. Further guidelines on figures and tables can be found below.
+
+
+
+\authorcontribution{TEXT} %% this section is mandatory
+
+\competinginterests{TEXT} %% this section is mandatory even if you declare that no competing interests are present
+
+\disclaimer{TEXT} %% optional section
+
+\begin{acknowledgements}
+TEXT
+\end{acknowledgements}
+
+
+
+
+%% REFERENCES
+
+%% The reference list is compiled as follows:
+
+%\begin{thebibliography}{}
+%\end{thebibliography}
+
+%% Since the Copernicus LaTeX package includes the BibTeX style file copernicus.bst,
+%% authors experienced with BibTeX only have to include the following two lines:
+%%
+\bibliographystyle{copernicus}
+\bibliography{bibliography.bib}
+%%
+%% URLs and DOIs can be entered in your BibTeX file as:
+%%
+%% URL = {http://www.xyz.org/~jones/idx_g.htm}
+%% DOI = {10.5194/xyz}
+
+
+%% LITERATURE CITATIONS
+%%
+%% command                        & example result
+%% \citet{jones90}|               & Jones et al. (1990)
+%% \citep{jones90}|               & (Jones et al., 1990)
+%% \citep{jones90,jones93}|       & (Jones et al., 1990, 1993)
+%% \citep[p.~32]{jones90}|        & (Jones et al., 1990, p.~32)
+%% \citep[e.g.,][]{jones90}|      & (e.g., Jones et al., 1990)
+%% \citep[e.g.,][p.~32]{jones90}| & (e.g., Jones et al., 1990, p.~32)
+%% \citeauthor{jones90}|          & Jones et al.
+%% \citeyear{jones90}|            & 1990
+
+
+
+%% FIGURES
+
+%% When figures and tables are placed at the end of the MS (article in one-column style), please add \clearpage
+%% between bibliography and first table and/or figure as well as between each table and/or figure.
+
+% The figure files should be labelled correctly with Arabic numerals (e.g. fig01.jpg, fig02.png).
+
+
+%% ONE-COLUMN FIGURES
+
+%%f
+%\begin{figure}[t]
+%\includegraphics[width=8.3cm]{FILE NAME}
+%\caption{TEXT}
+%\end{figure}
+%
+%%% TWO-COLUMN FIGURES
+%
+%%f
+%\begin{figure*}[t]
+%\includegraphics[width=12cm]{FILE NAME}
+%\caption{TEXT}
+%\end{figure*}
+%
+%
+%%% TABLES
+%%%
+%%% The different columns must be seperated with a & command and should
+%%% end with \\ to identify the column brake.
+%
+%%% ONE-COLUMN TABLE
+%
+%%t
+%\begin{table}[t]
+%\caption{TEXT}
+%\begin{tabular}{column = lcr}
+%\tophline
+%
+%\middlehline
+%
+%\bottomhline
+%\end{tabular}
+%\belowtable{} % Table Footnotes
+%\end{table}
+%
+%%% TWO-COLUMN TABLE
+%
+%%t
+%\begin{table*}[t]
+%\caption{TEXT}
+%\begin{tabular}{column = lcr}
+%\tophline
+%
+%\middlehline
+%
+%\bottomhline
+%\end{tabular}
+%\belowtable{} % Table Footnotes
+%\end{table*}
+%
+%%% LANDSCAPE TABLE
+%
+%%t
+%\begin{sidewaystable*}[t]
+%\caption{TEXT}
+%\begin{tabular}{column = lcr}
+%\tophline
+%
+%\middlehline
+%
+%\bottomhline
+%\end{tabular}
+%\belowtable{} % Table Footnotes
+%\end{sidewaystable*}
+%
+%
+%%% MATHEMATICAL EXPRESSIONS
+%
+%%% All papers typeset by Copernicus Publications follow the math typesetting regulations
+%%% given by the IUPAC Green Book (IUPAC: Quantities, Units and Symbols in Physical Chemistry,
+%%% 2nd Edn., Blackwell Science, available at: http://old.iupac.org/publications/books/gbook/green_book_2ed.pdf, 1993).
+%%%
+%%% Physical quantities/variables are typeset in italic font (t for time, T for Temperature)
+%%% Indices which are not defined are typeset in italic font (x, y, z, a, b, c)
+%%% Items/objects which are defined are typeset in roman font (Car A, Car B)
+%%% Descriptions/specifications which are defined by itself are typeset in roman font (abs, rel, ref, tot, net, ice)
+%%% Abbreviations from 2 letters are typeset in roman font (RH, LAI)
+%%% Vectors are identified in bold italic font using \vec{x}
+%%% Matrices are identified in bold roman font
+%%% Multiplication signs are typeset using the LaTeX commands \times (for vector products, grids, and exponential notations) or \cdot
+%%% The character * should not be applied as mutliplication sign
+%
+%
+%%% EQUATIONS
+%
+%%% Single-row equation
+%
+%\begin{equation}
+%
+%\end{equation}
+%
+%%% Multiline equation
+%
+%\begin{align}
+%& 3 + 5 = 8\\
+%& 3 + 5 = 8\\
+%& 3 + 5 = 8
+%\end{align}
+%
+%
+%%% MATRICES
+%
+%\begin{matrix}
+%x & y & z\\
+%x & y & z\\
+%x & y & z\\
+%\end{matrix}
+%
+%
+%%% ALGORITHM
+%
+%\begin{algorithm}
+%\caption{...}
+%\label{a1}
+%\begin{algorithmic}
+%...
+%\end{algorithmic}
+%\end{algorithm}
+%
+%
+%%% CHEMICAL FORMULAS AND REACTIONS
+%
+%%% For formulas embedded in the text, please use \chem{}
+%
+%%% The reaction environment creates labels including the letter R, i.e. (R1), (R2), etc.
+%
+%\begin{reaction}
+%%% \rightarrow should be used for normal (one-way) chemical reactions
+%%% \rightleftharpoons should be used for equilibria
+%%% \leftrightarrow should be used for resonance structures
+%\end{reaction}
+%
+%
+%%% PHYSICAL UNITS
+%%%
+%%% Please use \unit{} and apply the exponential notation
+
+\end{document}
+
+% vim: set spell spelllang=en_uk tabstop=8 expandtab shiftwidth=2 softtabstop=2
