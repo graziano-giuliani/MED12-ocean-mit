@@ -100,6 +100,7 @@ for ncfile in sys.argv[1:]:
         dsout.driving_institution_id = ginst
         dsout.driving_source_id = gmodel
         dsout.driving_variant_label = gmemb
+        dsout.frequency = 'day'
         dsout.institution = 'International Centre for Theoretical Physics'
         dsout.institution_id = myinst
         dsout.license = 'Creative Commons Attribution 4.0 International License (CC BY 4.0; https://creativecommons.org/licenses/by/4.0).'
