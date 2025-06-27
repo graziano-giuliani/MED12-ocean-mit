@@ -200,8 +200,8 @@ create coupled regional Earth System Models: in Italy the ENEA with their
 ENEA-Reg \citep{anav-gmd-2021} coupling the Atmosphere and Land model
 WRF \citep{wrf-2017} with the MITgcm Ocean model
 \citep{marshall-1997,adcroft-2004} and the HD river \citep{hagemann-1997},
-in Turkey the ITU \citep{surenkok-2015} which have implemented the coupling
-with the WAM \citep{wamdi-1988} wave model.
+in Turkey the ITU \citep{batibeniz-2025} which have implemented
+the coupling with the WAM \citep{wamdi-1988} wave model.
 
 In ICTP and OGS, this capability has been successfully exploited in past years
 by creating the RegCM-ES model, composed by coupling together, with the help
@@ -252,8 +252,9 @@ modifications in the code are:
     \item The update to support the most recent version of the MITgcm model
 \end{enumerate}
 
-The updated code is available on GitHub (see below in the \ref{code}
-section). The RegESM framework creates a single model executable file by
+The updated code is available on GitHub (see below in the section \ref{code}).
+
+The RegESM framework creates a single model executable file by
 linking together Fortran module objects from all the component models, each
 wrapped as a static library and selected at the configure step by the user
 by specifying the paths to the already compiled and coupling configured
@@ -265,29 +266,26 @@ the scripts made available should guide any user in compiling and setting
 up a successful coupled model simulation. Due to a possible misconfiguration
 of the target system used in the simulation run, we have been limited to use
 the sequential execution scheme in the experiment below described.
-In listing \ref{lst:exfields} the reader can find the defined exchange
-set variables between the models.
 
-\lstinputlisting[caption=Exchange Table, label={lst:exfields}, language=C]{exfield.tbl}
+The set of variables (described in Appendix \ref{appendix:regesm}) is chosen to
+keep the radiation balance internal to the atmospheric model by providing to
+the ocean the surface net short and long wave components.
 
-The set of variables is chosen to keep the radiation balance internal to
-the atmospheric model by providing to the ocean the surface net short and
-long wave components.
-We allow instead for an independent computation in both the atmosphere and
+We allow for an independent computation in both the atmosphere and
 the ocean model of the bulk energy and mass transfer, by feeding to the ocean
 the input wind zonal and meridional components already scaled to anemometric
 height, togheter with the air temperature and specific humidity at $2m$ height.
+
 The set of variables from the atmosphere to the ocean is completed with the
 precipitation and surface air pressure.
+
 The ocean reaceives these fields with hourly time resolution (following the
 MED-Cordex protocol). The river discharge from the routing model is updated
 instead with daily frequency to the ocean model. The atmosphere provides
 to the CHyM as input the daily average total runoff. The exchange feedback
 is closed with the hourly sst from the ocean to the atmosphere.
 The timing of the interactions is specified in the input file for the RegESM
-as reported in the excerpt in listing \ref{lst:namelistrc}.
-
-\lstinputlisting[caption=Exchange timing, label={lst:namelistrc}, language=bash]{namelist.rc}
+as reported in the excerpt in listing Appendix \ref{appendix:regesm}.
 
 \subsection{Atmosphere Model}
 
@@ -430,9 +428,8 @@ settings in table \ref{table:chym_conf}.
 
 The Manning's roughness coefficients are liberally deived from a table
 present in the US Army Corp of Engineers River Analysis Sistem (HEC-RAS)
-Reference Manual \citep{brunner-2020} .
-
-\lstinputlisting[caption=manning, label={lst:chym}, language=Fortran]{manning}
+Reference Manual \citep{brunner-2020} and are described in Appendix
+\ref{appendix:chym}.
 
 The slope and river hydraulic radio are estimated using the Hydrosheds
 [data: \ref{data:hydrosheds}], while the surface gridcell classification is
@@ -501,6 +498,18 @@ of all required and optional dependencies.
 
 
 \appendix
+\section{RegESM configuration}
+\label{appendix:regesm}
+In listing \ref{lst:exfields} the reader can find the defined exchange
+set of the variables between the models.
+
+\lstinputlisting[caption=Exchange Table, label={lst:exfields}, language=C]{exfield.tbl}
+
+In listing \ref{lst:namelistrc} the reader can find the timing of the
+exchanges between the different models.
+
+\lstinputlisting[caption=Exchange Timing, label={lst:namelistrc}, language=bash]{namelist.rc}
+
 \section{CHyM model}
 \label{appendix:chym}
 
@@ -524,6 +533,8 @@ is computed using the Cellular Automata algorithm described in
 calibration coefficients.
 $M$ are the land use dependent Manning's roughness coefficients in
 $(s m^{-1})^{\frac{1}{3}}$.
+
+\lstinputlisting[caption=Manning coefficients, label={lst:chym}, language=Fortran]{manning}
 
 The model uses the continuity equation for the total water mass $A$ per unit
 lenght [Eq. \ref{eqn:chym_water_continuity}] with and the input runoff per unit
