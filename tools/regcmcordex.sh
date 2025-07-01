@@ -43,9 +43,13 @@ stsvars=prmean,psmean,tasmean,tasmax,tasmin,sfcWindmax,sundmean,wsgsmax
 radvars=clwvi,clivi,rlut,rsut,rsdt,clh,clm,cll,cld
 atmvars=ua,va,ta,hus,zg,wa,mrsol,mrso,tsl,cli,clw
 
-$pycordex/pycordexer.py $allargs $srffile $srfvars &
-$pycordex/pycordexer.py $allargs $radfile $radvars &
-$pycordex/pycordexer.py $allargs $stsfile $stsvars &
-$pycordex/pycordexer.py $allargs $atmfile $atmvars &
+pids=""
+$pycordex/pycordexer.py $allargs $srffile $srfvars & pids+="$! "
+$pycordex/pycordexer.py $allargs $radfile $radvars & pids+="$! "
+$pycordex/pycordexer.py $allargs $stsfile $stsvars & pids+="$! "
+$pycordex/pycordexer.py $allargs $atmfile $atmvars & pids+="$! "
 
-wait %1 %2 %3 %4
+for p in $pids; do wait $p || err=$?; done
+[[ $err ]] && exit -1
+
+rm $srffile $radfile $stsfile $atmfile

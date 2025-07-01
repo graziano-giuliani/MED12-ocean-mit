@@ -1,4 +1,4 @@
-# Packages
+! Packages
  &PACKAGES
  useEXF     =.TRUE.,
  useOBCS    =.TRUE.,

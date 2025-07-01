@@ -1,16 +1,16 @@
-# =====================================================================
-# | Parameters for Gaspar et al. (1990)'s TKE vertical mixing scheme |
-# =====================================================================
-# ! Graziano : Test using DEFAULT GGL90 parameters (as in Bruno Blanke
-#              and Pascale Delecluse 1993 paper)
-#&GGL90_PARM01
-# GGL90TKEmin = 1.e-11,
-# mxlMaxFlag = 2,
-# GGL90ck = 0.1,
-# GGL90ceps = 0.7,
-# GGL90m2 = 3.75,
-# GGL90mixingLengthMin = 1.0e-8,
-#/
+! =====================================================================
+! | Parameters for Gaspar et al. (1990)'s TKE vertical mixing scheme |
+! =====================================================================
+! ! Graziano : Test using DEFAULT GGL90 parameters (as in Bruno Blanke
+!              and Pascale Delecluse 1993 paper)
+!&GGL90_PARM01
+! GGL90TKEmin = 1.e-11,
+! mxlMaxFlag = 2,
+! GGL90ck = 0.1,
+! GGL90ceps = 0.7,
+! GGL90m2 = 3.75,
+! GGL90mixingLengthMin = 1.0e-8,
+!/
 &GGL90_PARM01
 GGL90TKEmin = 1.e-7,
 mxlMaxFlag=2,

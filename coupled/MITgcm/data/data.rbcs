@@ -1,6 +1,6 @@
-# ***************
-# RBCS Parameters
-# ***************
+! ***************
+! RBCS Parameters
+! ***************
  &RBCS_PARM01
  useRBCsalt=.TRUE.,
  useRBCtemp=.TRUE.,

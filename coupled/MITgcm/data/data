@@ -1,15 +1,15 @@
-# ====================
-# | Model parameters |
-# ====================
-#
-# Continuous equation parameters
+! ====================
+! | Model parameters |
+! ====================
+!
+! Continuous equation parameters
  &PARM01
  tRef=75*19.,
  sRef=75*37.,
  viscA4=1.E10,
  viscA4Z=1.E10,
  viscA4D=1.E10,
-#
+!
  useStrainTensionVisc=.FALSE.,
  viscAz=1.5E-7,
  ivdc_kappa=1.E1,
@@ -30,9 +30,9 @@
  tempAdvScheme = 33,
  saltAdvScheme = 33,
  hFacMin=0.2,
-#--------------------
+!--------------------
  vectorInvariantMomentum=.TRUE.,
-#-------------------
+!-------------------
  nonHydrostatic=.FALSE.,
  readBinaryPrec=32,
  useSingleCpuIO=.TRUE.,
@@ -45,18 +45,19 @@
  hMixCriteria = -0.2,
  allowFreezing =.TRUE.,
  /
-# Elliptic solver parameters
+! Elliptic solver parameters
  &PARM02
  cg2dMaxIters=300,
  cg2dTargetResidual=1.E-13,
  cg3dMaxIters=20,
  cg3dTargetResidual=1.E-8,
  /
-# Time stepping parameters
+! Time stepping parameters
  &PARM03
- startTime  =         0.,
- endTime    = 244684800.,
-#----------------------
+ startTime  =           0.,
+ endTime    =   252460800.,
+!pickupSuff = '0001683072',
+!----------------------
  deltaT=150.,
  deltaTtracer= 150.0,
  deltaTClock = 150.0,
@@ -65,7 +66,7 @@
  pickupStrictlyMatch=.FALSE.,
  monitorFreq=86400.,
  /
-# Gridding parameters
+! Gridding parameters
  &PARM04
  usingCartesianGrid=.FALSE.,
  usingSphericalPolarGrid=.FALSE.,
@@ -90,7 +91,7 @@
           132.720626192246, 133.038895087999, 133.318693149665, 133.564534328342,
           133.780434591076, 133.969959398865, 134.136268488739 ,
  /
-# Input datasets
+! Input datasets
  &PARM05
  bathyFile='BATHYMETRY.bin',
  hydrogSaltFile='salinity_197908_1_decades.bin',
