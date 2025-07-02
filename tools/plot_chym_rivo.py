@@ -80,10 +80,9 @@ for river, ax in zip(riverlist, axs.reshape(-1)):
     data1 = measure['DISCHRG'].mean( ).values
     sigma1 = measure['DISCHRG'].std( ).values
 
-    rivo = rivofile.isel(lon=river['iloc'],
-                         lat=river['jloc']).groupby('time.month')
-    data2 = rivo.mean( )[varname].values
-    sigma2 = rivo.std( )[varname].values
+    rivo = rivofile.isel(lon=river['iloc'], lat=river['jloc'])
+    data2 = rivo[varname].groupby('time.month').mean( ).values
+    sigma2 = rivo[varname].resample(time='MS').mean( ).std( ).values
     months = np.linspace(1,12,12)
 
     ax.plot(months, data1, label='RivDIS v1.1 ('+
@@ -95,9 +94,9 @@ for river, ax in zip(riverlist, axs.reshape(-1)):
     ax.fill_between(months, data2-sigma2, data2+sigma2,
                     facecolor=color4,alpha=0.5)
     ax.legend( )
-    plt.xticks(months,['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-               rotation=45)
+    ax.set_xticks(months,['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                  rotation=45)
     ax.set_title(river['name']+' at '+mouth.STATION.values[0])
     ax.set_ylabel('Discharge [m3 s-1]')
 
