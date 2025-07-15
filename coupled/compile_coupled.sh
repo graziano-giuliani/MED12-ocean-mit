@@ -35,4 +35,3 @@ cd RegESM && autoreconf -f -i && ./configure --with-atm=$basedir/RegCM \
 }
 
 echo "Compiled!'
-

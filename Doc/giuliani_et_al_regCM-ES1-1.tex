@@ -377,13 +377,6 @@ and Applications, Version 2 (MERRA2) \citep{randles-2017,buchard-2017},
 while the CLM4.5 input dataset is not changing throughout the simulation
 timeframe.
 
-\subsection{Ocean}
-
-The MITgcm (MIT General Circulation Model) is a numerical model designed for
-study of the atmosphere, ocean, and climate. The Ocean component has been
-coupled to the RegCM using the
-
-
 \subsection{River}
 
 The ICTP CHyM model used in the RegCM-ES1-1 is a trimmed down version of the
@@ -434,6 +427,38 @@ Reference Manual \citep{brunner-2020} and are described in Appendix
 The slope and river hydraulic radio are estimated using the Hydrosheds
 [data: \ref{data:hydrosheds}], while the surface gridcell classification is
 derived from GLCC [data: \ref{data:glcc}].
+
+The river mouth discharge in $m^3s{-1}$ is computed and on a daily basis is
+updated in the ESMF to interface with the MITgcm.
+
+\subsection{Ocean}
+
+The MITgcm (MIT General Circulation Model) is a numerical model designed for
+study of the atmosphere, ocean, and climate. The Ocean component has been
+coupled to the RegCM using a custom code addition which hijacks the external
+forcing package present in the MIT to provide the input from the atmosphere
+to the MITgcm. The modifications create the standard initialize-run-finalize
+code scheme required by the ESMF coupler. Limit of the interaction is in the
+fact that the radiative and momentum balance is repeated twice in both the
+Atmosphere and the Ocean. The $2 m$ temperature and $10 m$ winds are the
+product of the bulk Zeng Ocean scheme \citet{zeng-2005} and the computation
+of the stress and evaporation don't match with the RegCM computation of the
+same.
+
+The MITgcm receives the net Visible and Infrared radiation, leaving the RegCM
+atmosphere the task of computing the radiative equilibrium, but the surface
+optical parameters are not function of the dynamical ocean state.
+
+The River discharge is provided as fresh water infulx into the ocean at a
+fixed intract radius to the MITgcm for the mass, and at air temperature.
+
+The model computes the dynamical, thermodynamical and density time evolution
+of the ocean waters.
+
+At hourly intervals, the topmost potential temperature is provided as Sea
+Surface Temperature SST to the Atmosphere.
+
+The model is configured for 
 
 \conclusions  %% \conclusions[modified heading if necessary]
 
