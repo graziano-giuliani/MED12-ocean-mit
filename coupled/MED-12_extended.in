@@ -53,12 +53,12 @@
  /
 
  &timeparam
- dt     =    120,
+ dt     =    100,
  /
 
  &outparam
  ifcordex = .true.,
- dirout  = '/leonardo_work/ICT25_ESP/COUPLED/coupled/output',
+ dirout  = '/leonardo_work/ICT25_ESP/COUPLED/coupled_new/output',
  do_parallel_netcdf_in  = .true.,
  do_parallel_netcdf_out = .false.,
  /
@@ -106,7 +106,7 @@
  /
 
  &clm_inparm
- DoForceRestart = .true.,
+ ! DoForceRestart = .true.,
  fpftcon = 'pft-physiology.c130503.nc',
  fsnowoptics = 'snicar_optics_5bnd_c090915.nc',
  fsnowaging = 'snicar_drdt_bst_fit_60_c070416.nc',

@@ -57,7 +57,7 @@ for ncf in sys.argv[1:]:
                                              "aspect" : 40.0,},
                              density=5.0, linewidth=1.0)
     p.axes.gridlines(draw_labels=True,
-                      dms=True, x_inline=False, y_inline=False)
+                     dms=True, x_inline=False, y_inline=False)
     p.axes.set_extent((-8,43,30,45))
     plt.savefig(os.path.basename(vbase)+'.png', bbox_inches='tight')
     plt.close("all")

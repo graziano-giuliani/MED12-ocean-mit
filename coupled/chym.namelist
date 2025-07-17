@@ -1,16 +1,18 @@
 &iniparam
  model_nsteps = 300,
  thrriv = 5400.0,
- efficiency = 0.95,
- irloss = 0.07,
- irmonfac = 0.0, 0.0, 0.0, 0.1, 0.2, 0.3, 0.4, 0.2, 0.1, 0.0, 0.0, 0.0,
+ efficiency = 0.9999,
+ nfarm = 1,
+ ifarm = 76,
+ irloss = 0.10,
+ irmonfac = 0.8, 0.2, 0.5, 0.5, 0.0, 1.8, 1.8, 1.7, 0.9, 0.9, 0.5, 0.8,
 /
 
 &inputparam
  isread = 1,
  iswrit = 1,
  nstep = 5500,
- dnini = 'chym_rst_loop3.nc',
+ dnini = 'chym_rst_last.nc',
  dnout = 'chym_dis_001.nc',
  dnres = 'chym_rst_001.nc',
  dnstt = 'chym_stk.nc',

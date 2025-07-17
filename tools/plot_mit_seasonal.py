@@ -12,10 +12,8 @@ import xarray as xr
 
 xr.set_options(keep_attrs=True)
 
-levels = { "so"     : (10,16,17,18,18.5,19.5,20,20.5,21,
-                       21.5,22,22.5,23.0,23.5,24.0,24.5,
-                       25.0,25.5,26,26.5,27.0,27.5,30,
-                       31,32,33,34,34.25,34.5,34.75,35,
+figsize = (32,12)
+levels = { "so"     : (30,31,32,33,34,34.25,34.5,34.75,35,
                        35.25,35.5,35.75,36,36.25,36.5,
                        36.75,37,37.25,37.5,37.75,38,
                        38.1,38.2,38.3,38.4,38.5,38.6,
@@ -69,12 +67,26 @@ def get_dpm(time, calendar='standard'):
             month_length[i] += 1
     return month_length
 
+def seasonal_gridlines(pax,i):
+    if i == 0:
+        pax.gridlines(draw_labels={'left':'y'},
+                      dms=True, x_inline=False, y_inline=False)
+    elif i == 2:
+        pax.gridlines(draw_labels={'bottom':'x','left':'y'},
+                      dms=True, x_inline=False, y_inline=False)
+    elif i == 3:
+        pax.gridlines(draw_labels={'bottom':'x'},
+                      dms=True, x_inline=False, y_inline=False)
+    else:
+        pax.gridlines(draw_labels=False,
+                      dms=True, x_inline=False, y_inline=False)
+
 font = {'family' : 'sans',
         'weight' : 'normal',
-        'size'   : 18}
+        'size'   : 20}
 matplotlib.rc('font', **font)
 
-cbar_kws = dict(fraction= 0.05, pad=0.06)
+cbar_kws = dict(fraction=0.05, pad=0.06, shrink=0.85)
 
 colors = { "so"     : cmocean.cm.haline,
            "thetao" : cmocean.cm.thermal,
@@ -131,9 +143,16 @@ else:
     pname = vname
 
 try:
-    calendar = ds.time.calendar
+    calendar = ds.time.dt.calendar
 except:
     calendar = "standard"
+
+try:
+    ymstart = ds.time[0].dt.strftime('%Y').values
+    ymstop = ds.time[-1].dt.strftime('%Y').values
+except:
+    ymstart = '1979-08'
+    ymstop = '1987-08'
 
 month_length = xr.DataArray(get_dpm(ds.time.to_index(), calendar),
                             coords=[ds.time], name='month_length')
@@ -146,7 +165,7 @@ if "depth" in ds[vname].dims:
 else:
     vp = (ds*weights).groupby('time.season').sum(dim='time',skipna=False)
 
-fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(32,12),
+fig, ax = plt.subplots(nrows=2, ncols=2, figsize=figsize,
         subplot_kw={'projection': ccrs.PlateCarree( ),
                     'facecolor' : 'grey',})
 
@@ -161,13 +180,12 @@ for i, season in enumerate(('DJF', 'MAM', 'JJA', 'SON')):
         c = sp["tau"][::10,::10]
         p = pax.quiver(x,y,u,v,c, transform = ccrs.PlateCarree( ),
                        cmap = colors["tau"])
-        plt.colorbar(sm,ax=pax,extend="both",fraction=0.05,pad=0.06)
+        plt.colorbar(sm,ax=pax,extend="both",**cbar_kws)
         pax.set(title = vp[pname].long_name+' ['+vp[pname].units+
                 '], season='+season)
         pax.add_feature(cfeature.LAND)
         pax.coastlines()
-        pax.gridlines(draw_labels=True,
-                      dms=True, x_inline=False, y_inline=False)
+        seasonal_gridlines(pax,i)
     elif "zos" in vname:
         p = vp[vname].sel(season=season).plot(x = "lon", y = "lat",
                           transform = ccrs.PlateCarree( ),
@@ -184,8 +202,7 @@ for i, season in enumerate(('DJF', 'MAM', 'JJA', 'SON')):
         c = sp["spd"]
         p1 = pax.streamplot(x, y, u, v, transform = ccrs.PlateCarree( ),
                           density=2.5,cmap=cmocean.cm.dense.reversed( ))
-        pax.gridlines(draw_labels=True,
-                      dms=True, x_inline=False, y_inline=False)
+        seasonal_gridlines(pax,i)
     else:
         p = vp[vname].sel(season=season).plot(x = "lon", y = "lat",
                           transform = ccrs.PlateCarree( ),
@@ -194,10 +211,9 @@ for i, season in enumerate(('DJF', 'MAM', 'JJA', 'SON')):
                           levels = levels[vname],
                           cmap = colors[vname],
                           cbar_kwargs = cbar_kws)
-        pax.gridlines(draw_labels=True,
-                      dms=True, x_inline=False, y_inline=False)
+        seasonal_gridlines(pax,i)
     pax.set_extent((-8,43,30,45))
 
 plt.tight_layout()
-fig.suptitle('Seasonal '+vp[pname].long_name)
+fig.suptitle('Seasonal '+vp[pname].long_name+', '+ymstart+'-'+ymstop)
 plt.savefig(pname+'_seasonal.png', bbox_inches='tight')
