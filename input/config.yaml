@@ -1,4 +1,4 @@
-source: oras5
+source: medhymap
 oras5:
         path: ../ORAS5_MIT
         variables: votemper vosaline

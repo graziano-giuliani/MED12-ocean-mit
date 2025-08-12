@@ -68,9 +68,17 @@ with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
     bathy[289,515] = 0.0
     bathy[300:,0:180] = 0.0
     bathy[0:10,500:] = 0.0
+    bathy[132,388] = bathy[132,389]
+    bathy[131,390] = bathy[131,389]
+    bathy[131,391] = bathy[131,392]
     bathy[188,473] = bathy[187,473]
     bathy[188,474] = bathy[187,473]
     bathy[191,474] = bathy[191,475]
+    bathy[191,476] = bathy[191,475]
+    bathy[192,473] = 0.0
+    bathy[192,472] = 0.0
+    bathy[193,473] = 0.0
+    bathy[186,472] = 0.0
     bathy[169,442] = bathy[169,441]
     bathy[170,445] = bathy[170,444]
     bathy[171,446] = bathy[171,445]

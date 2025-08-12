@@ -18,8 +18,9 @@ levels = cdo.showlevel(input="depth.nc", options="-s")
 strlevels = " ".join((repr(x) for x in levels)).replace(" ",",")
 for f in sorted(listfiles):
     oname = os.path.join(varname,os.path.basename(f))
-    cdo.mul(input="mask.nc -intlevel,"+strlevels+
-              " -setmisstonn -vertfillmiss -remapnn,mask.nc "+f,
-            output=oname, options="-L -f nc4 -z zip_4")
-    print(oname)
+    if not os.path.exists(oname):
+        cdo.mul(input="mask.nc -intlevel,"+strlevels+
+                  " -setmisstonn -vertfillmiss -remapnn,mask.nc "+f,
+                output=oname, options="-L -f nc4 -z zip_4")
+        print(oname)
 print('Done')

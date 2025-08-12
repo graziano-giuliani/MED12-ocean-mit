@@ -4,7 +4,7 @@ MIT=/leonardo_work/ICT25_ESP/MITGCM/MED12-ocean-mit/MITgcm
 
 PRJ=$PWD
 
-source $HOME/modules
+source $HOME/modules_new
 cd $PRJ/code && ln -sf SIZE_leonardo.h SIZE.h && cd $PRJ
 mkdir -p $PRJ/build && cd $PRJ/build
 
