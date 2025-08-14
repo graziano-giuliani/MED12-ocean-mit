@@ -8,7 +8,7 @@ Link the *mask.nc* and *depth.nc* files from the *bathy* directory above.
 
 Run the python-cdo interpolation scripts:
 
-    python3 process_oras_2d.py ~/project/MITGCM/ORAS5/sossheigh
-    python3 process_oras_3d.py ~/project/MITGCM/ORAS5/temperature
-    python3 process_oras_3d.py ~/project/MITGCM/ORAS5/salinity
+    python3 process_oras_2d.py ../ORAS5/sossheigh
+    python3 process_oras_3d.py ../ORAS5/temperature
+    python3 process_oras_3d.py ../ORAS5/salinity
 

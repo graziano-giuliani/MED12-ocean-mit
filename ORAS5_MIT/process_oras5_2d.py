@@ -2,7 +2,7 @@
 
 # Remap, interpolate data into a domain defined by the mask.nc file.
 # Usage:
-#        python3 process_oras_2d.py ~/project/MITGCM/ORAS5/sossheigh
+#        python3 process_oras_2d.py [../ORAS5/sossheig]
 
 import os
 import sys
@@ -10,14 +10,24 @@ import glob
 from cdo import *
 
 cdo = Cdo()
-varname = os.path.basename(sys.argv[1])
-listfiles = glob.glob(os.path.join(os.path.expanduser(sys.argv[1]),"*.nc"))
+try:
+    if sys.argv[1][-1] == '/':
+        indir = sys.argv[1][:-1]
+    else:
+        indir = sys.argv[1]
+except:
+    indir = '../ORAS5/sossheig'
+
+varname = os.path.basename(indir)
+listfiles = glob.glob(os.path.join(os.path.expanduser(indir),"*.nc"))
+
+tmpfile = varname+"_tmp.nc"
 for f in sorted(listfiles):
     oname = os.path.join(varname,os.path.basename(f))
     cdo.setmisstonn(input="-remapnn,mask.nc "+f,
-            output="tmp.nc", options="-L -f nc4 -z zip_4")
-    cdo.mul(input="tmp.nc mask.nc", 
+            output=tmpfile, options="-L -f nc4 -z zip_4")
+    cdo.mul(input=tmpfile+" mask.nc",
             output=oname, options="-L -f nc4 -z zip_4")
-    os.unlink("tmp.nc")
+    os.unlink(tmpfile)
     print(oname)
 print('Done')

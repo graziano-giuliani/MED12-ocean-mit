@@ -48,7 +48,7 @@ for var in variables:
     else:
         gpath = os.path.join(srcdir,var,"*_"+pattern+".nc")
     files = " ".join(sorted(glob.glob(os.path.expanduser(gpath))))
-    outname = (var + '_' + repr(start_year) + tmonth +
+    outname = (source + '_' + var + '_' + repr(start_year) + tmonth +
               '_' + repr(ic_decades) + '_decades.bin')
     fout = open(outname, "wb")
     values = cdo.timmean(input=" -mergetime "+files,returnArray=var).data

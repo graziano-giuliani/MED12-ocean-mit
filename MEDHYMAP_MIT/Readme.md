@@ -8,15 +8,15 @@ interpolated onto the *MITgcm* grid.
 Copy the *mask.nc* file from the *bathy* directory above and run the python
 script *medmask.py* to mask out the Atlantic and Black Sea. 
 
-    python3 medmask.py
+    python3 medmask.py mask.nc
 
 ## Interpolate the data on the MitGCM grid
 
 Run the python-cdo interpolation script:
 
-    python3 process_medhymap_3d.py temperature ../MEDHYMAP 
+    python3 process_medhymap_3d.py temperature ../MEDHYMAP [year]
 
-    python3 process_medhymap_3d.py salinity ../MEDHYMAP
+    python3 process_medhymap_3d.py salinity ../MEDHYMAP [year]
 
 ## Merge the ORAS5 interpoalted data onto Atlantic and Black Sea
 

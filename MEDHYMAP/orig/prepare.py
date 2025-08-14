@@ -6,10 +6,12 @@ import numpy as np
 from netCDF4 import Dataset
 
 ifile = sys.argv[1]
+ofile = sys.argv[2]
+
+#incput file
 dsin = Dataset(ifile, mode='r')
 
 #output file
-ofile = sys.argv[2]
 dsout = Dataset(ofile, "w", format="NETCDF4")
 
 #Copy dimensions
@@ -32,9 +34,11 @@ dsout.variables['lat'].standard_name = 'latitude'
 dsout.variables['lat'].units = 'degrees_north'
 dsout.variables['lon'].standard_name = 'longitude'
 dsout.variables['lon'].units = 'degrees_east'
+dsout.variables['time'].units = 'days since 1950-01-01 00:00:00 UTC'
 dsout.variables['temperature'].units = 'Celsius'
 dsout.variables['temperature_rmse'].units = 'Celsius'
 
 # close the files
 dsin.close( )
 dsout.close()
+print(ifile)

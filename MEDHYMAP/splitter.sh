@@ -7,6 +7,7 @@ do
   cdo splitmon $file $tmpbase
   for sfile in ${tmpbase}*
   do
+    echo $sfile
     cdo selvar,temperature $sfile temperature/$sfile
     cdo selvar,salinity $sfile salinity/$sfile
   done
