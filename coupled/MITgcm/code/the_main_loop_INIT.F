@@ -659,7 +659,7 @@ C--   Reset the model iteration counter and the model time.
 #ifdef ALLOW_ECCO
       IF ( useECCO ) then
 # ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('cost_averagesfields',myThid)
+        IF (debugMode) CALL DEBUG_CALL('COST_AVERAGESFIELDS',myThid)
 # endif
 c--   Accumulate time averages of temperature, salinity
         CALL TIMER_START('COST_AVERAGESFIELDS [MAIN_DO_LOOP]',myThid)
@@ -669,21 +669,16 @@ c--   Accumulate time averages of temperature, salinity
 #endif /* ALLOW_ECCO */
 
 #ifdef ALLOW_PROFILES
-      IF (usePROFILES) THEN
+      IF ( usePROFILES ) THEN
 #ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('profiles_inloop',myThid)
+        IF (debugMode) CALL DEBUG_CALL('PROFILES_INLOOP',myThid)
 #endif
 c--     Accumulate in-situ time averages of theta, salt, and SSH.
-#ifdef ALLOW_AUTODIFF
-C--   Reset the model iteration counter and the model time.
-        myIter = nIter0 + (iloop-1)
-        myTime = startTime + deltaTClock*(iloop-1)
-#endif
         CALL TIMER_START('PROFILES_INLOOP    [MAIN_DO_LOOP]', myThid)
         CALL PROFILES_INLOOP( myTime, myThid )
         CALL TIMER_STOP ('PROFILES_INLOOP    [MAIN_DO_LOOP]', myThid)
       ENDIF
-#endif
+#endif /* ALLOW_PROFILES */
 
 #ifdef USE_PDAF
 C     PDAF analysis step

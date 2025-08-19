@@ -13,4 +13,4 @@ sst:sea_surface_temperature:2d:bilinear:cross:cross:C:K:1.0:273.16:F
 rnof:total_runoff:2d:bilinear:cross:cross:mm/s:m/s:0.001:0.0:F
 2 rtm2ocn F
 rmsk:river_mask:2d:nearstod:cross:cross:1:1:1.0:0.0:F
-rdis:river_discharge:2d:nearstod:cross:cross:m^3:m^3:1.0:0.0:F
+rdis:river_discharge:2d:nearstod:cross:cross:m/s:m/s:1.0:0.0:F
