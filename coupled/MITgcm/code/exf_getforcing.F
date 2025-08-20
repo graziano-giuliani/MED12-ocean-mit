@@ -387,27 +387,6 @@ C     Set radiative fluxes
 C     Set wind fields
       CALL EXF_WIND( myTime, myIter, myThid )
 
-#ifdef EXF_READ_EVAP
-# ifdef ENEA_COUPLER
-      IF ( WHAT_IS_IN_ESMF(HAS_ESMF_EVAP) ) THEN
-       DO bj = mybylo(mythid),mybyhi(mythid)
-        DO bi = mybxlo(mythid),mybxhi(mythid)
-         DO j = 1-oly,sny+oly
-          DO i = 1-olx,snx+olx
-           evap(i,j,bi,bj) = evap_ESMF(i,j,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ELSE
-       WRITE(msgBuf,'(A)')
-     &      'COUPLER_CHECK: EVAP expected but not provided'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       CALL ALL_PROC_DIE( myThid )
-       STOP 'ABNORMAL END: S/R COUPLER_CHECK'
-      ENDIF
-# endif
-#endif
 
 #ifdef ENEA_COUPLER
       IF ( WHAT_IS_IN_ESMF(HAS_ESMF_PRECIP) ) THEN
@@ -501,6 +480,25 @@ CADJ STORE wstress      = comlev1, key=ikey_dynamics, kind=isbyte
       ENDIF
       CALL EXF_BULKFORMULAE( exf_Tsf, myTime, myIter, myThid )
 #  endif /* ALLOW_BULKFORMULAE */
+#  ifdef EXF_READ_EVAP
+      IF ( WHAT_IS_IN_ESMF(HAS_ESMF_EVAP) ) THEN
+       DO bj = mybylo(mythid),mybyhi(mythid)
+        DO bi = mybxlo(mythid),mybxhi(mythid)
+         DO j = 1-oly,sny+oly
+          DO i = 1-olx,snx+olx
+           evap(i,j,bi,bj) = evap_ESMF(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ELSE
+       WRITE(msgBuf,'(A)')
+     &      'COUPLER_CHECK: EVAP expected but not provided'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       CALL ALL_PROC_DIE( myThid )
+       STOP 'ABNORMAL END: S/R COUPLER_CHECK'
+      ENDIF
+# endif /* EXF_READ_EVAP */
 # endif /* ENEA_COUPLER */
 C     Compute turbulent fluxes (and surface stress) from bulk formulae
 #  ifdef ALLOW_AUTODIFF_TAMC
@@ -556,7 +554,7 @@ C     Apply runoff, masks and exchanges
          DO i = 1,sNx
 #ifdef ALLOW_RUNOFF
 # ifdef ENEA_COUPLER
-          sflux(i,j,bi,bj) = (sflux_ESMF(i,j,bi,bj)-runoff(i,j,bi,bj))
+          sflux(i,j,bi,bj) = (sflux(i,j,bi,bj) - runoff(i,j,bi,bj))
      &                          *EmPmR_msk(i,j,bi,bj)
 # else
           sflux(i,j,bi,bj) = sflux(i,j,bi,bj) - runoff(i,j,bi,bj)
