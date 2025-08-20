@@ -289,6 +289,30 @@ CADJ STORE areamask   = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF */
 
+#ifdef ALLOW_READ_TURBFLUXES
+# ifdef ENEA_COUPLER
+      IF ( WHAT_IS_IN_ESMF(HAS_ESMF_SHFX) .and.
+     &     WHAT_IS_IN_ESMF(HAS_ESMF_LHFX) ) THEN
+       DO bj = mybylo(mythid),mybyhi(mythid)
+        DO bi = mybxlo(mythid),mybxhi(mythid)
+         DO j = 1-oly,sny+oly
+          DO i = 1-olx,snx+olx
+           hs(i,j,bi,bj) = hs_ESMF(i,j,bi,bj)
+           hl(i,j,bi,bj) = hl_ESMF(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ELSE
+       WRITE(msgBuf,'(A)')
+     &      'COUPLER_CHECK: Turbulent fluxes are not present.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       CALL ALL_PROC_DIE( myThid )
+       STOP 'ABNORMAL END: S/R COUPLER_CHECK'
+      ENDIF
+# endif
+#endif
+
 #ifdef ALLOW_DOWNWARD_RADIATION
 # ifdef ENEA_COUPLER
       IF ( WHAT_IS_IN_ESMF(HAS_ESMF_SWDOWN) .and.
@@ -316,30 +340,32 @@ C     Set radiative fluxes
 #endif
 
 #ifdef ENEA_COUPLER
-      IF ( WHAT_IS_IN_ESMF(HAS_ESMF_UWIND) .and.
-     &     WHAT_IS_IN_ESMF(HAS_ESMF_VWIND) ) THEN
-       DO bj = mybylo(mythid),mybyhi(mythid)
-        DO bi = mybxlo(mythid),mybxhi(mythid)
-         DO j = 1-oly,sny+oly
-          DO i = 1-olx,snx+olx
-           uwindESMF(i,j,bi,bj) = uwind_ESMF(i,j,bi,bj)
-           vwindESMF(i,j,bi,bj) = vwind_ESMF(i,j,bi,bj)
+      IF ( useAtmWind ) THEN
+       IF ( WHAT_IS_IN_ESMF(HAS_ESMF_UWIND) .and.
+     &      WHAT_IS_IN_ESMF(HAS_ESMF_VWIND) ) THEN
+        DO bj = mybylo(mythid),mybyhi(mythid)
+         DO bi = mybxlo(mythid),mybxhi(mythid)
+          DO j = 1-oly,sny+oly
+           DO i = 1-olx,snx+olx
+            uwindESMF(i,j,bi,bj) = uwind_ESMF(i,j,bi,bj)
+            vwindESMF(i,j,bi,bj) = vwind_ESMF(i,j,bi,bj)
+           ENDDO
           ENDDO
          ENDDO
         ENDDO
-       ENDDO
-       CALL ROTATE_WIND_RL(
-     &           uwind, vwind,
-     &           uwindESMF, vwindESMF,
-     &           .FALSE., .FALSE. , .TRUE.,  mythid
-     &                    )
-      ELSE
-       WRITE(msgBuf,'(A)')
-     &      'COUPLER_CHECK: No wind provided. Cannot work'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       CALL ALL_PROC_DIE( myThid )
-       STOP 'ABNORMAL END: S/R COUPLER_CHECK'
-      ENDIF
+        CALL ROTATE_WIND_RL(
+     &            uwind, vwind,
+     &            uwindESMF, vwindESMF,
+     &            .FALSE., .FALSE. , .TRUE.,  mythid
+     &                     )
+       ELSE
+        WRITE(msgBuf,'(A)')
+     &       'COUPLER_CHECK: No wind provided. Cannot work'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( myThid )
+        STOP 'ABNORMAL END: S/R COUPLER_CHECK'
+       ENDIF
+      END IF
       IF ( WHAT_IS_IN_ESMF(HAS_ESMF_WSPEED) ) THEN
        DO bj = mybylo(mythid),mybyhi(mythid)
         DO bi = mybxlo(mythid),mybxhi(mythid)
@@ -350,11 +376,11 @@ C     Set radiative fluxes
          ENDDO
         ENDDO
        ENDDO
-      ENDIF
-      IF ( stressIsOnCgrid ) THEN
-       CALL EXCH_UV_XY_RL( uwind, vwind, .TRUE., myThid )
-      ELSE
-       CALL EXCH_UV_AGRID_3D_RL(uwind, vwind, .TRUE., 1, myThid)
+       IF ( stressIsOnCgrid ) THEN
+        CALL EXCH_UV_XY_RL( uwind, vwind, .TRUE., myThid )
+       ELSE
+        CALL EXCH_UV_AGRID_3D_RL(uwind, vwind, .TRUE., 1, myThid)
+       ENDIF
       ENDIF
 #endif
 
@@ -429,7 +455,6 @@ C     Set wind fields
 #endif
 
 #ifdef ALLOW_ATM_TEMP
-# ifdef ALLOW_BULKFORMULAE
 #  ifdef ALLOW_AUTODIFF_TAMC
 C     Here we probably only need to store uwind, vwind, wstress but we
 C     keep the other fields for the paranoid AD-modeller
@@ -440,7 +465,7 @@ CADJ STORE ustress      = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vstress      = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE wstress      = comlev1, key=ikey_dynamics, kind=isbyte
 #  endif
-#  ifdef ENEA_COUPLER
+# ifdef ENEA_COUPLER
       IF ( WHAT_IS_IN_ESMF(HAS_ESMF_SWFLUX) .and.
      &     WHAT_IS_IN_ESMF(HAS_ESMF_LWFLUX) ) THEN
        DO bj = mybylo(mythid),mybyhi(mythid)
@@ -454,6 +479,7 @@ CADJ STORE wstress      = comlev1, key=ikey_dynamics, kind=isbyte
         ENDDO
        ENDDO
       ENDIF
+#  ifdef ALLOW_BULKFORMULAE
       IF ( WHAT_IS_IN_ESMF(HAS_ESMF_ATEMP) .and.
      &     WHAT_IS_IN_ESMF(HAS_ESMF_AQH) ) THEN
        DO bj = mybylo(mythid),mybyhi(mythid)
@@ -473,13 +499,13 @@ CADJ STORE wstress      = comlev1, key=ikey_dynamics, kind=isbyte
        CALL ALL_PROC_DIE( myThid )
        STOP 'ABNORMAL END: S/R COUPLER_CHECK'
       ENDIF
-#  endif /* ENEA_COUPLER */
-C     Compute turbulent fluxes (and surface stress) from bulk formulae
       CALL EXF_BULKFORMULAE( exf_Tsf, myTime, myIter, myThid )
+#  endif /* ALLOW_BULKFORMULAE */
+# endif /* ENEA_COUPLER */
+C     Compute turbulent fluxes (and surface stress) from bulk formulae
 #  ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE evap         = comlev1, key=ikey_dynamics, kind=isbyte
 #  endif /* ALLOW_AUTODIFF_TAMC */
-# endif /* ALLOW_BULKFORMULAE */
 #endif /* ALLOW_ATM_TEMP */
 
 #ifdef ALLOW_RUNOFF
