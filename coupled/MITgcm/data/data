@@ -11,13 +11,17 @@
  viscA4D=1.E10,
 !
  useStrainTensionVisc=.FALSE.,
+ viscAh=1.0E4,
  viscAz=1.5E-7,
  ivdc_kappa=1.E1,
  no_slip_sides=.TRUE.,
  no_slip_bottom=.TRUE.,
- diffKhT=6.E1,
- diffKhS=6.E1,
+ diffKhT=0.1E0,
+ diffKhS=0.1E0,
+ diffKzT = 0.E-5,
+ diffKzS = 0.E-5,
  f0=0.8543851429E-4,
+ gravity = 9.80665,
  beta=0.E-11,
  tAlpha=0.E-4,
  sBeta =1.E-3,
@@ -41,7 +45,7 @@
  NonLinFreeSurf = 4,
  exactConserv = .TRUE.,
  useRealFreshWaterFlux = .TRUE.,
- balanceEmPmR = .TRUE.,
+ balanceEmPmR = .FALSE.,
  hMixCriteria = -0.2,
  allowFreezing =.TRUE.,
  /
@@ -55,8 +59,8 @@
 ! Time stepping parameters
  &PARM03
  startTime  =           0.,
- endTime    =   252460800.,
-!pickupSuff = '0001683072',
+ endTime    =   252547200.,
+! pickupSuff = '0001683072',
 !----------------------
  deltaT=150.,
  deltaTtracer= 150.0,
@@ -94,7 +98,6 @@
 ! Input datasets
  &PARM05
  bathyFile='BATHYMETRY.bin',
- hydrogSaltFile='salinity_197908_1_decades.bin',
- hydrogThetaFile='temperature_197908_1_decades.bin',
+ hydrogSaltFile='medhymap_salinity_197908_1_decades.bin',
+ hydrogThetaFile='medhymap_temperature_197908_1_decades.bin',
  /
-

@@ -3,7 +3,7 @@
 ! *****************************************
  &OBCS_PARM01
 !
- OBWetaFile='sossheig_197908_202412.bin',
+ OBWetaFile='sossheig_197908_198708.bin',
 !
  OB_Iwest=368*1,
 !

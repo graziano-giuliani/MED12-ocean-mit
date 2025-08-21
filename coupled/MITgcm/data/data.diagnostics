@@ -102,14 +102,22 @@
   fields(1,10)     = 'oceQsw',
 !---------------------------
 
+!---------------------------
+!  oceFWflx
+!  net upward freshwater flux, > 0 increases salinity [kg/m^2/s]
+!---------------------------
+  filename(11)     = 'oceFWflx',
+ frequency(11)     =  2592000.,
+  fields(1,11)     = 'oceFWflx',
+!---------------------------
 
 !---------------------------
-!  EmPmR
-!  net Fresh Water flux into the ocean (+=down), [kg/m2/s] 
+!  EXFevap
+!  Evaporation > 0 increases salinity [m/s]
 !---------------------------
-  filename(12)     = 'EmPmR',
+  filename(12)     = 'EXFevap',
  frequency(12)     =  2592000.,
-  fields(1,12)     = 'oceFWflx',
+  fields(1,12)     = 'EXFevap',
 !---------------------------
 
 !---------------------------
@@ -127,7 +135,6 @@
  frequency(16)     =  2592000.,
   fields(1,16)     = 'TFLUX',
 !---------------------------
-
 
 !---------------------------
 ! U WIND STRESS 

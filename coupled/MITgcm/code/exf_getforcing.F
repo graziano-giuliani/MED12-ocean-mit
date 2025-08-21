@@ -532,7 +532,7 @@ CADJ STORE evap         = comlev1, key=ikey_dynamics, kind=isbyte
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
 #ifdef ALLOW_ATM_TEMP
-C     compute hflux & sflux from multiple components
+C       compute hflux & sflux from multiple components
         DO j = 1,sNy
          DO i = 1,sNx
 C     Net surface heat flux.
@@ -543,7 +543,7 @@ C     Net surface heat flux.
 #ifndef SHORTWAVE_HEATING
      &         + swflux(i,j,bi,bj)
 #endif
-C             fresh-water flux from Precipitation and Evaporation.
+C         fresh-water flux from Precipitation and Evaporation.
           sflux(i,j,bi,bj) = evap(i,j,bi,bj) - precip(i,j,bi,bj)
          ENDDO
         ENDDO

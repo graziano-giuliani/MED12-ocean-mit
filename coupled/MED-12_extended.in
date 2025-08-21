@@ -23,7 +23,7 @@
  h2opct = 50.,
  h2ohgt = .false.,
  dirter = '/leonardo_scratch/large/userexternal/ggiulian/run/input/',
- inpter = '/leonardo_work/ICT25_ESP/RCMDATA',
+ inpter = '/leonardo_work/ICT25_ESP/RCMDATA/ALTERNATE',
  lclm45lake = .true.
  /
 
@@ -106,7 +106,7 @@
  /
 
  &clm_inparm
- ! DoForceRestart = .true.,
+ DoForceRestart = .true.,
  fpftcon = 'pft-physiology.c130503.nc',
  fsnowoptics = 'snicar_optics_5bnd_c090915.nc',
  fsnowaging = 'snicar_drdt_bst_fit_60_c070416.nc',

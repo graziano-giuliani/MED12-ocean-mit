@@ -1,16 +1,16 @@
 8 atm2ocn T
-psfc:surface_air_pressure:2d:bilinear:cross:cross:Pa:Pa:1.0:0.0:F
-tsfc:surface_air_temperature:2d:bilinear:cross:cross:K:K:1.0:0.0:F
-qsfc:surface_air_specific_humidity:2d:bilinear:cross:cross:kg/kg:kg/kg:1.0:0.0:F
+taux:eastward_10m_wind_stress:2d:bilinear:cross:cross:N/m2:N/m2:1.0:0.0:F
+tauy:northward_10m_wind_stress:2d:bilinear:cross:cross:N/m2:N/m2:1.0:0.0:F
+lhfx:latent_heat_flux:2d:bilinear:cross:cross:W/m^2:W/m^2:-1.0:0.0:T
+shfx:sensible_heat_flux:2d:bilinear:cross:cross:W/m^2:W/m^2:-1.0:0.0:T
 swrd:shortwave_radiation:2d:bilinear:cross:cross:W/m^2:W/m^2:-1.0:0.0:T
 lwrd:longwave_radiation:2d:bilinear:cross:cross:W/m^2:W/m^2:1.0:0.0:T
+evap:evaporation:2d:bilinear:cross:cross:kg/m^2s:m/s:0.001:0.0:F
 prec:total_precipitation:2d:bilinear:cross:cross:kg/m^2s:m/s:0.001:0.0:F
-wndu:eastward_10m_wind:2d:bilinear:cross:cross:m/s:m/s:1.0:0.0:F
-wndv:northward_10m_wind:2d:bilinear:cross:cross:m/s:m/s:1.0:0.0:F
 1 ocn2atm T
 sst:sea_surface_temperature:2d:bilinear:cross:cross:C:K:1.0:273.16:F
 1 atm2rtm T
 rnof:total_runoff:2d:bilinear:cross:cross:mm/s:m/s:0.001:0.0:F
 2 rtm2ocn F
 rmsk:river_mask:2d:nearstod:cross:cross:1:1:1.0:0.0:F
-rdis:river_discharge:2d:nearstod:cross:cross:m/s:m/s:1.0:0.0:F
+rdis:river_discharge:2d:nearstod:cross:cross:m^3:m^3:1.0:0.0:F
