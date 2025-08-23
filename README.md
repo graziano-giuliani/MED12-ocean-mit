@@ -1,4 +1,12 @@
-# Create the grid
+This repository contains the glue linking together the pieces composig the
+RegCM-ES1-1, the Regional Earth System Moddel of UNESCO ICTP which is used
+for the MED-CORDEX simulation run by the ICTP.
+
+Following here you can find the procedure followed to prepare the run.
+
+The RegCM5 component is not here described.
+
+# Create the MITgcm grid
 
   * We use for the MED the global NEMO ORCA grid, from which we cut down
     the area of interest. You can download the global grid from here:
@@ -31,7 +39,7 @@
 
       > python3 coordinates2mit.py
 
-# Model build
+# Stand alone MITgcm model build
 
   * Download model code (I use my fork here):
 
