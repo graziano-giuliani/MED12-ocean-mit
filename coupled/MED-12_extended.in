@@ -53,7 +53,7 @@
  /
 
  &timeparam
- dt     =    100,
+ dt     =    120,
  /
 
  &outparam
@@ -66,22 +66,22 @@
  &physicsparam
  iboudy  =          5,
  ibltyp  =          1,
- icup_lnd =          5,
- icup_ocn =          5,
+ icup_lnd =         5,
+ icup_ocn =         5,
  ipptls  =          2,
  iocnflx =          2,
-   iocnrough =      4,
-   iocnzoq =        4,
+   iocnrough =      1,
+   iocnzoq =        1,
  scenario =   'SSP370',
- iocncpl  =          1,
- idcsst   =          0,
- iseaice  =          1,
- iconvlwp =          0,
- icldfrac =          0,
- irrtm    =          0,
- iclimao3 =          1,
- isolconst =         0,
- iclimaaer =         2,
+ iocncpl  =         1,
+ idcsst   =         0,
+ iseaice  =         1,
+ iconvlwp =         0,
+ icldfrac =         0,
+ irrtm    =         0,
+ iclimao3 =         1,
+ isolconst =        0,
+ iclimaaer =        2,
  radclimpath = '/leonardo_work/ICT25_ESP/RCMDATA/MERRA2/OPPMONTH',
  /
 
