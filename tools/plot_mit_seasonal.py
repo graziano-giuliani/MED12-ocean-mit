@@ -10,21 +10,26 @@ import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 
-xr.set_options(keep_attrs=True)
+xr.set_options(keep_attrs=True, use_new_combine_kwarg_defaults=True)
 
 figsize = (32,12)
-levels = { "so"     : (30,31,32,33,34,34.25,34.5,34.75,35,
-                       35.25,35.5,35.75,36,36.25,36.5,
-                       36.75,37,37.25,37.5,37.75,38,
-                       38.1,38.2,38.3,38.4,38.5,38.6,
-                       38.7,38.8,38.9,39,39.1,39.2),
-           "thetao" : np.linspace(4.0,28.0,25),
-           "mlot"   : np.linspace(0.0,700,101),
-           "hfns"   : None, # np.linspace(-200,200,51),
-           "rsdo"   : None,
-           "sltnf"  : None,
-           "tau"    : None,
-           "zos"    : np.linspace(-0.5,0.5,21),
+levels = { "so"       : (30,31,32,33,34,34.25,34.5,34.75,35,
+                         35.25,35.5,35.75,36,36.25,36.5,
+                         36.75,37,37.25,37.5,37.75,38,
+                         38.1,38.2,38.3,38.4,38.5,38.6,
+                         38.7,38.8,38.9,39,39.1,39.2),
+           "salinity" : (30,31,32,33,34,34.25,34.5,34.75,35,
+                         35.25,35.5,35.75,36,36.25,36.5,
+                         36.75,37,37.25,37.5,37.75,38,
+                         38.1,38.2,38.3,38.4,38.5,38.6,
+                         38.7,38.8,38.9,39,39.1,39.2),
+           "thetao"   : np.linspace(4.0,28.0,25),
+           "mlot"     : np.linspace(0.0,700,101),
+           "hfns"     : None, # np.linspace(-200,200,51),
+           "rsdo"     : None,
+           "sltnf"    : None,
+           "tau"      : None,
+           "zos"      : np.linspace(-0.5,0.5,21),
          }
 
 dpm = {'noleap': [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
@@ -88,19 +93,23 @@ matplotlib.rc('font', **font)
 
 cbar_kws = dict(fraction=0.05, pad=0.06, shrink=0.85)
 
-colors = { "so"     : cmocean.cm.haline,
-           "thetao" : cmocean.cm.thermal,
-           "mlot"   : cmocean.cm.deep,
-           "hfns"   : cmocean.cm.balance,
-           "rsdo"   : cmocean.cm.solar,
-           "sltnf"  : cmocean.cm.diff,
-           "tau"    : cmocean.cm.speed,
-           "zos"    : cmocean.cm.balance,
+colors = { "so"       : cmocean.cm.haline,
+           "salinity" : cmocean.cm.haline,
+           "thetao"   : cmocean.cm.thermal,
+           "mlot"     : cmocean.cm.deep,
+           "hfns"     : cmocean.cm.balance,
+           "rsdo"     : cmocean.cm.solar,
+           "sltnf"    : cmocean.cm.diff,
+           "tau"      : cmocean.cm.speed,
+           "zos"      : cmocean.cm.balance,
          }
 
 try:
     ncf = sys.argv[1]
-    vname = os.path.basename(ncf).split('_')[0]
+    thedir, thefile  = os.path.split(ncf)
+    vname = thefile.split('_')[0]
+    if vname == "medhymap":
+        thedir, vname = os.path.split(thedir)
 except:
     print('At least one filename must be provided!')
     sys.exit(-1)
@@ -204,7 +213,7 @@ for i, season in enumerate(('DJF', 'MAM', 'JJA', 'SON')):
                           density=2.5,cmap=cmocean.cm.dense.reversed( ))
         seasonal_gridlines(pax,i)
     else:
-        p = vp[vname].sel(season=season).plot(x = "lon", y = "lat",
+        p = vp[vname].sel(season=season).plot(x = 'lon', y = 'lat',
                           transform = ccrs.PlateCarree( ),
                           ax = pax, robust=True,
                           extend = 'both',
@@ -215,5 +224,8 @@ for i, season in enumerate(('DJF', 'MAM', 'JJA', 'SON')):
     pax.set_extent((-8,43,30,45))
 
 plt.tight_layout()
-fig.suptitle('Seasonal '+vp[pname].long_name+', '+ymstart+'-'+ymstop)
+if pname == 'salinity':
+    fig.suptitle('Seasonal Salinity, '+ymstart+'-'+ymstop)
+else:
+    fig.suptitle('Seasonal '+vp[pname].long_name+', '+ymstart+'-'+ymstop)
 plt.savefig(pname+'_seasonal.png', bbox_inches='tight')

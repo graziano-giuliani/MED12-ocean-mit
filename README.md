@@ -1,3 +1,5 @@
+![University of  Trieste](UNITS.svg)
+
 This repository contains the glue linking together the pieces composig the
 RegCM-ES1-1, the Regional Earth System Moddel of UNESCO ICTP which is used
 for the MED-CORDEX simulation run by the ICTP.
