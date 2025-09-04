@@ -1,4 +1,4 @@
-![University of  Trieste](UNITS.svg)
+![University of  Trieste](UNITS.jpg)
 
 This repository contains the glue linking together the pieces composig the
 RegCM-ES1-1, the Regional Earth System Moddel of UNESCO ICTP which is used
