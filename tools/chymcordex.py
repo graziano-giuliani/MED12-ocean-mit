@@ -79,11 +79,11 @@ for ncfile in sys.argv[1:]:
         xlat[:] = lat
 
         now = datetime.datetime.now( ).isoformat( )
-        dsout.Conventions = "CF-1.9"
+        dsout.Conventions = "CF-1.11"
         dsout.creation_date = now
-        dsout.tracking_id = str(uuid.uuid1( ))
+        dsout.tracking_id = 'hdl:21.14103/'+str(uuid.uuid1( ))
         dsout.description = domain+' simulation'
-        dsout.title = 'Coupled RegCM-ES1-1 simulation. River Component is CHyM model. Output prepared for CORDEX experiment'
+        dsout.title = 'Coupled RegCM-ES1-1 simulation. Ocean Component is MITgcm checkpoint69. Output prepared for CORDEX experiment'
         dsout.activity_id = 'CORDEX'
         dsout.contact = 'ggiulian@ictp.it'
         dsout.experiment_id = experiment
@@ -101,13 +101,14 @@ for ncfile in sys.argv[1:]:
         dsout.driving_source_id = gmodel
         dsout.driving_variant_label = gmemb
         dsout.frequency = 'day'
-        dsout.institution = 'International Centre for Theoretical Physics'
+        dsout.table_id = 'Table day'
+        dsout.institution = 'The Abdus Salam International Centre for Theoretical Physics, Trieste, Italy'
         dsout.institution_id = myinst
-        dsout.license = 'Creative Commons Attribution 4.0 International License (CC BY 4.0; https://creativecommons.org/licenses/by/4.0).'
+        dsout.license = 'https://cordex.org/data-access/cordex-cmip6-data/cordex-cmip6-terms-of-use'
         dsout.mip_era = 'CMIP6'
         dsout.product = 'model-output'
-        dsout.project_id = 'CORDEX'
-        dsout.source = 'The Regional Earth System Model RegCM-ES version 1.1 based on RegCM v5.0, MITgcm v69 and CHyM'
+        dsout.project_id = 'CORDEX-CMIP6'
+        dsout.source = 'The Regional Earth System Model RegCM-ES version 1.1 based on RegCM v5.0, MITgcm v6.9d and CHyM (2025)'
         dsout.source_id = 'RegCM-ES1-1'
         dsout.source_type = 'AORCM'
         dsout.realm = 'land'
@@ -117,7 +118,7 @@ for ncfile in sys.argv[1:]:
         dsout.cohort = 'Registered'
         dsout.further_info_url = 'https://www.medcordex.eu/Med-CORDEX-2_baseline-runs_protocol.pdf'
         dsout.label = 'RegCM-ES1-1'
-        dsout.label_extended = 'The Regional Earth System Model RegCM-ES version 1.1 based on RegCM v5.0, MITgcm v69 and CHyM'
+        dsout.label_extended = 'The Regional Earth System Model RegCM-ES version 1.1 based on RegCM v5.0, MITgcm v6.9d and CHyM (2025)'
         dsout.release_year = '2025'
         dsout.title = 'ICTP Regional Climatic Coupled model V1.1'
         dsout.references = 'https://github.com/graziano-giuliani/MED12-ocean-mit'

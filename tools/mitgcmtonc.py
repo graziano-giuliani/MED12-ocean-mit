@@ -408,9 +408,9 @@ for binfile in sys.argv[1:]:
     if names[vname]['dimensions'] == 3:
         ds["depth_bnds"] = xbnds
     now = datetime.datetime.now( ).isoformat( )
-    ds.attrs['Conventions'] = "CF-1.9"
+    ds.attrs['Conventions'] = "CF-1.11"
     ds.attrs['creation_date'] = now
-    ds.attrs['tracking_id'] = str(uuid.uuid1( ))
+    ds.attrs['tracking_id'] = 'hdl:21.14103/'+str(uuid.uuid1( ))
     ds.attrs['description'] = domain+' simulation'
     ds.attrs['title'] = 'Coupled RegCM-ES1-1 simulation. Ocean Component is MITgcm checkpoint69e. Output prepared for CORDEX experiment'
     ds.attrs['activity_id'] = 'CORDEX'
@@ -429,17 +429,17 @@ for binfile in sys.argv[1:]:
     ds.attrs['driving_institution_id'] = ginst
     ds.attrs['driving_source_id'] = gmodel
     ds.attrs['driving_variant_label'] = gmemb
-    ds.attrs['institution'] = 'International Centre for Theoretical Physics'
+    ds.attrs['institution'] = 'The Abdus Salam International Centre for Theoretical Physics, Trieste, Italy'
     ds.attrs['institution_id'] = myinst
-    ds.attrs['license'] = 'Creative Commons Attribution 4.0 International License (CC BY 4.0; https://creativecommons.org/licenses/by/4.0).'
+    ds.attrs['license'] = 'https://cordex.org/data-access/cordex-cmip6-data/cordex-cmip6-terms-of-use'
     ds.attrs['mip_era'] = 'CMIP6'
     ds.attrs['product'] = 'model-output'
-    ds.attrs['project_id'] = 'CORDEX'
-    ds.attrs['source'] = 'The Regional Earth System Model RegCM-ES version 1.1 based on RegCM v5, MITgcm v69 and CHyM'
+    ds.attrs['project_id'] = 'CORDEX-CMIP6'
+    ds.attrs['source'] = 'The Regional Earth System Model RegCM-ES version 1.1 based on RegCM v5.0, MITgcm v6.9d and CHyM (2025)'
     ds.attrs['source_id'] = 'RegCM-ES1-1'
     ds.attrs['source_type'] = 'AORCM'
     ds.attrs['realm'] = 'ocean'
-    ds.attrs['table_id'] = 'Omon'
+    ds.attrs['table_id'] = 'Table mon'
     ds.attrs['frequency'] = 'mon'
     ds.attrs['variable_id'] = infname
     ds.attrs['version_realization'] = 'v1-r1'
@@ -448,7 +448,7 @@ for binfile in sys.argv[1:]:
     ds.attrs['cohort'] = 'Registered'
     ds.attrs['further_info_url'] = 'https://www.medcordex.eu/Med-CORDEX-2_baseline-runs_protocol.pdf'
     ds.attrs['label'] = 'RegCM-ES1-1'
-    ds.attrs['label_extended'] = 'The Regional Earth System Model RegCM-ES version 1.1 based on RegCM v5, MITgcm v69 and CHyM'
+    ds.attrs['label_extended'] = 'The Regional Earth System Model RegCM-ES version 1.1 based on RegCM v5.0, MITgcm v6.9d and CHyM (2025)'
     ds.attrs['release_year'] = '2025'
     ds.attrs['title'] = 'ICTP Regional Climatic Coupled model V1.1'
     ds.attrs['references'] = 'https://github.com/graziano-giuliani/MED12-ocean-mit'
