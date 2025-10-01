@@ -93,16 +93,12 @@ C o Include/exclude Quasi-Hydrostatic Stagger Time-step AdamsBashforth code
 
 C-- Model formulation options:
 
-C o Allow/exclude "Exact Convervation" of fluid in Free-Surface formulation
-C   that ensures that d/dt(eta) is exactly equal to - Div.Transport
-#define EXACT_CONSERV
-
 C o Allow the use of Non-Linear Free-Surface formulation
 C   this implies that grid-cell thickness (hFactors) varies with time
 #define NONLIN_FRSURF
 
 C o Include/exclude nonHydrostatic code
-#undef ALLOW_NONHYDROSTATIC
+#define ALLOW_NONHYDROSTATIC
 
 C o Include/exclude GM-like eddy stress in momentum code
 #undef ALLOW_EDDYPSI
