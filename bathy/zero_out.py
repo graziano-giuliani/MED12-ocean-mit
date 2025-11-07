@@ -2,6 +2,7 @@
 
 import os
 import sys
+import copy
 import numpy as np
 from netCDF4 import Dataset
 from cdo import *
@@ -36,14 +37,6 @@ with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
 
     # Remove greater than zero values
     bathy = np.where(bathy > 0.0, 0.0, bathy)
-    # Remove not connected pixels
-    nj,ni = np.shape(bathy)
-    for i in range(1,ni-1):
-       for j in range(1,nj-1):
-           if bathy[j,i] < 0.0:
-               if all(np.array((bathy[j-1,i],bathy[j+1,i],
-                                bathy[j,i+1],bathy[j,i-1])) > -0.5):
-                   bathy[j,i] = 0.0
 
 #########################################################################
 #########################################################################
@@ -71,20 +64,19 @@ with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
     bathy[195,256] = 0.0  # Giglio
     bathy[203,249] = 0.0  # Elba
 
-    # Close Bizerte Bay
-    bathy[107,246] = 0.0
-    bathy[107,247] = 0.0
+    # Zarzis
+    bathy[50,259] = 0.0
+    bathy[51,259] = 0.0
+    bathy[50,258] = 0.0
+    bathy[51,258] = 0.0
 
-    # Close Marmaris Bay
-    bathy[112,467] = 0.0
-    bathy[112,468] = 0.0
-
-    # Close in Adana Bay
-    bathy[110,556] = 0.0
-    bathy[110,557] = 0.0
-
-    # Sicily Channel increased depth
-    bathy[127,315] = -250
+    # Sicily Channel
+    bathy[124,315] = -500
+    bathy[125,315] = -500
+    bathy[126,315] = -500
+    bathy[125,316] = -250
+    bathy[126,316] = -250
+    bathy[127,316] = -250
 
     # Open up Corinth Gulf
     bathy[128,384] = -62
@@ -94,6 +86,7 @@ with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
     bathy[132,389] = -62
     bathy[132,390] = -62
     bathy[132,393] = -62
+    bathy[132,394] = -62
 
     # Close Ambracian Gulf
     bathy[141,381] = 0.0
@@ -104,16 +97,17 @@ with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
     bathy[143,377] = 0.0
     bathy[142,378] = 0.0
     bathy[142,377] = 0.0
-    bathy[141,377] = -25
-    bathy[141,376] = -25
-    bathy[142,376] = -25
+    bathy[141,377] = -45
+    bathy[141,376] = -45
+    bathy[142,376] = -45
 
     # Open up Eubean Gulf
-    bathy[136,407] = -45
-    bathy[137,407] = -45
-    bathy[141,402] = -45
-    bathy[142,402] = -45
-    bathy[142,403] = -45
+    bathy[136,407] = -100
+    bathy[137,407] = -100
+    bathy[141,402] = -100
+    bathy[142,402] = -100
+    bathy[142,403] = -100
+    bathy[142,404] = -100
 
     # Open up Pagaseatic Gulf
     bathy[146,404] = -80
@@ -124,9 +118,6 @@ with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
     bathy[149,441] = 0.0
     bathy[149,442] = 0.0
 
-    # Limnos shape
-    bathy[163,430] = 0.0
-
     # Dardanelles Strait
     bathy[169,441] = -40
     bathy[169,442] = -40
@@ -134,7 +125,7 @@ with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
     bathy[169,444] = -25
     bathy[170,444] = -26
     bathy[170,445] = -25
-    bathy[170,446] = -45
+    bathy[170,446] = 0.0
     bathy[171,446] = -45
     bathy[172,446] = -25
     bathy[172,447] = -45
@@ -142,21 +133,24 @@ with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
     bathy[174,447] = 0.0
 
     # Bosphorus Strait
-    bathy[187,473] = -65.0
-    bathy[187,474] = -65.0
-    bathy[188,474] = -65.0
-    bathy[188,475] = -65.0
+    bathy[187,473] = -45.0
+    bathy[187,474] = -45.0
+    bathy[188,474] = -25.0
+    bathy[188,475] = -25.0
+    bathy[189,475] = 0.0
     bathy[190,474] = -45.0
     bathy[190,475] = -45.0
     bathy[191,475] = -45.0
 
+    # Thessaloniki
+    bathy[171,400] = -50
+
     # Izmir
-    bathy[165,442] = -65
     bathy[166,441] = -50
+    bathy[137,448] = -50
 
     # Izmit
     bathy[182,478] = -100
-    bathy[182,483] = -25
 
     # Close Halkidiki
     bathy[169,411] = 0.0
@@ -164,8 +158,8 @@ with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
     bathy[166,406] = 0.0
 
     # Sardinia-Corsica Strait
-    bathy[176,236] = -63
-    bathy[176,237] = -65
+    bathy[176,236] = -65
+    bathy[176,237] = -45
     bathy[175,238] = -65
 
     # Close Cattaro Mouth
@@ -184,16 +178,44 @@ with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
     # Open for Rijeka
     bathy[249,292] = -48
 
+    # Open/Close for Azov Sea
+    bathy[310,532] = 0.0
+    bathy[311,532] = 0.0
+    bathy[312,532] = 0.0
+    bathy[312,533] = 0.0
+    bathy[297,557] = -25.0
+    bathy[298,557] = -25.0
+    bathy[297,558] = -25.0
+    bathy[297,559] = -25.0
+
+    # Close Marmaris
+    bathy[107,464] = 0.0
+    bathy[107,461] = 0.0
+    bathy[107,462] = 0.0
+
 #########################################################################
 #########################################################################
 ####################    END MEDITERRANNEAN SEA MODIFS     ###############
 #########################################################################
 #########################################################################
 
+    # Remove not connected pixels
+    nj,ni = np.shape(bathy)
+    for loop in range(3):
+        temp = copy.deepcopy(bathy)
+        for j in range(1,nj-1):
+            for i in range(1,ni-1):
+               if temp[j,i] < 0.0:
+                   stencil = np.array((temp[j-1,i],temp[j+1,i],
+                                       temp[j,i+1],temp[j,i-1]))
+                   if np.all(stencil > -0.5):
+                       bathy[j,i] = 0.0
+                   if (stencil > -0.5).sum( ) == 3:
+                       bathy[j,i] = 0.0
     mask1 = (bathy < 0.0)
-    mask2 = (bathy > -10.0)
+    mask2 = (bathy > -25.0)
     mask = (mask1 & mask2)
-    bathy = np.where(mask,-10.5,bathy)
+    bathy = np.where(mask,-25.0+np.random.random(np.shape(mask))*2.0,bathy)
 
     dst.variables['elevation'][:] = bathy
 

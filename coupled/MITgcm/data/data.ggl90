@@ -13,9 +13,9 @@
 !/
 &GGL90_PARM01
  GGL90TKEmin = 1.e-7,
- mxlMaxFlag=2,
- GGL90ck=0.15,
+ mxlMaxFlag = 2,
+ GGL90ck = 0.15,
  GGL90ceps = 0.35,
  GGL90m2 = 5.,
- GGL90mixingLengthMin=3.,
+ GGL90mixingLengthMin = 3.0,
 / 

@@ -1,11 +1,11 @@
 8 atm2ocn T
 taux:eastward_10m_wind_stress:2d:bilinear:cross:cross:N/m2:N/m2:1.0:0.0:F
 tauy:northward_10m_wind_stress:2d:bilinear:cross:cross:N/m2:N/m2:1.0:0.0:F
-lhfx:latent_heat_flux:2d:bilinear:cross:cross:W/m^2:W/m^2:-1.0:0.0:T
-shfx:sensible_heat_flux:2d:bilinear:cross:cross:W/m^2:W/m^2:-1.0:0.0:T
+evap:evaporation:2d:bilinear:cross:cross:kg/m^2s:m/s:0.001:0.0:F
+lhfx:latent_heat_flux:2d:bilinear:cross:cross:W/m^2:W/m^2:-1.0:0.0:F
+shfx:sensible_heat_flux:2d:bilinear:cross:cross:W/m^2:W/m^2:-1.0:0.0:F
 swrd:shortwave_radiation:2d:bilinear:cross:cross:W/m^2:W/m^2:-1.0:0.0:T
 lwrd:longwave_radiation:2d:bilinear:cross:cross:W/m^2:W/m^2:1.0:0.0:T
-evap:evaporation:2d:bilinear:cross:cross:kg/m^2s:m/s:0.001:0.0:F
 prec:total_precipitation:2d:bilinear:cross:cross:kg/m^2s:m/s:0.001:0.0:F
 1 ocn2atm T
 sst:sea_surface_temperature:2d:bilinear:cross:cross:C:K:1.0:273.16:F
