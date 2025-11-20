@@ -1,0 +1,313 @@
+# Diagnostic Package Choices
+#-----------------
+# for each output-stream:
+#  filename(n) : prefix of the output file name (only 8.c long) for outp.stream n
+#  frequency(n):< 0 : write snap-shot output every |frequency| seconds
+#               > 0 : write time-average output every frequency seconds
+#  timePhase(n)     : write at time = timePhase + multiple of |frequency|
+#  levels(:,n) : list of levels to write to file (Notes: declared as REAL)
+#                 when this entry is missing, select all common levels of this list
+#  fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics" file
+#                 for the list of all available diag. in this particular config)
+#  averagingFreq  :: frequency (in s) for periodic averaging interval
+#-----------------
+#      NAMELIST / DIAGNOSTICS_LIST /
+#     &     frequency, timePhase,
+#     &     averagingFreq, averagingPhase, repeatCycle,
+#     &     missing_value, missing_value_int,
+#     &     levels, fields, filename, fileflags,
+#     &     dumpAtLast, diag_mnc,
+#     &     diag_pickup_read,     diag_pickup_write,
+#     &     diag_pickup_read_mnc, diag_pickup_write_mnc
+
+#C--   per level statistics output:
+#      NAMELIST / DIAG_STATIS_PARMS /
+#     &     stat_freq, stat_phase, stat_region, stat_fields,
+#     &     stat_fname, diagSt_mnc,
+#     &     set_regMask, val_regMask,
+#     &     diagSt_regMaskFile, nSetRegMskFile
+#-------------------- 
+ &diagnostics_list
+  diag_mnc=.FALSE.,
+#  diag_pickup_read=.TRUE.,   
+#  diag_pickup_write=.TRUE.,
+#  diag_pickup_read_mnc=.TRUE.,
+#  diag_pickup_write_mnc=.TRUE.,
+#---------------------------
+
+
+#---------------------------
+#  ELEVATION 
+#---------------------------
+  filename(1)     = 'ELEVATION',
+  fields(1,1)     = 'ETAN   ',
+ frequency(1)     =  2592000.,
+#---------------------------
+#  Salt 
+#---------------------------
+  filename(2)     = 'SALT',
+  fields(1,2)     = 'SALT ',
+ frequency(2)     =  2592000.,
+#---------------------------
+#  Theta 
+#---------------------------
+  filename(3)     = 'THETA',
+  fields(1,3)     = 'THETA',
+ frequency(3)     =  2592000.,
+#---------------------------
+#  Density Anomaly (=Rho-rhoConst) kg/m^3 
+#---------------------------
+  filename(4)     = 'RHO',
+  fields(1,4)     = 'RHOAnoma',
+ frequency(4)     =  2592000.,
+
+#---------------------------
+# Mixed-Layer Depth (>0) m
+#---------------------------
+  filename(5)     = 'MLD',
+  fields(1,5)     = 'MXLDEPTH',
+ frequency(5)     =  2592000.,
+#---------------------------
+#  Uvel 
+#---------------------------
+  filename(6)     = 'UVEL',
+  fields(1,6)     = 'UVEL',
+ frequency(6)     =  2592000.,
+#---------------------------
+#  Vvel 
+#---------------------------
+  filename(7)     = 'VVEL',
+  fields(1,7)     = 'VVEL',
+ frequency(7)     =  2592000.,
+#---------------------------
+# Wvel 
+#---------------------------
+  filename(8)     = 'WVEL',
+  fields(1,8)     = 'WVEL',
+ frequency(8)     =  2592000.,
+
+#---------------------------
+# HEAT FLUX (imposed hflux) 
+#---------------------------
+  filename(9)     = 'HFLUX',
+ frequency(9)     =  2592000.,
+  fields(1,9)     = 'oceQnet',
+#---------------------------
+
+#---------------------------
+# HEAT FLUX (imposed swave)
+#---------------------------
+  filename(10)     = 'SWAVE',
+ frequency(10)     =  2592000.,
+  fields(1,10)     = 'oceQsw',
+#---------------------------
+
+
+#---------------------------
+# SALT FLUX (imposed)
+# net Salt flux into the ocean (+=down), [psu.kg/m2/s ~ g/m2/s] 
+#---------------------------
+  filename(11)     = 'SFLUX',
+ frequency(11)     =  2592000.,
+  fields(1,11)     = 'oceSflux',
+#---------------------------
+
+#---------------------------
+#  EmPmR
+#  net Fresh Water flux into the ocean (+=down), [kg/m2/s] 
+#---------------------------
+  filename(12)     = 'EmPmR',
+ frequency(12)     =  2592000.,
+  fields(1,12)     = 'oceFWflx',
+#---------------------------
+
+#---------------------------
+# surForcT (=model surface forcing for Temperature [W/m2], >0 increases T 
+#---------------------------
+  filename(13)     = 'SFORC_T',
+ frequency(13)     =  2592000.,
+  fields(1,13)     = 'surForcT',
+#---------------------------
+
+#---------------------------
+# surForcS (=model surface forcing for Salinity, [g/m2/s], >0 increases S 
+#---------------------------
+  filename(14)     = 'SFORC_S',
+ frequency(14)     =  2592000.,
+  fields(1,14)     = 'surForcS',
+#---------------------------
+
+
+#---------------------------
+# SFLUX (=total salt flux, match salt-content variations [g/m2/s])
+#---------------------------
+  filename(15)     = 'T_SFLUX',
+ frequency(15)     =  2592000.,
+  fields(1,15)     = 'SFLUX',
+#---------------------------
+
+#---------------------------
+# TFLUX (=total heat flux, match heat-content variations, [W/m2]) 
+#---------------------------
+  filename(16)     = 'T_TFLUX',
+ frequency(16)     =  2592000.,
+  fields(1,16)     = 'TFLUX',
+#---------------------------
+
+
+#---------------------------
+# U WIND STRESS 
+#---------------------------
+  filename(17)     = 'U_WSTRESS',
+ frequency(17)     =  2592000.,
+  fields(1,17)     = 'oceTAUX',
+#---------------------------
+
+#---------------------------
+# V WIND STRESS                                    
+#---------------------------
+  filename(18)     = 'V_WSTRESS',
+ frequency(18)     =  2592000.,
+  fields(1,18)     = 'oceTAUY',
+#---------------------------
+
+#---------------------------
+# Zonal Transport of Pot Temp degC.m/s  
+#---------------------------
+  filename(19)     = 'UTHMASS',
+  fields(1,19)     = 'UTHMASS',
+ frequency(19)     =  2592000.,
+
+#---------------------------
+# Meridional Transport of Pot Temp degC.m/s  
+#---------------------------
+  filename(20)     = 'VTHMASS',
+  fields(1,20)     = 'VTHMASS',
+ frequency(20)     =  2592000.,
+#---------------------------
+# Zonal Transport of Salt psu.m/s  
+#---------------------------
+  filename(21)     = 'USLTMASS',
+  fields(1,21)     = 'USLTMASS',
+ frequency(21)     =  2592000.,
+#---------------------------
+# Meridional Transport of Salt psu.m/s  
+#---------------------------
+  filename(22)     = 'VSLTMASS',
+  fields(1,22)     = 'VSLTMASS',
+ frequency(22)     =  2592000.,
+#---------------------------
+#---------------------------
+# Meridional Transport of Salt psu.m/s
+#---------------------------
+  filename(23)     = 'VVELMASS',
+  fields(1,23)     = 'VVELMASS',
+ frequency(23)     =  2592000.,
+#---------------------------
+
+#---------------------------
+# Zonal Transport of Salt psu.m/s
+#---------------------------
+  filename(24)     = 'UVELMASS',
+  fields(1,24)     = 'UVELMASS',
+ frequency(24)     =  2592000.,
+#---------------------------
+
+
+#---------------------------
+# Zonal Transport of Salt psu.m/s
+#---------------------------
+#  filename(25)     = 'TRELAX',
+#  fields(1,25)     = 'TRELAX',
+# frequency(25)     =  86400,
+#---------------------------
+
+
+#---------------------------
+# Zonal Transport of Salt psu.m/s
+#---------------------------
+#  filename(26)     = 'SRELAX',
+#  fields(1,26)     = 'SRELAX',
+# frequency(26)     =  86400,
+#---------------------------
+
+
+#---------------------------
+# Zonal Transport of Salt psu.m/s
+#---------------------------
+  filename(27)     = 'EXFempmr',
+  fields(1,27)     = 'EXFempmr',
+ frequency(27)     =  2592000.,
+#---------------------------
+
+#---------------------------
+# Zonal Transport of Salt psu.m/s
+#---------------------------
+  filename(28)     = 'EXFroff',
+  fields(1,28)     = 'EXFroff',
+ frequency(28)     =  2592000.,
+#---------------------------
+
+
+
+# filename(3)      = 'diagno2d',
+#  fields(1,1)     = 'ETAN   ',
+#  fields(2,1)     = 'oceTAUX ',
+#  fields(3,1)     = 'oceTAUY ',
+#  fields(4,1)     = 'MXLDEPTH',
+#  fields(5,1)     = 'TFLUX   ',
+#  fields(6,1)     = 'SFLUX   ',
+#  fields(7,1)     = 'EXFroff ',
+# frequency(2) =  #taveFreq,
+# filename(2) = 'diagno3d',
+#  fields(1,2) = 'THETA   ',
+#  fields(2,2) = 'SALT    ',
+#  fields(3,2) = 'UVEL    ',
+#  fields(4,2) = 'VVEL    ',
+# frequency(3) = 2592000,
+# filename(3) = 'dia2dday',
+#  levels(1,3) = 1,
+#  fields(1,3) = 'ETAN   ',
+#  fields(2,3) = 'oceTAUX ',
+#  fields(3,3) = 'oceTAUY ',
+#  fields(4,3) = 'MXLDEPTH',
+#  fields(5,3) = 'SFLUX   ',
+##  fields(6,3) = 'TFLUX   ',
+# frequency(4) = 2592000,
+# filename(4) = 'ssst2day',
+#  levels(1,4) = 1,
+#  fields(2,4) = 'SALT   ','THETA   ',
+#----------------------------------
+# frequency(2) =  #taveFreq,
+# filename(2) = 'diagtras',
+#--Zonal Transp of Pot Temp
+#  fields(1,2) = 'VVELTH  ',
+#--Meridional Transport of Zonal Momentum (cell center)
+#  fields(2,2) = 'UV_VEL_C',
+#--Meridional Transp of Salt 
+#  fields(3,2) = 'VVELSLT ',
+#--Zonal Mass-Weight Transp of Pot Temp
+#  fields(4,2) = 'UTHMASS ',
+ /
+
+
+# Parameter for Diagnostics of per level statistics:
+#-----------------
+# for each output-stream:
+#  stat_fname(n) : prefix of the output file name (only 8.c long) for outp.stream n
+#  stat_freq(n):< 0 : write snap-shot output every |stat_freq| seconds
+#               > 0 : write time-average output every stat_freq seconds
+#  stat_phase(n)    : write at time = stat_phase + multiple of |stat_freq|
+#  stat_region(:,n) : list of "regions" (default: 1 region only=global)
+#  stat_fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics.log"
+#                 file for the list of all available diag. in this particular config)
+#-----------------
+ &DIAG_STATIS_PARMS
+#- an example just to check the agreement with MONITOR output:
+#   stat_fields(1,1)= 'UVEL    ','VVEL    ','WVEL    ', 'THETA   ','SALT    ','oceTAUX ','oceTAUY ',
+#   stat_fname(1)= 'STATDY3D',
+#    stat_freq(1)= 2592000.,
+#   stat_phase(1)= 0.,
+ /
+
+

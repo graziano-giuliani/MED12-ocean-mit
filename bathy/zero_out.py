@@ -80,6 +80,8 @@ with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
 
     # Open up Corinth Gulf
     bathy[128,384] = -62
+    bathy[130,389] = -62
+    bathy[130,390] = -62
     bathy[131,390] = -62
     bathy[131,391] = -62
     bathy[132,388] = -62

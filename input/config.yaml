@@ -10,3 +10,8 @@ end_year: 1987
 start_month: 8
 end_month: 8
 ic_decades: 1
+boundary:
+        North: False
+        West: True
+        South: False
+        East: False

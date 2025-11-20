@@ -70,7 +70,17 @@ for var in variables:
         for o,f,d in zip(xfiles,files,dates):
             if d == startdate:
                 print(var+": "+repr(d))
-                values = Dataset(f).variables[var][0,:,0].data
-                values.astype('>f4').tofile(fout)
+                if config['boundary']['North']:
+                    values = Dataset(f).variables[var][0,-1,:].data
+                    values.astype('>f4').tofile(fout)
+                if config['boundary']['South']:
+                    values = Dataset(f).variables[var][0,0,:].data
+                    values.astype('>f4').tofile(fout)
+                if config['boundary']['East']:
+                    values = Dataset(f).variables[var][0,:,-1].data
+                    values.astype('>f4').tofile(fout)
+                if config['boundary']['West']:
+                    values = Dataset(f).variables[var][0,:,0].data
+                    values.astype('>f4').tofile(fout)
 
 print('Done')

@@ -1,0 +1,73 @@
+#
+# *********************
+# External Forcing Data
+# *********************
+#
+ &EXF_NML_01
+ exf_iprec         = 32,
+ exf_yftype        = 'RL',
+ useExfCheckRange  = .FALSE.
+ /
+#
+ &EXF_NML_02
+#
+ atempfile         = "ERA5_atemp_197907_202312.bin",
+ atempstartdate1   = 19790716,
+ atempstartdate2   = 180000,
+ atempperiod       = -1.0,
+#
+ apressureFile     = "ERA5_apressure_197907_202312.bin",
+ apressurestartdate1   = 19790716,
+ apressurestartdate2   = 180000,
+ apressureperiod       = -1.0
+#
+ runoffFile        = "ERA5_runoff_197907_202312.bin",
+ runoffstartdate1   = 19790716,
+ runoffstartdate2   = 180000,
+ runoffperiod       = -1.0
+#
+ aqhfile           = "ERA5_aqh_197907_202312.bin",
+ aqhstartdate1     = 19790716,
+ aqhstartdate2     = 180000,
+ aqhperiod         = -1.0
+#
+ precipfile        = "ERA5_precip_197907_202312.bin",
+ precipstartdate1  = 19790716,
+ precipstartdate2  = 180000,
+ precipperiod      = -1.0
+#
+ uwindfile         = "ERA5_uwind_197907_202312.bin",
+ uwindstartdate1   = 19790716,
+ uwindstartdate2   = 180000,
+ uwindperiod       = -1.0
+#
+ vwindfile         = "ERA5_vwind_197907_202312.bin",
+ vwindstartdate1   = 19790716,
+ vwindstartdate2   = 180000,
+ vwindperiod       = -1.0
+#
+ swfluxfile        = "ERA5_swflux_197907_202312.bin",
+ swfluxstartdate1  = 19790716,
+ swfluxstartdate2  = 180000,
+ swfluxperiod      = -1.0
+#
+ lwfluxfile        = "ERA5_lwflux_197907_202312.bin",
+ lwfluxstartdate1  = 19790716,
+ lwfluxstartdate2  = 180000,
+ lwfluxperiod      = -1.0
+#
+ /
+#
+ &EXF_NML_03
+
+ /
+#
+ &EXF_NML_04
+ /
+#
+ &EXF_NML_OBCS
+ obcsWstartdate1     = 19790801,
+ obcsWstartdate2     = 00000,
+ obcsWperiod         = 2635200.,
+ /
+#
