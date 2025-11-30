@@ -15,7 +15,7 @@ import numpy as np
 cpath = "config.yaml"
 with open(cpath,"r") as f:
     config = yaml.safe_load(f)
-source = config["source"]
+source = config["source_init"]
 srcdir = config[source]["path"]
 variables = config[source]["variables"].split( )
 

@@ -1,14 +1,18 @@
-source: medhymap
+source_init: medhymap
+source_bc: ec_earth
 oras5:
         path: ../ORAS5_MIT
         variables: votemper vosaline
 medhymap:
         path: ../MEDHYMAP_MIT
         variables: temperature salinity
-start_year: 1979
-end_year: 1987
+ec_earth3_veg:
+        path: ../EC-Earth3-Veg_MIT
+        variables: thetao so
+start_year: 1968
+end_year: 2100
 start_month: 8
-end_month: 8
+end_month: 2
 ic_decades: 1
 boundary:
         North: False

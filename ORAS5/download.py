@@ -8,7 +8,7 @@ import zipfile
 dataset = "reanalysis-oras5"
 client = cdsapi.Client()
 
-for year in range(1970,2015):
+for year in range(1958,2015):
     for month in range(1,13):
         request = {
             "product_type": ["consolidated"],

@@ -11,14 +11,10 @@ import yaml
 from netCDF4 import Dataset
 import numpy as np
 
-try:
-    oras5dir = sys.argv[1]
-except:
-    oras5dir = "../ORAS5_MIT"
-
 cpath = "config.yaml"
 with open(cpath,"r") as f:
     config = yaml.safe_load(f)
+source = config["source_bc"]
 start_year = config["start_year"]
 start_month = config["start_month"]
 end_year = config["end_year"]
@@ -30,57 +26,135 @@ if end_year > 0:
 else:
     enddate = -1
 
-variables = [ "votemper", "vosaline", "sossheig" ]
-
-for var in variables:
-    gpath = os.path.join(oras5dir,var,"*monthly*.nc")
-    files = sorted(glob.glob(os.path.expanduser(gpath)))
-    xfiles = list(os.path.splitext(os.path.basename(x))[0] for x in files)
-    dates = list(int(y[5]) for y in (x.split('_') for x in xfiles))
-
-    if enddate < 0:
-        enddate = dates[-1]
-
-    outname = var + '_' + repr(startdate) + '_' + repr(enddate) + '.bin'
+if source == 'oras5':
     try:
-        os.unlink(outname)
+        oras5dir = sys.argv[1]
     except:
-        pass
+        oras5dir = "../ORAS5_MIT"
+    variables = [ "votemper", "vosaline", "sossheig" ]
+    for var in variables:
+        gpath = os.path.join(oras5dir,var,"*monthly*.nc")
+        files = sorted(glob.glob(os.path.expanduser(gpath)))
+        xfiles = list(os.path.splitext(os.path.basename(x))[0] for x in files)
+        dates = list(int(y[5]) for y in (x.split('_') for x in xfiles))
+        if enddate < 0:
+            enddate = dates[-1]
+        outname = var + '_' + repr(startdate) + '_' + repr(enddate) + '.bin'
+        try:
+            os.unlink(outname)
+        except:
+            pass
+        fout = open(outname, "wb")
+        if var in ["votemper", "vosaline"]: # full 3d field
+            for o,f,d in zip(xfiles,files,dates):
+                if d >= startdate and d <= enddate:
+                    print(var+": "+repr(d))
+                    values = Dataset(f).variables[var][:].data
+                    values.astype('>f4').tofile(fout)
+        else: # sossheig, keep only West boundary.
+            for o,f,d in zip(xfiles,files,dates):
+                if d >= startdate and d <= enddate:
+                    print(var+": "+repr(d))
+                    if config['boundary']['North']:
+                        values = Dataset(f).variables[var][0,-1,:].data
+                        values.astype('>f4').tofile(fout)
+                    if config['boundary']['South']:
+                        values = Dataset(f).variables[var][0,0,:].data
+                        values.astype('>f4').tofile(fout)
+                    if config['boundary']['East']:
+                        values = Dataset(f).variables[var][0,:,-1].data
+                        values.astype('>f4').tofile(fout)
+                    if config['boundary']['West']:
+                        values = Dataset(f).variables[var][0,:,0].data
+                        values.astype('>f4').tofile(fout)
+        if var in ["votemper", "vosaline"]: # full 3d field
+            for o,f,d in zip(xfiles,files,dates):
+                if d == startdate:
+                    print(var+": "+repr(d))
+                    values = Dataset(f).variables[var][:].data
+                    values.astype('>f4').tofile(fout)
+        else: # sossheig, keep only West boundary.
+            for o,f,d in zip(xfiles,files,dates):
+                if d == startdate:
+                    print(var+": "+repr(d))
+                    if config['boundary']['North']:
+                        values = Dataset(f).variables[var][0,-1,:].data
+                        values.astype('>f4').tofile(fout)
+                    if config['boundary']['South']:
+                        values = Dataset(f).variables[var][0,0,:].data
+                        values.astype('>f4').tofile(fout)
+                    if config['boundary']['East']:
+                        values = Dataset(f).variables[var][0,:,-1].data
+                        values.astype('>f4').tofile(fout)
+                    if config['boundary']['West']:
+                        values = Dataset(f).variables[var][0,:,0].data
+                        values.astype('>f4').tofile(fout)
+else:
+    try:
+        inpdir = sys.argv[1]
+    except:
+        print('Need input directory name')
+        sys.exit(1)
+    variables = [ "thetao", "so", "zos" ]
+    for var in variables:
+        gpath = os.path.join(inpdir,var,"*year????_mon??.nc")
+        files = sorted(glob.glob(os.path.expanduser(gpath)))
+        xfiles = list(os.path.splitext(os.path.basename(x))[0] for x in files)
+        dates = list(int(y[7][4:]+y[8][3:])
+                     for y in (x.split('_') for x in xfiles))
+        if enddate < 0:
+            enddate = dates[-1]
+        outname = (var + '_' + source + '_' + repr(startdate)
+                       + '_' + repr(enddate) + '.bin')
+        try:
+            os.unlink(outname)
+        except:
+            pass
+        fout = open(outname, "wb")
+        if var in ["thetao", "so"]: # full 3d field
+            for o,f,d in zip(xfiles,files,dates):
+                if d >= startdate and d <= enddate:
+                    print(var+": "+repr(d))
+                    values = Dataset(f).variables[var][:].data
+                    values.astype('>f4').tofile(fout)
+        else: # zos, keep only boundary.
+            for o,f,d in zip(xfiles,files,dates):
+                if d >= startdate and d <= enddate:
+                    print(var+": "+repr(d))
+                    if config['boundary']['North']:
+                        values = Dataset(f).variables[var][0,-1,:].data
+                        values.astype('>f4').tofile(fout)
+                    if config['boundary']['South']:
+                        values = Dataset(f).variables[var][0,0,:].data
+                        values.astype('>f4').tofile(fout)
+                    if config['boundary']['East']:
+                        values = Dataset(f).variables[var][0,:,-1].data
+                        values.astype('>f4').tofile(fout)
+                    if config['boundary']['West']:
+                        values = Dataset(f).variables[var][0,:,0].data
+                        values.astype('>f4').tofile(fout)
+        if var in ["thetao", "so"]: # full 3d field
+            for o,f,d in zip(xfiles,files,dates):
+                if d == startdate:
+                    print(var+": "+repr(d))
+                    values = Dataset(f).variables[var][:].data
+                    values.astype('>f4').tofile(fout)
+        else: # zos, keep only boundary.
+            for o,f,d in zip(xfiles,files,dates):
+                if d == startdate:
+                    print(var+": "+repr(d))
+                    if config['boundary']['North']:
+                        values = Dataset(f).variables[var][0,-1,:].data
+                        values.astype('>f4').tofile(fout)
+                    if config['boundary']['South']:
+                        values = Dataset(f).variables[var][0,0,:].data
+                        values.astype('>f4').tofile(fout)
+                    if config['boundary']['East']:
+                        values = Dataset(f).variables[var][0,:,-1].data
+                        values.astype('>f4').tofile(fout)
+                    if config['boundary']['West']:
+                        values = Dataset(f).variables[var][0,:,0].data
+                        values.astype('>f4').tofile(fout)
 
-    fout = open(outname, "wb")
-    if var in ["votemper", "vosaline"]: # full 3d field
-        for o,f,d in zip(xfiles,files,dates):
-            if d >= startdate and d <= enddate:
-                print(var+": "+repr(d))
-                values = Dataset(f).variables[var][:].data
-                values.astype('>f4').tofile(fout)
-    else: # sossheig, keep only West boundary.
-        for o,f,d in zip(xfiles,files,dates):
-            if d >= startdate and d <= enddate:
-                print(var+": "+repr(d))
-                values = Dataset(f).variables[var][0,:,0].data
-                values.astype('>f4').tofile(fout)
-    if var in ["votemper", "vosaline"]: # full 3d field
-        for o,f,d in zip(xfiles,files,dates):
-            if d == startdate:
-                print(var+": "+repr(d))
-                values = Dataset(f).variables[var][:].data
-                values.astype('>f4').tofile(fout)
-    else: # sossheig, keep only West boundary.
-        for o,f,d in zip(xfiles,files,dates):
-            if d == startdate:
-                print(var+": "+repr(d))
-                if config['boundary']['North']:
-                    values = Dataset(f).variables[var][0,-1,:].data
-                    values.astype('>f4').tofile(fout)
-                if config['boundary']['South']:
-                    values = Dataset(f).variables[var][0,0,:].data
-                    values.astype('>f4').tofile(fout)
-                if config['boundary']['East']:
-                    values = Dataset(f).variables[var][0,:,-1].data
-                    values.astype('>f4').tofile(fout)
-                if config['boundary']['West']:
-                    values = Dataset(f).variables[var][0,:,0].data
-                    values.astype('>f4').tofile(fout)
 
 print('Done')
