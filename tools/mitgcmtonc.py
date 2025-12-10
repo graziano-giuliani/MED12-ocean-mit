@@ -278,22 +278,22 @@ names = { 'SALT'        : { 'esgf_name'     : 'so',
                             'stagger'       : 'v',
                             'coordinates'   : 'lat lon',
                           },
-          #'pickup'      : { 'esgf_name'     : 'pickup',
-          #                  'standard_name' : 'pickup',
-          #                  'long_name'     : 'Pickup field',
-          #                  'units'         : '1',
-          #                  'dimensions'    : NFPICKUP,
-          #                  'stagger'       : 'none',
-          #                  'coordinates'   : 'lat lon',
-          #                },
-          #'pickup_ggl90': { 'esgf_name'     : 'pickup_ggl90',
-          #                  'standard_name' : 'pickup_ggl90',
-          #                  'long_name'     : 'Pickup field for ggl90',
-          #                  'units'         : '1',
-          #                  'dimensions'    : 3,
-          #                  'stagger'       : 'none',
-          #                  'coordinates'   : 'lat lon',
-          #                },
+         #'pickup'      : { 'esgf_name'     : 'pickup',
+         #                  'standard_name' : 'pickup',
+         #                  'long_name'     : 'Pickup field',
+         #                  'units'         : '1',
+         #                  'dimensions'    : NFPICKUP,
+         #                  'stagger'       : 'none',
+         #                  'coordinates'   : 'lat lon',
+         #                },
+         #'pickup_ggl90': { 'esgf_name'     : 'pickup_ggl90',
+         #                  'standard_name' : 'pickup_ggl90',
+         #                  'long_name'     : 'Pickup field for ggl90',
+         #                  'units'         : '1',
+         #                  'dimensions'    : 3,
+         #                  'stagger'       : 'none',
+         #                  'coordinates'   : 'lat lon',
+         #                },
           }
 
 mask = np.fromfile('hFacC.data','>f4').reshape((1,NZ,NY,NX)) > 0.0
@@ -398,9 +398,9 @@ for binfile in sys.argv[1:]:
         coords = dict(lon = xlon, lat = xlat, depth = xdepth, time = xtime)
         count = NZ*NY*NX
         if 'pickup' in vname:
-            dims = ["time","field","lat","lon"]
+            dims = ["time","depth","lat","lon"]
             h = np.fromfile(binfile, '>f8',
-                        count = count).reshape(1,NZ,NY,NX)
+                            count = count).reshape(1,NZ,NY,NX)
         else:
             dims = ["time","depth","lat","lon"]
             rv = np.fromfile(binfile, '>f4',
@@ -408,7 +408,7 @@ for binfile in sys.argv[1:]:
             h = np.where(mask,rv,np.nan)
     else:
         if vname == 'pickup':
-            dims = ["time","field","lon","lat"]
+            dims = ["time","field","lat","lon"]
             coords = dict(lon = xlon, lat = xlat, field = xfield, time = xtime)
             count = NFPICKUP*NY*NX
             h = np.fromfile(binfile, '>f8',
@@ -492,10 +492,13 @@ for binfile in sys.argv[1:]:
             for a in att1[v].keys( ):
                 ds.attrs[aa+'_'+a] = str(att1[v][a])
 
-    opath = os.path.join(outpath,'CORDEX-CMIP6','DD',domain,myinst,
-            gmodel,experiment,gmemb,'RegCM-ES1-1','v1-r1','mon',
-            infname)
-    os.makedirs(opath,exist_ok=True)
+    if 'pickup' in vname:
+        opath = '.'
+    else:
+        opath = os.path.join(outpath,'CORDEX-CMIP6','DD',domain,myinst,
+              gmodel,experiment,gmemb,'RegCM-ES1-1','v1-r1','mon',
+              infname)
+        os.makedirs(opath,exist_ok=True)
     ncfile = os.path.join(opath, infname + '_' + domain + '_' + gmodel +
             '_' + experiment + '_' + gmemb + '_' + myinst +
             '_RegCM-ES1-1_v1-r1_mon_' + s_ym.strftime('%Y%m') + '-' +
@@ -511,10 +514,12 @@ for binfile in sys.argv[1:]:
     except:
         print('Error for ',ncfile)
         continue
-    metafile = os.path.splitext(binfile)[0]+'.meta'
-    try:
-        os.unlink(binfile)
-        os.unlink(metafile)
-    except:
-        pass
-
+    if 'pickup' in vname:
+        continue
+    else:
+        metafile = os.path.splitext(binfile)[0]+'.meta'
+        try:
+            os.unlink(binfile)
+            os.unlink(metafile)
+        except:
+            pass

@@ -66,29 +66,51 @@ with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
 
     # Zarzis
     bathy[50,259] = 0.0
-    bathy[51,259] = 0.0
     bathy[50,258] = 0.0
+    bathy[51,259] = 0.0
     bathy[51,258] = 0.0
+    bathy[52,257] = -25.0
+    bathy[52,258] = -25.0
+    bathy[52,259] = -25.0
+    bathy[52,260] = -25.0
+    bathy[52,261] = -25.0
+    bathy[53,259] = -25.0
+    bathy[53,260] = -25.0
+    bathy[53,261] = -25.0
 
     # Sicily Channel
-    bathy[124,315] = -500
-    bathy[125,315] = -500
-    bathy[126,315] = -500
-    bathy[125,316] = -250
-    bathy[126,316] = -250
-    bathy[127,316] = -250
+    bathy[124,315] = -500+np.random.uniform(10.0)
+    bathy[125,315] = -500+np.random.uniform(10.0)
+    bathy[126,315] = -500+np.random.uniform(10.0)
+    bathy[125,316] = -250+np.random.uniform(5.0)
+    bathy[126,316] = -250+np.random.uniform(5.0)
+    bathy[127,316] = -250+np.random.uniform(5.0)
 
     # Open up Corinth Gulf
-    bathy[128,384] = -62
-    bathy[130,389] = -62
-    bathy[130,390] = -62
-    bathy[131,390] = -62
-    bathy[131,391] = -62
-    bathy[132,388] = -62
-    bathy[132,389] = -62
-    bathy[132,390] = -62
-    bathy[132,393] = -62
-    bathy[132,394] = -62
+    bathy[128,384] = -62+np.random.uniform(2.0)
+    bathy[128,406] = -62+np.random.uniform(2.0)
+    bathy[129,383] = -62+np.random.uniform(2.0)
+    bathy[129,384] = -62+np.random.uniform(2.0)
+    bathy[129,385] = -62+np.random.uniform(2.0)
+    bathy[129,388] = -62+np.random.uniform(2.0)
+    bathy[129,394] = -62+np.random.uniform(2.0)
+    bathy[130,382] = -62+np.random.uniform(2.0)
+    bathy[130,383] = -62+np.random.uniform(2.0)
+    bathy[130,384] = -62+np.random.uniform(2.0)
+    bathy[130,389] = -62+np.random.uniform(2.0)
+    bathy[130,390] = -62+np.random.uniform(2.0)
+    bathy[130,403] = -62+np.random.uniform(2.0)
+    bathy[131,386] = -62+np.random.uniform(2.0)
+    bathy[131,388] = -62+np.random.uniform(2.0)
+    bathy[131,389] = -62+np.random.uniform(2.0)
+    bathy[131,390] = -62+np.random.uniform(2.0)
+    bathy[131,391] = -62+np.random.uniform(2.0)
+    bathy[132,388] = -62+np.random.uniform(2.0)
+    bathy[132,389] = -62+np.random.uniform(2.0)
+    bathy[132,390] = -62+np.random.uniform(2.0)
+    bathy[132,393] = -62+np.random.uniform(2.0)
+    bathy[132,394] = -62+np.random.uniform(2.0)
+    bathy[132,395] = -62+np.random.uniform(2.0)
 
     # Close Ambracian Gulf
     bathy[141,381] = 0.0
@@ -99,21 +121,21 @@ with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
     bathy[143,377] = 0.0
     bathy[142,378] = 0.0
     bathy[142,377] = 0.0
-    bathy[141,377] = -45
-    bathy[141,376] = -45
-    bathy[142,376] = -45
+    bathy[141,377] = -45+np.random.uniform(2.0)
+    bathy[141,376] = -45+np.random.uniform(2.0)
+    bathy[142,376] = -45+np.random.uniform(2.0)
 
     # Open up Eubean Gulf
-    bathy[136,407] = -100
-    bathy[137,407] = -100
-    bathy[141,402] = -100
-    bathy[142,402] = -100
-    bathy[142,403] = -100
-    bathy[142,404] = -100
+    bathy[136,407] = -100+np.random.uniform(3.5)
+    bathy[137,407] = -100+np.random.uniform(3.5)
+    bathy[141,402] = -100+np.random.uniform(3.5)
+    bathy[142,402] = -100+np.random.uniform(3.5)
+    bathy[142,403] = -100+np.random.uniform(3.5)
+    bathy[142,404] = -100+np.random.uniform(3.5)
 
     # Open up Pagaseatic Gulf
-    bathy[146,404] = -80
-    bathy[146,405] = -70
+    bathy[146,404] = -80+np.random.uniform(3.0)
+    bathy[146,405] = -70+np.random.uniform(3.0)
 
     # Close Kallonis Gulf
     bathy[148,441] = 0.0
@@ -121,38 +143,38 @@ with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
     bathy[149,442] = 0.0
 
     # Dardanelles Strait
-    bathy[169,441] = -40
-    bathy[169,442] = -40
-    bathy[169,443] = -55
+    bathy[169,441] = -40+np.random.uniform(2.0)
+    bathy[169,442] = -40+np.random.uniform(2.0)
+    bathy[169,443] = -55+np.random.uniform(2.0)
     bathy[169,444] = -25
-    bathy[170,444] = -26
+    bathy[170,444] = -25
     bathy[170,445] = -25
     bathy[170,446] = 0.0
-    bathy[171,446] = -45
+    bathy[171,446] = -45+np.random.uniform(2.0)
     bathy[172,446] = -25
-    bathy[172,447] = -45
-    bathy[173,447] = -45
+    bathy[172,447] = -45+np.random.uniform(2.0)
+    bathy[173,447] = -45+np.random.uniform(2.0)
     bathy[174,447] = 0.0
 
     # Bosphorus Strait
-    bathy[187,473] = -45.0
-    bathy[187,474] = -45.0
+    bathy[187,473] = -45.0+np.random.uniform(2.0)
+    bathy[187,474] = -45.0+np.random.uniform(2.0)
     bathy[188,474] = -25.0
     bathy[188,475] = -25.0
     bathy[189,475] = 0.0
-    bathy[190,474] = -45.0
-    bathy[190,475] = -45.0
-    bathy[191,475] = -45.0
+    bathy[190,474] = -45.0+np.random.uniform(2.0)
+    bathy[190,475] = -45.0+np.random.uniform(2.0)
+    bathy[191,475] = -45.0+np.random.uniform(2.0)
 
     # Thessaloniki
-    bathy[171,400] = -50
+    bathy[171,400] = -50+np.random.uniform(2.0)
 
     # Izmir
-    bathy[166,441] = -50
-    bathy[137,448] = -50
+    bathy[166,441] = -50+np.random.uniform(2.0)
+    bathy[137,448] = -50+np.random.uniform(2.0)
 
     # Izmit
-    bathy[182,478] = -100
+    bathy[182,478] = -100+np.random.uniform(3.0)
 
     # Close Halkidiki
     bathy[169,411] = 0.0
@@ -160,9 +182,9 @@ with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
     bathy[166,406] = 0.0
 
     # Sardinia-Corsica Strait
-    bathy[176,236] = -65
-    bathy[176,237] = -45
-    bathy[175,238] = -65
+    bathy[176,236] = -65+np.random.uniform(2.0)
+    bathy[176,237] = -45+np.random.uniform(2.0)
+    bathy[175,238] = -65+np.random.uniform(2.0)
 
     # Close Cattaro Mouth
     bathy[203,348] = 0.0
@@ -178,7 +200,7 @@ with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
     bathy[239,302] = 0.0
 
     # Open for Rijeka
-    bathy[249,292] = -48
+    bathy[249,292] = -50+np.random.uniform(2.0)
 
     # Open/Close for Azov Sea
     bathy[310,532] = 0.0

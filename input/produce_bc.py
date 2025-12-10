@@ -26,6 +26,20 @@ if end_year > 0:
 else:
     enddate = -1
 
+def boundary(da,config,fout):
+    if config['boundary']['North']:
+        values = da[0,-1,:].data
+        values.astype('>f4').tofile(fout)
+    if config['boundary']['South']:
+        values = da[0,0,:].data
+        values.astype('>f4').tofile(fout)
+    if config['boundary']['East']:
+        values = da[0,:,-1].data
+        values.astype('>f4').tofile(fout)
+    if config['boundary']['West']:
+        values = da[0,:,0].data
+        values.astype('>f4').tofile(fout)
+
 if source == 'oras5':
     try:
         oras5dir = sys.argv[1]
@@ -55,18 +69,7 @@ if source == 'oras5':
             for o,f,d in zip(xfiles,files,dates):
                 if d >= startdate and d <= enddate:
                     print(var+": "+repr(d))
-                    if config['boundary']['North']:
-                        values = Dataset(f).variables[var][0,-1,:].data
-                        values.astype('>f4').tofile(fout)
-                    if config['boundary']['South']:
-                        values = Dataset(f).variables[var][0,0,:].data
-                        values.astype('>f4').tofile(fout)
-                    if config['boundary']['East']:
-                        values = Dataset(f).variables[var][0,:,-1].data
-                        values.astype('>f4').tofile(fout)
-                    if config['boundary']['West']:
-                        values = Dataset(f).variables[var][0,:,0].data
-                        values.astype('>f4').tofile(fout)
+                    boundary(Dataset(f).variables[var],config,fout)
         if var in ["votemper", "vosaline"]: # full 3d field
             for o,f,d in zip(xfiles,files,dates):
                 if d == startdate:
@@ -77,18 +80,7 @@ if source == 'oras5':
             for o,f,d in zip(xfiles,files,dates):
                 if d == startdate:
                     print(var+": "+repr(d))
-                    if config['boundary']['North']:
-                        values = Dataset(f).variables[var][0,-1,:].data
-                        values.astype('>f4').tofile(fout)
-                    if config['boundary']['South']:
-                        values = Dataset(f).variables[var][0,0,:].data
-                        values.astype('>f4').tofile(fout)
-                    if config['boundary']['East']:
-                        values = Dataset(f).variables[var][0,:,-1].data
-                        values.astype('>f4').tofile(fout)
-                    if config['boundary']['West']:
-                        values = Dataset(f).variables[var][0,:,0].data
-                        values.astype('>f4').tofile(fout)
+                    boundary(Dataset(f).variables[var],config,fout)
 else:
     try:
         inpdir = sys.argv[1]
@@ -121,18 +113,7 @@ else:
             for o,f,d in zip(xfiles,files,dates):
                 if d >= startdate and d <= enddate:
                     print(var+": "+repr(d))
-                    if config['boundary']['North']:
-                        values = Dataset(f).variables[var][0,-1,:].data
-                        values.astype('>f4').tofile(fout)
-                    if config['boundary']['South']:
-                        values = Dataset(f).variables[var][0,0,:].data
-                        values.astype('>f4').tofile(fout)
-                    if config['boundary']['East']:
-                        values = Dataset(f).variables[var][0,:,-1].data
-                        values.astype('>f4').tofile(fout)
-                    if config['boundary']['West']:
-                        values = Dataset(f).variables[var][0,:,0].data
-                        values.astype('>f4').tofile(fout)
+                    boundary(Dataset(f).variables[var],config,fout)
         if var in ["thetao", "so"]: # full 3d field
             for o,f,d in zip(xfiles,files,dates):
                 if d == startdate:
@@ -143,18 +124,6 @@ else:
             for o,f,d in zip(xfiles,files,dates):
                 if d == startdate:
                     print(var+": "+repr(d))
-                    if config['boundary']['North']:
-                        values = Dataset(f).variables[var][0,-1,:].data
-                        values.astype('>f4').tofile(fout)
-                    if config['boundary']['South']:
-                        values = Dataset(f).variables[var][0,0,:].data
-                        values.astype('>f4').tofile(fout)
-                    if config['boundary']['East']:
-                        values = Dataset(f).variables[var][0,:,-1].data
-                        values.astype('>f4').tofile(fout)
-                    if config['boundary']['West']:
-                        values = Dataset(f).variables[var][0,:,0].data
-                        values.astype('>f4').tofile(fout)
-
+                    boundary(Dataset(f).variables[var],config,fout)
 
 print('Done')

@@ -27,7 +27,9 @@ for ind in indirs:
     listfiles = glob.glob(os.path.join(os.path.expanduser(ind),"*.nc"))
     levels = cdo.showlevel(input="depth.nc", options="-s")
     strlevels = " ".join((repr(x) for x in levels)).replace(" ",",")
-    tmpfile = varname+"_tmp.nc"
+    intstr = "-intlevel,"+strlevels+" -setmisstonn -vertfillmiss "
+    tmpfile1 = varname+"1_tmp.nc"
+    tmpfile2 = varname+"2_tmp.nc"
     for f in sorted(listfiles):
         rf,_ = os.path.splitext(os.path.basename(f))
         cdo.splityear(input=f, output=rf+'_year')
@@ -38,12 +40,15 @@ for ind in indirs:
             for m in sorted(glob.glob(mf+'_mon'+'*.nc')):
                 oname = os.path.join(varname,os.path.basename(m))
                 if not os.path.exists(oname):
-                    cdo.intlevel(strlevels,
-                        input="-setmisstonn -vertfillmiss -remapnn,mask.nc "+m,
-                        output=tmpfile, options="-L -f nc4 -z zip_4")
-                    cdo.mul(input=tmpfile+" mask.nc",
+                    cdo.remapnn('mask.nc', input=m,
+                                output=tmpfile1, options="-L -f nc4 -z zip_4")
+                    cdo.vertfillmiss(
+                        input=intstr+tmpfile1,
+                        output=tmpfile2, options="-L -f nc4 -z zip_4")
+                    os.unlink(tmpfile1)
+                    cdo.mul(input=tmpfile2+" mask.nc",
                         output=oname, options="-L -f nc4 -z zip_4")
+                    os.unlink(tmpfile2)
                 os.unlink(m)
-                os.unlink(tmpfile)
                 print(oname)
 print('Done')

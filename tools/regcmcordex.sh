@@ -2,7 +2,7 @@
 
 #SBATCH --account             CMPNS_ictpclim
 #SBATCH --job-name            MED-12_POST
-#SBATCH --mail-type           ALL
+#SBATCH --mail-type           FAIL
 #SBATCH --mail-user           ggiulian@ictp.it
 #SBATCH --nodes               1
 #SBATCH --ntasks-per-node     112

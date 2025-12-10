@@ -1,5 +1,5 @@
 source_init: medhymap
-source_bc: ec_earth
+source_bc: ec_earth3_veg
 oras5:
         path: ../ORAS5_MIT
         variables: votemper vosaline
@@ -9,9 +9,15 @@ medhymap:
 ec_earth3_veg:
         path: ../EC-Earth3-Veg_MIT
         variables: thetao so
+mpi-esm1-2-hr:
+        path: ../MPI-ESM1-2-HR_MIT
+        variables: thetao so
+nor-esm2-mm:
+        path: ../NorESM2-MM_MIT
+        variables: thetao so
 start_year: 1968
-end_year: 2100
 start_month: 8
+end_year: 2100
 end_month: 2
 ic_decades: 1
 boundary:

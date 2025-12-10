@@ -43,7 +43,7 @@ for ind in indirs:
                         output=tmpfile, options="-L -f nc4 -z zip_4")
                     cdo.mul(input=tmpfile+" mask.nc",
                         output=oname, options="-L -f nc4 -z zip_4")
+                    os.unlink(tmpfile)
                 os.unlink(m)
-                os.unlink(tmpfile)
                 print(oname)
 print('Done')
