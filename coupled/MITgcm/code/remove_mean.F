@@ -321,7 +321,7 @@ C-    end type correction selection
           DO I=1,sNx
            jG = myYGlobalLo-1+(bj-1)*sNy+J
            iG = myXGlobalLo-1+(bi-1)*sNx+I
-           IF (iG.le.IG_BEGIN_ATLANTIC) then
+           IF ( iG <= IG_BEGIN_ATLANTIC ) then
             tmpVal = arr(I,J,K,bi,bj)
             IF (arrMask(I,J,bi,bj).NE.0.) THEN
              tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
@@ -329,7 +329,9 @@ C-    end type correction selection
              theMean_A = theMean_A + tmpVol*tmpVal
             ENDIF
            ENDIF
-           IF (iG.gt.IG_BEGIN_ATLANTIC) then
+           IF ( ( iG > IG_BEGIN_ATLANTIC ) .and.
+     &          ( iG < IG_BEGIN_BLACKSEA .and.
+     &            jG < JG_BEGIN_BLACKSEA ) ) then
             tmpVal = arr(I,J,K,bi,bj)
             IF (arrMask(I,J,bi,bj).NE.0.) THEN
              tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
@@ -355,7 +357,7 @@ C-    end type correction selection
            DO I=1,sNx
             jG = myYGlobalLo-1+(bj-1)*sNy+J
             iG = myXGlobalLo-1+(bi-1)*sNx+I
-            IF (iG.le.IG_BEGIN_ATLANTIC) then
+            IF ( iG <= IG_BEGIN_ATLANTIC ) then
              IF (arrMask(I,J,bi,bj).NE.0.) THEN
               arr(I,J,K,bi,bj) = arr(I,J,K,bi,bj) - theMean
              ENDIF
