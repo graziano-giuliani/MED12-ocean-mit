@@ -756,7 +756,7 @@ C--   Call time stepping loop of full model
 # endif
 C--   Call time stepping loop of full model
       CALL TIMER_START('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
-      CALL THE_MAIN_LOOP( myTime, myIter, myThid )
+      CALL THE_MAIN_LOOP_FINALIZE( myTime, myIter, myThid )
       CALL TIMER_STOP ('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
 
 #endif /* ALLOW_TANGENTLINEAR_RUN ALLOW_ADJOINT_RUN ALLOW_ADMTLM */
