@@ -518,6 +518,7 @@ c---------------------------------------------------------------------
             EmPmR_SALT_msk(I,J,bi,bj)=0.
 #endif
                  EmPmR_msk(I,J,bi,bj)=1.
+                 EmPmR_Atlantic(I,J,bi,bj)=0.
 C convert from local x|y index I|J to global x|y index iG|jG
             jG = myYGlobalLo-1+(bj-1)*sNy+J
             iG = myXGlobalLo-1+(bi-1)*sNx+I
@@ -526,7 +527,10 @@ C convert from local x|y index I|J to global x|y index iG|jG
             IF (iG <= IG_BEGIN_ATLANTIC .or.
      &          ( iG > IG_BEGIN_BLACKSEA .and.
      &            jG > JG_BEGIN_BLACKSEA ) ) then
-                 EmPmR_msk(I,J,bi,bj)=0.
+             EmPmR_msk(I,J,bi,bj)=0.
+            ENDIF
+            IF (iG <= IG_BEGIN_ATLANTIC ) then
+             EmPmR_Atlantic(I,J,bi,bj)=1.
             ENDIF
 #endif
          ENDDO
@@ -536,9 +540,11 @@ C convert from local x|y index I|J to global x|y index iG|jG
 
       _EXCH_XY_RS(EmPmR_msk, myThid )
       _EXCH_XY_RS(EmPmR_SALT_msk, myThid )
+      _EXCH_XY_RS(EmPmR_Atlantic, myThid )
 
       CALL PLOT_FIELD_XYRL( EmPmR_msk, 'EmPmR_msk', 1, myThid)
       CALL PLOT_FIELD_XYRL( EmPmR_SALT_msk, 'EmPmR_SALT_msk', 1, myThid)
+      CALL PLOT_FIELD_XYRL( EmPmR_Atlantic, 'EmPmR_Atlantic', 1, myThid)
 #endif
 
 c #ifdef ALLOW_NONHYDROSTATIC

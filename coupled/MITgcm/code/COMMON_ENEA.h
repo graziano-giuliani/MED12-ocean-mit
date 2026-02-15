@@ -16,7 +16,8 @@ CEOP
 #endif
 
 cgmMASK(
-      COMMON /SURF_MASK/ EmPmR_msk, EmPmR_SALT_msk
+      COMMON /SURF_MASK/ EmPmR_msk, EmPmR_SALT_msk, EmPmR_Atlantic
       _RL        EmPmR_msk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL   EmPmR_SALT_msk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL   EmPmR_Atlantic(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 cgmMASK)

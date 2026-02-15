@@ -235,7 +235,7 @@ C     !LOCAL VARIABLES:
 #endif
 CEOP
 
-#if defined(ENEA_COUPLER) && defindef(MED_12_ATLANTIC)
+#if defined(ENEA_COUPLER) && defined(MED_12_ATLANTIC)
       theMean_A = 0.
       theVol_A = 0.
       theMean_M = 0.
@@ -276,6 +276,7 @@ CEOP
       _GLOBAL_SUM_RS(theMean_M,myThid)
       IF (theVol_A.GT.0.) THEN
        theMean = (theMean_A+ theMEAN_M)/theVol_A
+       meanCorr = theMean
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO K=1,myNr
@@ -293,6 +294,8 @@ CEOP
          ENDDO
         ENDDO
        ENDDO
+      ELSE
+       meanCorr = 0. _d 0
       ENDIF
 #else
       DO bj=myByLo(myThid),myByHi(myThid)

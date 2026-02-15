@@ -289,7 +289,7 @@ C     with this input/output of water is added here to the surface tendency.
      &      + PmEpR(i,j,bi,bj)
      &          *( salt_EvPrRn + EmPmR_SALT_msk(i,j,bi,bj)
      &                         - salt(i,j,ks,bi,bj))
-     &          *mass2rUnit * EmPmR_msk(i,j,bi,bj)
+     &          *mass2rUnit * EmPmR_Atlantic(i,j,bi,bj)
 #else
           surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
      &      + PmEpR(i,j,bi,bj)
