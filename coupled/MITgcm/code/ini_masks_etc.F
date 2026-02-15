@@ -513,7 +513,7 @@ c---------------------------------------------------------------------
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
 #ifdef MED_12_ATLANTIC
-            EmPmR_SALT_msk(I,J,bi,bj)=34.
+            EmPmR_SALT_msk(I,J,bi,bj)=0.40
 #else
             EmPmR_SALT_msk(I,J,bi,bj)=0.
 #endif
