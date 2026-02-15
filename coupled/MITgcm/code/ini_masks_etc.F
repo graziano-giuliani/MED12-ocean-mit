@@ -512,14 +512,20 @@ c---------------------------------------------------------------------
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
+#ifdef MED_12_ATLANTIC
+            EmPmR_SALT_msk(I,J,bi,bj)=34.
+#else
             EmPmR_SALT_msk(I,J,bi,bj)=0.
+#endif
                  EmPmR_msk(I,J,bi,bj)=1.
 C convert from local x|y index I|J to global x|y index iG|jG
             jG = myYGlobalLo-1+(bj-1)*sNy+J
             iG = myXGlobalLo-1+(bi-1)*sNx+I
 
 #ifdef MED_12_ATLANTIC
-            IF (iG.le.IG_BEGIN_ATLANTIC) then
+            IF (iG <= IG_BEGIN_ATLANTIC .or.
+     &          ( iG > IG_BEGIN_BLACKSEA .and.
+     &            jG > JG_BEGIN_BLACKSEA ) ) then
                  EmPmR_msk(I,J,bi,bj)=0.
             ENDIF
 #endif

@@ -225,7 +225,6 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ENEA_COUPLER
 #ifdef MED_12_ATLANTIC
-      _RL arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
       _RS theMean_A
       _RS theVol_A
       _RS theMean_M
@@ -236,6 +235,66 @@ C     !LOCAL VARIABLES:
 #endif
 CEOP
 
+#if defined(ENEA_COUPLER) && defindef(MED_12_ATLANTIC)
+      theMean_A = 0.
+      theVol_A = 0.
+      theMean_M = 0.
+      theVol_M = 0.
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO K=1,myNr
+         DO J=1,sNy
+          DO I=1,sNx
+           jG = myYGlobalLo-1+(bj-1)*sNy+J
+           iG = myXGlobalLo-1+(bi-1)*sNx+I
+           IF ( iG <= IG_BEGIN_ATLANTIC ) then
+            tmpVal = arrFld(I,J,K,bi,bj)
+            IF (arrMask(I,J,bi,bj).NE.0.) THEN
+             tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
+             theVol_A = theVol_A   + tmpVol
+             theMean_A = theMean_A + tmpVol*tmpVal
+            ENDIF
+           ENDIF
+           IF ( ( iG > IG_BEGIN_ATLANTIC ) .and.
+     &          ( iG < IG_BEGIN_BLACKSEA .and.
+     &            jG < JG_BEGIN_BLACKSEA ) ) then
+            tmpVal = arrFld(I,J,K,bi,bj)
+            IF (arrMask(I,J,bi,bj).NE.0.) THEN
+             tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
+             theVol_M = theVol_M   + tmpVol
+             theMean_M = theMean_M + tmpVol*tmpVal
+            ENDIF
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      _GLOBAL_SUM_RS(theVol_A,myThid)
+      _GLOBAL_SUM_RS(theMean_A,myThid)
+      _GLOBAL_SUM_RS(theVol_M,myThid)
+      _GLOBAL_SUM_RS(theMean_M,myThid)
+      IF (theVol_A.GT.0.) THEN
+       theMean = (theMean_A+ theMEAN_M)/theVol_A
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO K=1,myNr
+          DO J=1,sNy
+           DO I=1,sNx
+            jG = myYGlobalLo-1+(bj-1)*sNy+J
+            iG = myXGlobalLo-1+(bi-1)*sNx+I
+            IF ( iG <= IG_BEGIN_ATLANTIC ) then
+             IF (arrMask(I,J,bi,bj).NE.0.) THEN
+              arrFld(I,J,K,bi,bj) = arrFld(I,J,K,bi,bj) - theMean
+             ENDIF
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+#else
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         volTile(bi,bj) = 0. _d 0
@@ -307,68 +366,6 @@ C-    end type correction selection
       ELSE
        meanCorr = 0. _d 0
       ENDIF
-
-#ifdef ENEA_COUPLER
-#ifdef MED_12_ATLANTIC
-      theMean_A = 0.
-      theVol_A = 0.
-      theMean_M = 0.
-      theVol_M = 0.
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO K=1,myNr
-         DO J=1,sNy
-          DO I=1,sNx
-           jG = myYGlobalLo-1+(bj-1)*sNy+J
-           iG = myXGlobalLo-1+(bi-1)*sNx+I
-           IF ( iG <= IG_BEGIN_ATLANTIC ) then
-            tmpVal = arr(I,J,K,bi,bj)
-            IF (arrMask(I,J,bi,bj).NE.0.) THEN
-             tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
-             theVol_A = theVol_A   + tmpVol
-             theMean_A = theMean_A + tmpVol*tmpVal
-            ENDIF
-           ENDIF
-           IF ( ( iG > IG_BEGIN_ATLANTIC ) .and.
-     &          ( iG < IG_BEGIN_BLACKSEA .and.
-     &            jG < JG_BEGIN_BLACKSEA ) ) then
-            tmpVal = arr(I,J,K,bi,bj)
-            IF (arrMask(I,J,bi,bj).NE.0.) THEN
-             tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
-             theVol_M = theVol_M   + tmpVol
-             theMean_M = theMean_M + tmpVol*tmpVal
-            ENDIF
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-      _GLOBAL_SUM_RS(theVol_A,myThid)
-      _GLOBAL_SUM_RS(theMean_A,myThid)
-      _GLOBAL_SUM_RS(theVol_M,myThid)
-      _GLOBAL_SUM_RS(theMean_M,myThid)
-      IF (theVol_A.GT.0.) THEN
-       theMean = (theMean_A+ theMEAN_M)/theVol_A
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO K=1,myNr
-          DO J=1,sNy
-           DO I=1,sNx
-            jG = myYGlobalLo-1+(bj-1)*sNy+J
-            iG = myXGlobalLo-1+(bi-1)*sNx+I
-            IF ( iG <= IG_BEGIN_ATLANTIC ) then
-             IF (arrMask(I,J,bi,bj).NE.0.) THEN
-              arr(I,J,K,bi,bj) = arr(I,J,K,bi,bj) - theMean
-             ENDIF
-            ENDIF
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDIF
-#endif
 #endif
 
 C     Print the global mean to standard output, this is a measure
