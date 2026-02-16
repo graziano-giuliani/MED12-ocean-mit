@@ -242,32 +242,34 @@ CEOP
       theVol_M = 0.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO K=1,myNr
-         DO J=1,sNy
-          DO I=1,sNx
-           jG = myYGlobalLo-1+(bj-1)*sNy+J
-           iG = myXGlobalLo-1+(bi-1)*sNx+I
-           IF ( iG <= IG_BEGIN_ATLANTIC ) then
-            tmpVal = arrFld(I,J,K,bi,bj)
-            IF (arrMask(I,J,bi,bj).NE.0.) THEN
-             tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
-             theVol_A = theVol_A   + tmpVol
-             theMean_A = theMean_A + tmpVol*tmpVal
+        IF ( arrDr(1).GE.zeroRS ) THEN
+         DO K=1,myNr
+          DO J=1,sNy
+           DO I=1,sNx
+            jG = myYGlobalLo-1+(bj-1)*sNy+J
+            iG = myXGlobalLo-1+(bi-1)*sNx+I
+            IF ( iG <= IG_BEGIN_ATLANTIC ) then
+             tmpVal = arrFld(I,J,K,bi,bj)
+             IF (arrMask(I,J,bi,bj).NE.0.) THEN
+              tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
+              theVol_A = theVol_A   + tmpVol
+              theMean_A = theMean_A + tmpVol*tmpVal
+             ENDIF
             ENDIF
-           ENDIF
-           IF ( ( iG > IG_BEGIN_ATLANTIC ) .and.
-     &          ( iG < IG_BEGIN_BLACKSEA .and.
-     &            jG < JG_BEGIN_BLACKSEA ) ) then
-            tmpVal = arrFld(I,J,K,bi,bj)
-            IF (arrMask(I,J,bi,bj).NE.0.) THEN
-             tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
-             theVol_M = theVol_M   + tmpVol
-             theMean_M = theMean_M + tmpVol*tmpVal
+            IF ( ( iG > IG_BEGIN_ATLANTIC ) .and.
+     &           ( iG < IG_BEGIN_BLACKSEA .and.
+     &             jG < JG_BEGIN_BLACKSEA ) ) then
+             tmpVal = arrFld(I,J,K,bi,bj)
+             IF (arrMask(I,J,bi,bj).NE.0.) THEN
+              tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
+              theVol_M = theVol_M   + tmpVol
+              theMean_M = theMean_M + tmpVol*tmpVal
+             ENDIF
             ENDIF
-           ENDIF
+           ENDDO
           ENDDO
          ENDDO
-        ENDDO
+        END IF
        ENDDO
       ENDDO
       _GLOBAL_SUM_RS(theVol_A,myThid)
@@ -279,19 +281,21 @@ CEOP
        meanCorr = theMean
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO K=1,myNr
-          DO J=1,sNy
-           DO I=1,sNx
-            jG = myYGlobalLo-1+(bj-1)*sNy+J
-            iG = myXGlobalLo-1+(bi-1)*sNx+I
-            IF ( iG <= IG_BEGIN_ATLANTIC ) then
-             IF (arrMask(I,J,bi,bj).NE.0.) THEN
-              arrFld(I,J,K,bi,bj) = arrFld(I,J,K,bi,bj) - theMean
+         IF ( arrDr(1).GE.zeroRS ) THEN
+          DO K=1,myNr
+           DO J=1,sNy
+            DO I=1,sNx
+             jG = myYGlobalLo-1+(bj-1)*sNy+J
+             iG = myXGlobalLo-1+(bi-1)*sNx+I
+             IF ( iG <= IG_BEGIN_ATLANTIC ) then
+              IF (arrMask(I,J,bi,bj).NE.0.) THEN
+               arrFld(I,J,K,bi,bj) = arrFld(I,J,K,bi,bj) - theMean
+              ENDIF
              ENDIF
-            ENDIF
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
+         END IF
         ENDDO
        ENDDO
       ELSE
