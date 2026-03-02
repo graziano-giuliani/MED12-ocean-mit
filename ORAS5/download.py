@@ -15,7 +15,9 @@ for year in range(1958,2015):
             "vertical_resolution": "all_levels",
             "variable": [
                 "potential_temperature",
-                "salinity"
+                "salinity",
+                "meridional_velocity",
+                "zonal_velocity",
             ],
             "year": [repr(year)],
             "month": [f"{month:02d}"]
@@ -46,7 +48,9 @@ for year in range(2015,2025):
             "vertical_resolution": "all_levels",
             "variable": [
                 "potential_temperature",
-                "salinity"
+                "salinity",
+                "meridional_velocity",
+                "zonal_velocity",
             ],
             "year": [repr(year)],
             "month": [f"{month:02d}"]
