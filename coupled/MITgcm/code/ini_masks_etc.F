@@ -526,7 +526,8 @@ C convert from local x|y index I|J to global x|y index iG|jG
             ENDIF
             IF (iG <= IG_BEGIN_ATLANTIC ) then
              EmPmR_Atlantic(I,J,bi,bj)=0.
-             EmPmR_SALT_msk(I,J,bi,bj)=10.0
+C            This should be tuned.
+             EmPmR_SALT_msk(I,J,bi,bj)=0.0
             ENDIF
 #endif
          ENDDO

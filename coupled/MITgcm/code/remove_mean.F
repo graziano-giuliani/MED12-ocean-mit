@@ -229,17 +229,27 @@ C     !LOCAL VARIABLES:
       _RS theVol_A
       _RS theMean_M
       _RS theVol_M
-      _RS tmpval
+      _RS theMean_B
+      _RS theVol_B
+      _RS tmpVal
+      _RS w1
+      _RS w2
       INTEGER iG, jG, iGo, jGo
 #endif
 #endif
 CEOP
 
 #if defined(ENEA_COUPLER) && defined(MED_12_ATLANTIC)
+C     The fraction in the Atlantic
+      w1 = 0.65
+C     The fraction of the (1-w1) that goes in the Mediterranean
+      w2 = 0.90
       theMean_A = 0.
       theVol_A = 0.
       theMean_M = 0.
       theVol_M = 0.
+      theMean_B = 0.
+      theVol_B = 0.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         IF ( arrDr(1).GE.zeroRS ) THEN
@@ -248,58 +258,118 @@ CEOP
            DO I=1,sNx
             jG = myYGlobalLo-1+(bj-1)*sNy+J
             iG = myXGlobalLo-1+(bi-1)*sNx+I
-            IF ( iG <= IG_BEGIN_ATLANTIC ) then
-             tmpVal = arrFld(I,J,K,bi,bj)
+            tmpVal = arrFld(I,J,K,bi,bj)
+            IF ( iG <= IG_BEGIN_ATLANTIC ) THEN
              IF (arrMask(I,J,bi,bj).NE.0.) THEN
               tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
               theVol_A = theVol_A   + tmpVol
               theMean_A = theMean_A + tmpVol*tmpVal
              ENDIF
             ENDIF
-            IF ( ( iG > IG_BEGIN_ATLANTIC ) .and.
-     &           ( iG < IG_BEGIN_BLACKSEA .and.
-     &             jG < JG_BEGIN_BLACKSEA ) ) then
-             tmpVal = arrFld(I,J,K,bi,bj)
+            IF ( iG > IG_BEGIN_ATLANTIC .and.
+     &         ( iG < IG_BEGIN_BLACKSEA .and.
+     &           jG < JG_BEGIN_BLACKSEA ) )THEN
              IF (arrMask(I,J,bi,bj).NE.0.) THEN
               tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
               theVol_M = theVol_M   + tmpVol
               theMean_M = theMean_M + tmpVol*tmpVal
              ENDIF
             ENDIF
+            IF ( iG > IG_BEGIN_ATLANTIC .and.
+     &         ( iG >= IG_BEGIN_BLACKSEA .and.
+     &           jG >= JG_BEGIN_BLACKSEA ) )THEN
+             IF (arrMask(I,J,bi,bj).NE.0.) THEN
+              tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
+              theVol_B = theVol_B   + tmpVol
+              theMean_B = theMean_B + tmpVol*tmpVal
+             ENDIF
+            ENDIF
            ENDDO
           ENDDO
          ENDDO
-        END IF
+        ENDIF
        ENDDO
       ENDDO
       _GLOBAL_SUM_RS(theVol_A,myThid)
       _GLOBAL_SUM_RS(theMean_A,myThid)
       _GLOBAL_SUM_RS(theVol_M,myThid)
       _GLOBAL_SUM_RS(theMean_M,myThid)
-      IF (theVol_A.GT.0.) THEN
-       theMean = (theMean_A+ theMEAN_M)/theVol_A
-       meanCorr = theMean
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         IF ( arrDr(1).GE.zeroRS ) THEN
-          DO K=1,myNr
-           DO J=1,sNy
-            DO I=1,sNx
-             jG = myYGlobalLo-1+(bj-1)*sNy+J
-             iG = myXGlobalLo-1+(bi-1)*sNx+I
-             IF ( iG <= IG_BEGIN_ATLANTIC ) then
-              IF (arrMask(I,J,bi,bj).NE.0.) THEN
-               arrFld(I,J,K,bi,bj) = arrFld(I,J,K,bi,bj) - theMean
+      _GLOBAL_SUM_RS(theVol_B,myThid)
+      _GLOBAL_SUM_RS(theMean_B,myThid)
+      tmpVal = (theMean_A+theMean_M+theMean_B)
+      IF (tmpVal > 0.0 ) THEN
+       IF ((theVol_A+theVol_M+theVOl_B).GT.0.) THEN
+        meanCorr = (theMean_A+theMean_M+theMean_B) /
+     &             (theVol_A+theVol_M+theVol_B)
+        theMean = (w1*tmpval)/theVol_A
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          IF ( arrDr(1).GE.zeroRS ) THEN
+           DO K=1,myNr
+            DO J=1,sNy
+             DO I=1,sNx
+              jG = myYGlobalLo-1+(bj-1)*sNy+J
+              iG = myXGlobalLo-1+(bi-1)*sNx+I
+              IF ( iG <= IG_BEGIN_ATLANTIC ) then
+               IF (arrMask(I,J,bi,bj).NE.0.) THEN
+                arrFld(I,J,K,bi,bj) = arrFld(I,J,K,bi,bj) - theMean
+               ENDIF
               ENDIF
-             ENDIF
+             ENDDO
             ENDDO
            ENDDO
-          ENDDO
-         END IF
+          ENDIF
+         ENDDO
         ENDDO
-       ENDDO
+        theMean = ((1.0-w1)*w2*tmpVal)/theVol_M
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          IF ( arrDr(1).GE.zeroRS ) THEN
+           DO K=1,myNr
+            DO J=1,sNy
+             DO I=1,sNx
+              jG = myYGlobalLo-1+(bj-1)*sNy+J
+              iG = myXGlobalLo-1+(bi-1)*sNx+I
+              IF ( iG > IG_BEGIN_ATLANTIC .and.
+     &           ( iG < IG_BEGIN_BLACKSEA .and.
+     &             jG < JG_BEGIN_BLACKSEA ) ) then
+               IF (arrMask(I,J,bi,bj).NE.0.) THEN
+                arrFld(I,J,K,bi,bj) = arrFld(I,J,K,bi,bj) - theMean
+               ENDIF
+              ENDIF
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDIF
+         ENDDO
+        ENDDO
+        theMean = ((1.0-w1)*(1.0-w2)*tmpVal)/theVol_B
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          IF ( arrDr(1).GE.zeroRS ) THEN
+           DO K=1,myNr
+            DO J=1,sNy
+             DO I=1,sNx
+              jG = myYGlobalLo-1+(bj-1)*sNy+J
+              iG = myXGlobalLo-1+(bi-1)*sNx+I
+              IF ( iG > IG_BEGIN_ATLANTIC .and.
+     &           ( iG >= IG_BEGIN_BLACKSEA .and.
+     &             jG >= JG_BEGIN_BLACKSEA ) ) then
+               IF (arrMask(I,J,bi,bj).NE.0.) THEN
+                arrFld(I,J,K,bi,bj) = arrFld(I,J,K,bi,bj) - theMean
+               ENDIF
+              ENDIF
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDIF
+         ENDDO
+        ENDDO
+       ELSE
+        meanCorr = 0.0
+       ENDIF
       ELSE
-       meanCorr = 0. _d 0
+       meanCorr = 0.0
       ENDIF
 #else
       DO bj=myByLo(myThid),myByHi(myThid)
