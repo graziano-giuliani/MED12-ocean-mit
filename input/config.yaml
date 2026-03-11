@@ -1,27 +1,48 @@
-source_init: medhymap
-source_bc: ec_earth3_veg
+source_init: medhymap oras5
+source_obcs: oras5
+source_rbcs: oras5
+mit_dt: 150
+mit_rbcs_dt: 2628000
 oras5:
         path: ../ORAS5_MIT
-        variables: votemper vosaline
+        variables_obcs: sossheig
+        variables_rbcs: votemper vosaline
+        variables_init: sossheig
 medhymap:
         path: ../MEDHYMAP_MIT
-        variables: temperature salinity
+        variables_obcs: 
+        variables_rbcs: temperature salinity
+        variables_init: temperature salinity
 ec_earth3_veg:
         path: ../EC-Earth3-Veg_MIT
-        variables: thetao so
+        variables_obcs: zos
+        variables_rbcs: thetao so
+        variables_init: thetao so
 mpi-esm1-2-hr:
         path: ../MPI-ESM1-2-HR_MIT
-        variables: thetao so
+        variables_obcs: zos
+        variables_rbcs: thetao so
+        variables_init: thetao so
 nor-esm2-mm:
         path: ../NorESM2-MM_MIT
-        variables: thetao so
-start_year: 1968
+        variables_obcs: zos
+        variables_rbcs: thetao so
+        variables_init: thetao so
+start_year: 1979
 start_month: 8
-end_year: 2100
-end_month: 2
+end_year: 1987
+end_month: 9
 ic_decades: 1
 boundary:
-        North: False
-        West: True
-        South: False
-        East: False
+        North:
+             active: True
+             j: 130
+        West:
+             active: True
+             i: 0
+        South:
+             active: True
+             j: 24
+        East:
+             active: False
+             i: 0

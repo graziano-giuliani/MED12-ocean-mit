@@ -191,6 +191,7 @@ C     === Global data ===
 #include "GRID.h"
 
 #ifdef ENEA_COUPLER
+#include "FFIELDS.h"
 #include "COMMON_ENEA.h"
 #endif
 
@@ -221,29 +222,26 @@ C     !LOCAL VARIABLES:
       INTEGER bi, bj, i, j, k
       _RL volTile(nSx,nSy), sumTile(nSx,nSy)
       _RL tmpVol, volGlob, sumGlob, theMean
-      _RS meanCorr
+      _RL meanCorr
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef ALLOW_ADDFLUID
 #ifdef ENEA_COUPLER
 #ifdef MED_12_ATLANTIC
-      _RS theMean_A
-      _RS theVol_A
-      _RS theMean_M
-      _RS theVol_M
-      _RS theMean_B
-      _RS theVol_B
-      _RS tmpVal
-      _RS w1
-      _RS w2
+      _RL theMean_A, sumGlob_A
+      _RL theVol_A, volGlob_A
+      _RL theMean_M, sumGlob_M
+      _RL theVol_M, volGlob_M
+      _RL theMean_B, sumGlob_B
+      _RL theVol_B, volGlob_B
+      _RL tmpVal
       INTEGER iG, jG, iGo, jGo
+#endif
 #endif
 #endif
 CEOP
 
+#ifdef ALLOW_ADDFLUID
 #if defined(ENEA_COUPLER) && defined(MED_12_ATLANTIC)
-C     The fraction in the Atlantic
-      w1 = 0.65
-C     The fraction of the (1-w1) that goes in the Mediterranean
-      w2 = 0.90
       theMean_A = 0.
       theVol_A = 0.
       theMean_M = 0.
@@ -259,7 +257,7 @@ C     The fraction of the (1-w1) that goes in the Mediterranean
             jG = myYGlobalLo-1+(bj-1)*sNy+J
             iG = myXGlobalLo-1+(bi-1)*sNx+I
             tmpVal = arrFld(I,J,K,bi,bj)
-            IF ( iG <= IG_BEGIN_ATLANTIC ) THEN
+            IF ( iG > 2 .and. iG <= IG_BEGIN_ATLANTIC ) THEN
              IF (arrMask(I,J,bi,bj).NE.0.) THEN
               tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
               theVol_A = theVol_A   + tmpVol
@@ -290,18 +288,20 @@ C     The fraction of the (1-w1) that goes in the Mediterranean
         ENDIF
        ENDDO
       ENDDO
-      _GLOBAL_SUM_RS(theVol_A,myThid)
-      _GLOBAL_SUM_RS(theMean_A,myThid)
-      _GLOBAL_SUM_RS(theVol_M,myThid)
-      _GLOBAL_SUM_RS(theMean_M,myThid)
-      _GLOBAL_SUM_RS(theVol_B,myThid)
-      _GLOBAL_SUM_RS(theMean_B,myThid)
-      tmpVal = (theMean_A+theMean_M+theMean_B)
+
+      CALL GLOBAL_SUM_TILE_RL( theVol_A, volGlob_A, myThid )
+      CALL GLOBAL_SUM_TILE_RL( theMean_A, sumGlob_A, myThid )
+      CALL GLOBAL_SUM_TILE_RL( theVol_M, volGlob_M, myThid )
+      CALL GLOBAL_SUM_TILE_RL( theMean_M, sumGlob_M, myThid )
+      CALL GLOBAL_SUM_TILE_RL( theVol_B, volGlob_B, myThid )
+      CALL GLOBAL_SUM_TILE_RL( theMean_B, sumGlob_B, myThid )
+
+      tmpVal = sumGlob_A+sumGlob_M+sumGlob_B
+      tmpVol = volGlob_A+volGlob_M+volGlob_B
       IF (tmpVal > 0.0 ) THEN
-       IF ((theVol_A+theVol_M+theVOl_B).GT.0.) THEN
-        meanCorr = (theMean_A+theMean_M+theMean_B) /
-     &             (theVol_A+theVol_M+theVol_B)
-        theMean = (w1*tmpval)/theVol_A
+       IF (tmpVol .GT. 0.) THEN
+        meanCorr = tmpVal/tmpVol
+        theMean = tmpVal/volGlob_A
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           IF ( arrDr(1).GE.zeroRS ) THEN
@@ -310,53 +310,9 @@ C     The fraction of the (1-w1) that goes in the Mediterranean
              DO I=1,sNx
               jG = myYGlobalLo-1+(bj-1)*sNy+J
               iG = myXGlobalLo-1+(bi-1)*sNx+I
-              IF ( iG <= IG_BEGIN_ATLANTIC ) then
+              IF ( iG > 2 .and. iG <= IG_BEGIN_ATLANTIC ) then
                IF (arrMask(I,J,bi,bj).NE.0.) THEN
-                arrFld(I,J,K,bi,bj) = arrFld(I,J,K,bi,bj) - theMean
-               ENDIF
-              ENDIF
-             ENDDO
-            ENDDO
-           ENDDO
-          ENDIF
-         ENDDO
-        ENDDO
-        theMean = ((1.0-w1)*w2*tmpVal)/theVol_M
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          IF ( arrDr(1).GE.zeroRS ) THEN
-           DO K=1,myNr
-            DO J=1,sNy
-             DO I=1,sNx
-              jG = myYGlobalLo-1+(bj-1)*sNy+J
-              iG = myXGlobalLo-1+(bi-1)*sNx+I
-              IF ( iG > IG_BEGIN_ATLANTIC .and.
-     &           ( iG < IG_BEGIN_BLACKSEA .and.
-     &             jG < JG_BEGIN_BLACKSEA ) ) then
-               IF (arrMask(I,J,bi,bj).NE.0.) THEN
-                arrFld(I,J,K,bi,bj) = arrFld(I,J,K,bi,bj) - theMean
-               ENDIF
-              ENDIF
-             ENDDO
-            ENDDO
-           ENDDO
-          ENDIF
-         ENDDO
-        ENDDO
-        theMean = ((1.0-w1)*(1.0-w2)*tmpVal)/theVol_B
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          IF ( arrDr(1).GE.zeroRS ) THEN
-           DO K=1,myNr
-            DO J=1,sNy
-             DO I=1,sNx
-              jG = myYGlobalLo-1+(bj-1)*sNy+J
-              iG = myXGlobalLo-1+(bi-1)*sNx+I
-              IF ( iG > IG_BEGIN_ATLANTIC .and.
-     &           ( iG >= IG_BEGIN_BLACKSEA .and.
-     &             jG >= JG_BEGIN_BLACKSEA ) ) then
-               IF (arrMask(I,J,bi,bj).NE.0.) THEN
-                arrFld(I,J,K,bi,bj) = arrFld(I,J,K,bi,bj) - theMean
+                addmass(I,J,K,bi,bj) = theMean
                ENDIF
               ENDIF
              ENDDO
@@ -371,6 +327,7 @@ C     The fraction of the (1-w1) that goes in the Mediterranean
       ELSE
        meanCorr = 0.0
       ENDIF
+#endif
 #else
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)

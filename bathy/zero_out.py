@@ -256,5 +256,14 @@ with Dataset(ifile,"r") as src, Dataset(ofile, "w") as dst:
     with open(binfile,"w") as fbin:
         bathy.astype('>f4').tofile(fbin)
 
+mask = np.where(bathy > -1,0,1)
+ds_rbcs = Dataset('maskrbcs.nc','r+')
+mask_rbcs = ds_rbcs.variables['maskrbcs'][:]
+for k in range(mask_rbcs.shape[0]):
+    mask_rbcs[k,:,:] = np.where(mask > 0,mask_rbcs[k,:,:],0.0)
+ds_rbcs.variables['maskrbcs'][:] = mask_rbcs[:]
+with open("../input/maskrbcs.bin","wb") as fo:
+    mask_rbcs.data.astype('>f4').tofile(fo)
+
 cdo = cdo.Cdo( )
 cdo.selvar("mask",input=ofile, output="mask.nc")

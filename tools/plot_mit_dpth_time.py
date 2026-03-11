@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 
 xarray.set_options(keep_attrs=True)
 
-#ocean_shapes = '/leonardo_work/ICT25_ESP/GIS/SeaVoX_sea_areas/SeaVoX_sea_areas_polygons_v19.shp'
+#ocean_shapes = '/leonardo_work/ICT26_ESP/GIS/SeaVoX_sea_areas/SeaVoX_sea_areas_polygons_v19.shp'
 #gdf = geopandas.read_file(ocean_shapes)
 #geometries = gdf[REGION == 'MEDITERRANEAN REGION']
 #geometries.to_file('Mediterraneo.shp')

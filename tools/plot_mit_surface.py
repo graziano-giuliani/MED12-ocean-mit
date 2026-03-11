@@ -42,17 +42,22 @@ colors = { "so"     : cmocean.cm.haline,
 
 for ncf in sys.argv[1:]:
     vbase = os.path.splitext(ncf)[0]
-    vname = os.path.basename(ncf).split('_')[0]
+    vname = 'so' #os.path.basename(ncf).split('_')[0]
 
     ds = xr.load_dataset(ncf)
-    p = ds[vname][0,:,:].plot(x = "lon", y = "lat",
-                              subplot_kws = subplot_kws,
-                              cbar_kwargs = cbar_kws,
-                              levels = levels[vname],
-                              extend = 'both',
-                              size = 10.0,
-                              aspect = 3.2,
-                              cmap = colors[vname])
+    if "depth" in ds[vname].dims:
+        vv = ds[vname].isel(time=0,depth=0)
+    else:
+        vv = ds[vname].isel(time=0)
+    p = vv.plot(x = "lon", y = "lat",
+                subplot_kws = subplot_kws,
+                cbar_kwargs = cbar_kws,
+                #levels = levels[vname],
+                vmin = -0.5, vmax = 0.5,
+                extend = 'both',
+                size = 10.0,
+                aspect = 3.2,
+                cmap = cmocean.cm.balance) #colors[vname])
     p.axes.gridlines(draw_labels=True, dms=True, x_inline=False, y_inline=False)
     p.axes.set_extent((-8,43,30,45))
     plt.savefig(os.path.basename(vbase)+'.png', bbox_inches='tight')

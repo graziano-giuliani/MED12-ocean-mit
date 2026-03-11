@@ -7,8 +7,10 @@
 #SBATCH --nodes               1
 #SBATCH --ntasks-per-node     112
 #SBATCH --partition           dcgp_usr_prod
-###SBATCH --qos                 dcgp_qos_dbg
+#SBATCH --qos=qos_lowprio
 #SBATCH --time                00:30:00
+
+source /leonardo/home/userexternal/ggiulian/modules_new
 
 datadir=$1
 idate=$2

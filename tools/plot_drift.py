@@ -22,9 +22,10 @@ depths = [ { 'name'   : 'bottom',
              'bottom' : 200, },
          ]
 
+paths = [ 'initial', 'loop?' ]
+
 sdir = pathlib.Path(sys.argv[1]) 
 bases = sys.argv[2:]
-paths = ['initial','loop?']
 
 ocean_shapes = 'Mediterraneo.shp'
 gdf = geopandas.read_file(ocean_shapes)
@@ -32,10 +33,12 @@ regions = regionmask.from_geopandas(gdf, names='SUB_REGION',
               abbrevs='_from_name')
 
 for base in bases:
-    patterns = ( os.path.join(x,'**',base,base+'*.nc') for x in paths )
+    patterns = ( os.path.join(x,'CORDEX-CMIP6','**',
+                        base,base+'*.nc') for x in paths )
     matched_paths = list(
       itertools.chain.from_iterable(sdir.glob(pattern)
           for pattern in patterns) )
+    print(len(matched_paths))
 
     ds = xr.load_dataset(matched_paths[0])
     lat = ds['lat'][:]
@@ -50,18 +53,44 @@ for base in bases:
     var = ds[base]
     for i, med_region in enumerate(gdf.itertuples()):
         subregion = med_region.SUB_REGION
-        for d in depths:
-            vv = var.where(mask2d.isel(region=i), other=np.nan).sel(
-              depth=slice(d['top'],d['bottom'])).mean(dim=('lat','lon','depth'))
+        if 'depth' in var.dims:
+            for d in depths:
+                xx = var.where(mask2d.isel(region=i), other=np.nan).sel(
+                  depth=slice(d['top'],d['bottom']))
+                if ( len(ds.time) > 24 ):
+                    xv = xx.mean(dim=('lat','lon',
+                                 'depth')).groupby("time.month")
+                    vv = xv-xv.mean(dim="time")
+                else:
+                    vv = xx.mean(dim=('lat','lon','depth')) 
+                vv = vv-vv[0]
+                if np.sum(~np.isnan(vv)) > 0:
+                    print(subregion+' : '+d['name'])
+                    plt.plot(vv)
+                    plt.title(subregion.lower( ).capitalize( )+'\n'+
+                      long_name+' anomaly ['+units+']\n'+d['name']+' depth ['+
+                      repr(d['top'])+'-'+repr(d['bottom'])+']')
+                    oname = base+'-'+'_'.join(subregion.lower( ).split())
+                    oname = oname.translate(str.maketrans(',','_'))
+                    oname = oname+'_'+d['name']+'.png'
+                    plt.savefig(oname)
+                    plt.close("all")
+        else:
+            xx = var.where(mask2d.isel(region=i), other=np.nan)
+            if ( len(ds.time) > 24 ):
+                xv = xx.mean(dim=('lat','lon')).groupby("time.month")
+                vv = xv-xv.mean(dim="time")
+            else:
+                vv = xx.mean(dim=('lat','lon'))
+            vv = vv-vv[0]
             if np.sum(~np.isnan(vv)) > 0:
-                print(subregion+' : '+d['name'])
+                print(subregion+' : surface')
                 plt.plot(vv)
-                plt.title(subregion.lower( ).capitalize( )+' '+
-                  long_name+' ['+units+']\n'+d['name']+' depth ['+
-                  repr(d['top'])+'-'+repr(d['bottom'])+']')
+                plt.title(subregion.lower( ).capitalize( )+'\n'+
+                    long_name+' anomaly ['+units+']')
                 oname = base+'-'+'_'.join(subregion.lower( ).split())
                 oname = oname.translate(str.maketrans(',','_'))
-                oname = oname+'_'+d['name']+'.png'
+                oname = oname+'.png'
                 plt.savefig(oname)
                 plt.close("all")
     ds.close( )

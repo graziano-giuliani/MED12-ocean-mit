@@ -38,8 +38,11 @@
  bottomDragQuadratic = 0.002,
  select_rStar = 2,
  NonLinFreeSurf = 4,
+ freeSurfFac = 1.0,
  useRealFreshWaterFlux = .true.,
- balanceEmPmR = .false.,
+ selectAddFluid = 1,
+ balanceEmPmR = .true.,
+ balancePrintMean = .true.,
  hMixCriteria = -0.2,
  allowFreezing = .true.,
  /
@@ -53,8 +56,8 @@
 ! Time stepping parameters
  &PARM03
  startTime  =           0.,
- endTime    =   252547200.,
- ! pickupSuff = '0001683072',
+ endTime    =   255139200.,
+ !pickupSuff = '0001683072',
 !----------------------
  deltaT = 150.,
  deltaTtracer= 150.0,
@@ -94,6 +97,7 @@
  !
  &PARM05
  bathyFile = 'BATHYMETRY.bin',
- hydrogSaltFile = 'medhymap_salinity_197908_1_decades.bin',
- hydrogThetaFile = 'medhymap_temperature_197908_1_decades.bin',
+ pSurfInitFile = 'mitgcm_init/oras5_sossheig_197908_1_decades.bin',
+ hydrogSaltFile = 'mitgcm_init/medhymap_salinity_197908_1_decades.bin',
+ hydrogThetaFile = 'mitgcm_init/medhymap_temperature_197908_1_decades.bin',
  /

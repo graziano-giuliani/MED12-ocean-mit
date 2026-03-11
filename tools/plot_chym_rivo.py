@@ -2,6 +2,8 @@
 
 import os
 import sys
+import pathlib
+import itertools
 import datetime
 import numpy as np
 import xarray as xr
@@ -13,9 +15,9 @@ color2 = 'blue'
 color3 = 'salmon'
 color4 = 'aqua'
 
-obspath = '/leonardo_work/ICT25_ESP/OBS/RIVERS/RivDIS1.1'
-datapath = '/leonardo_work/ICT25_ESP/COUPLED/coupled_new/loop1/CORDEX-CMIP6'
-cordexpath = 'DD/MED-12/ICTP/ERA5/evaluation/r1i1p1f1/RegCM-ES1-1/v1-r1/day'
+paths = [ 'initial', 'loop?' ]
+obspath = '/leonardo_work/ICT26_ESP/OBS/RIVERS/RivDIS1.1'
+
 varname = 'rivo'
 
 riverlist = ( { 'name' : 'Danube',
@@ -60,12 +62,19 @@ rivdis['MONTH'] = pd.to_numeric(rivdis['MONTH'],
         downcast='integer', errors='coerce')
 rivdis['DISCHRG'] = pd.to_numeric(rivdis['DISCHRG'],
         downcast='float', errors='coerce')
-flist = os.path.join(datapath,cordexpath,varname,'*nc')
-rivofile = xr.open_mfdataset(flist, decode_coords=all,
-        concat_dim="time", combine='nested')
 
-ymstart = rivofile.time[0].dt.strftime('%Y-%m').values
-ymstop = rivofile.time[-1].dt.strftime('%Y-%m').values
+sdir = pathlib.Path(sys.argv[1])
+patterns = ( os.path.join(x,'CORDEX-CMIP6','**',
+                        varname,varname+'*.nc') for x in paths )
+matched_paths = list(
+      itertools.chain.from_iterable(sdir.glob(pattern)
+      for pattern in patterns) )
+
+rivofile = xr.open_mfdataset(sorted(matched_paths), concat_dim="time",
+      combine='nested', data_vars='minimal', compat='no_conflicts')
+
+ymstart = min(rivofile.time).dt.strftime('%Y-%m').values
+ymstop = max(rivofile.time).dt.strftime('%Y-%m').values
 
 fig, axs = plt.subplots(2,5,figsize=(32,10))
 
@@ -82,7 +91,7 @@ for river, ax in zip(riverlist, axs.reshape(-1)):
 
     rivo = rivofile.isel(lon=river['iloc'], lat=river['jloc'])
     data2 = rivo[varname].groupby('time.month').mean( ).values
-    sigma2 = rivo[varname].resample(
+    sigma2 = rivo[varname].sortby('time').resample(
             time='MS').mean( ).groupby('time.month').std( ).values
     months = np.linspace(1,12,12)
 

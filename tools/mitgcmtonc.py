@@ -319,30 +319,30 @@ for binfile in sys.argv[1:]:
     if names[vname]['stagger'] == 'c':
       lonfile = 'XC.data'
       latfile = 'YC.data'
-      nnx1 = 20
+      nnx1 = 0
       nnx2 = 631
-      nny1 = 1
+      nny1 = 0
       nny2 = 362
     elif names[vname]['stagger'] == 'u':
       lonfile = 'XG.data'
       latfile = 'YC.data'
-      nnx1 = 20
+      nnx1 = 0
       nnx2 = 631
-      nny1 = 1
+      nny1 = 0
       nny2 = 362
     elif names[vname]['stagger'] == 'v':
       lonfile = 'XC.data'
       latfile = 'YG.data'
-      nnx1 = 20
+      nnx1 = 0
       nnx2 = 631
-      nny1 = 1
+      nny1 = 0
       nny2 = 362
     elif names[vname]['stagger'] == 'z':
       lonfile = 'XC.data'
       latfile = 'YC.data'
-      nnx1 = 20
+      nnx1 = 0
       nnx2 = 631
-      nny1 = 1
+      nny1 = 0
       nny2 = 362
     else:
       lonfile = 'XC.data'
@@ -517,9 +517,13 @@ for binfile in sys.argv[1:]:
     if 'pickup' in vname:
         continue
     else:
+        try:
+            os.mkdir('mitgcm_output')
+        except:
+            pass
         metafile = os.path.splitext(binfile)[0]+'.meta'
         try:
-            os.unlink(binfile)
-            os.unlink(metafile)
+            os.rename(binfile, os.path.join('mitgcm_output',binfile))
+            os.rename(metafile, os.path.join('mitgcm_output',metafile))
         except:
             pass

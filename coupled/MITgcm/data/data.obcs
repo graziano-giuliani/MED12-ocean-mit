@@ -2,13 +2,14 @@
 ! Open-boundaries
 ! *****************************************
  &OBCS_PARM01
-!
- OBWetaFile='sossheig_197908_198708.bin',
-!
- OB_Iwest=368*1,
-!
- useOBCSprescribe=.TRUE.,
-!
+ OBWetaFile = 'mit_obcs/West_sossheig_197908_198709.bin',
+ OBSetaFile = 'mit_obcs/South_sossheig_197908_198709.bin',
+ OBNetaFile = 'mit_obcs/North_sossheig_197908_198709.bin',
+ OB_Iwest(25:131) = 1,
+ OB_Jsouth(1:17) = 25,
+ OB_Jnorth(1:16) = 131,
+ useOBCSprescribe = .true.,
+ useOBCSbalance = .true.
  /
 !
 ! *****************************************

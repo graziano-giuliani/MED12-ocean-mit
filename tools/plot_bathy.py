@@ -30,9 +30,8 @@ p = xr.ufuncs.negative(ds.elevation).plot(x='lon',y='lat',
 ax.gridlines(draw_labels=True,
              dms=True, x_inline=False, y_inline=False)
 ax.coastlines()
-ax.add_feature(cfeature.LAND, zorder=100, facecolor='white')
+ax.add_feature(cfeature.LAND)
 ax.set_extent((-8,43,30,45))
 plt.tight_layout()
 fig.suptitle('EMODnet Bathymetry - DTM 2024')
-
-plt.show( )
+plt.savefig('bathymetry.png', bbox_inches='tight')

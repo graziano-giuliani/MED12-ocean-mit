@@ -2,16 +2,18 @@
 ! RBCS Parameters
 ! ***************
  &RBCS_PARM01
- useRBCsalt=.TRUE.,
- useRBCtemp=.TRUE.,
- rbcsForcingOffset=-1314000.,
- tauRelaxT=172800.,
- tauRelaxS=172800.,
- relaxTFile='votemper_197908_198708.bin',
- relaxSFile='vosaline_197908_198708.bin',
- rbcsForcingPeriod=2628000.,
- rbcsForcingCycle=270684000.,
- rbcsIniter = 0,
+ rbcsForcingCycle = 0,
+ rbcsSingleTimeFiles = .true.,
+ rbcsForcingOffset = 0.,
+ rbcsIter0 = 0,
+ deltaTrbcs = 150.,
+ rbcsForcingPeriod = 2628000.,
+ useRBCsalt = .true.,
+ useRBCtemp = .true.,
+ tauRelaxT = 172800.,
+ tauRelaxS = 172800.,
+ relaxTFile = 'mit_rbcs/votemper',
+ relaxSFile = 'mit_rbcs/vosaline',
  relaxMaskFile(1) ='maskrbcs.bin',
  relaxMaskFile(2) ='maskrbcs.bin',
  /

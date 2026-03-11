@@ -1,1 +1,1 @@
-/leonardo_work/ICT25_ESP/MITGCM/MED12-ocean-mit/grid/depth.nc
+../grid/depth.nc
