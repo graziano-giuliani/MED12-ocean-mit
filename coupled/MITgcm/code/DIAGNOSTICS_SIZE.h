@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS_SIZE.h,v 1.5 2008/02/05 15:31:19 jmc Exp $
-C $Name: checkpoint63a $
-
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics
@@ -22,11 +18,9 @@ C  and "diagSt_size" (statistics-diags) since values here are deliberately small
       INTEGER    diagSt_size
       PARAMETER( ndiagMax = 500 )
       PARAMETER( numlists = 28, numperlist = 20, numLevels=2*Nr )
-Ccgm      PARAMETER( numlists = 19, numperlist = 20, numLevels=2*Nr )
       PARAMETER( numDiags = 39*Nr )
       PARAMETER( nRegions = 0 , sizRegMsk = 1 , nStats = 4 )
       PARAMETER( diagSt_size = 10*Nr )
-
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

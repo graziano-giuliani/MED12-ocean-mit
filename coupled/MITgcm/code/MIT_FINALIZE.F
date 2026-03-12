@@ -194,6 +194,5 @@ C--   Write closedown status
       ENDIF
 
       END
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#endif
+#endif /* ENEA COUPLER */

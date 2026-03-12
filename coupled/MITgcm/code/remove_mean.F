@@ -312,7 +312,8 @@ CEOP
               iG = myXGlobalLo-1+(bi-1)*sNx+I
               IF ( iG > 2 .and. iG <= IG_BEGIN_ATLANTIC ) then
                IF (arrMask(I,J,bi,bj).NE.0.) THEN
-                addmass(I,J,K,bi,bj) = theMean
+                addmass(I,J,2,bi,bj) = 0.8*theMean
+                addmass(I,J,3,bi,bj) = 0.2*theMean
                ENDIF
               ENDIF
              ENDDO

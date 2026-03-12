@@ -14,10 +14,3 @@ CEOP
       INTEGER, PARAMETER :: IG_BEGIN_BLACKSEA = 450
       INTEGER, PARAMETER :: JG_BEGIN_BLACKSEA = 170
 #endif
-
-cgmMASK(
-      COMMON /SURF_MASK/ EmPmR_msk, EmPmR_SALT_msk, EmPmR_Atlantic
-      _RL        EmPmR_msk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL   EmPmR_SALT_msk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL   EmPmR_Atlantic(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-cgmMASK)

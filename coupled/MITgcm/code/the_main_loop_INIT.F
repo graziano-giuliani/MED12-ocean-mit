@@ -51,6 +51,9 @@
 #ifdef ALLOW_PROFILES
 # include "PROFILES_OPTIONS.h"
 #endif
+#ifdef ALLOW_OBSFIT
+# include "OBSFIT_OPTIONS.h"
+#endif
 #ifdef ALLOW_RBCS
 # include "RBCS_OPTIONS.h"
 #endif
@@ -182,8 +185,7 @@ c They provide the fields to be stored.
 #  ifdef ALLOW_OFFLINE
 #   include "OFFLINE.h"
 #  endif
-# if (defined ALLOW_CG2D_NSA || defined NONLIN_FRSURF || \
-      defined ALLOW_DEPTH_CONTROL)
+# if (defined ALLOW_CG2D_NSA || defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL)
 #   include "CG2D.h"
 #  endif
 #  ifdef ALLOW_DIVIDED_ADJOINT
@@ -201,6 +203,10 @@ C-- keep tamc.h here without ALLOW_AUTODIFF_TAMC for ALLOW_TAMC_CHECKPOINTING
 #  ifdef ALLOW_PROFILES
 #   include "PROFILES_SIZE.h"
 #   include "profiles.h"
+#  endif
+#  ifdef ALLOW_OBSFIT
+#   include "OBSFIT_SIZE.h"
+#   include "OBSFIT.h"
 #  endif
 #  ifdef ALLOW_ECCO
 #   include "ecco_cost.h"
@@ -225,14 +231,10 @@ C     it is important that this file is included after SEAICE_SIZE.h
 #ifdef ALLOW_TAPENADE
 # ifdef ALLOW_GMREDI
 #  include "GMREDI.h"
-#  include "GMREDI_TAVE.h"
 # endif
 # ifdef ALLOW_KPP
 #  include "KPP.h"
 c#  include "KPP_PARAMS.h"
-# endif
-# ifdef ALLOW_TIMEAVE
-#  include "TIMEAVE_STATV.h"
 # endif
 # ifdef ALLOW_EXF
 #  include "EXF_PARAM.h"
@@ -630,6 +632,8 @@ c--         choice of the 3-tupel ( nchklev_1, nchklev_2, nchklev_3 ).
 
 #  else /* ALLOW_TAMC_CHECKPOINTING  undefined */
 
+C      DO iloop = 1, nTimeSteps
+
 c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #  endif /* ALLOW_TAMC_CHECKPOINTING */
 # endif /* ALLOW_AUTODIFF */
@@ -637,7 +641,7 @@ c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #ifndef ALLOW_AUTODIFF
-
+C      DO iloop = 1, nTimeSteps
 #endif /* ALLOW_AUTODIFF */
 
 c--     >>> Loop body start <<<
@@ -657,7 +661,7 @@ C--   Reset the model iteration counter and the model time.
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_ECCO
-      IF ( useECCO ) then
+      IF ( useECCO ) THEN
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('COST_AVERAGESFIELDS',myThid)
 # endif
@@ -679,6 +683,18 @@ c--     Accumulate in-situ time averages of theta, salt, and SSH.
         CALL TIMER_STOP ('PROFILES_INLOOP    [MAIN_DO_LOOP]', myThid)
       ENDIF
 #endif /* ALLOW_PROFILES */
+
+#ifdef ALLOW_OBSFIT
+      IF ( useOBSFIT ) THEN
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('OBSFIT_INLOOP',myThid)
+#endif
+c--     Accumulate in-situ time averages of theta, salt, and SSH.
+        CALL TIMER_START('OBSFIT_INLOOP      [MAIN_DO_LOOP]', myThid)
+        CALL OBSFIT_INLOOP( myTime, myIter, myThid )
+        CALL TIMER_STOP ('OBSFIT_INLOOP      [MAIN_DO_LOOP]', myThid)
+      ENDIF
+#endif /* ALLOW_OBSFIT */
 
 #ifdef USE_PDAF
 C     PDAF analysis step
@@ -704,23 +720,13 @@ c--     >>> Loop body end <<<
       enddo
 #    endif
 #   else /* ndef ALLOW_TAMC_CHECKPOINTING */
-      
+C      ENDDO
 #   endif /* ALLOW_TAMC_CHECKPOINTING */
 # else /* ALLOW_AUTODIFF */
-
+C      ENDDO
 # endif /* ALLOW_AUTODIFF */
 #endif /* undef ALLOW_OPENAD */
 
-c     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STOPS   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-#ifdef ALLOW_ECCO
-c--     Accumulate time averages of temperature, salinity
-      CALL TIMER_START('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',myThid)
-      CALL COST_AVERAGESFIELDS( endtime, myThid )
-      CALL TIMER_STOP ('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',myThid)
-#endif /* ALLOW_ECCO */
-
       RETURN
       END
-#endif
+#endif /* ENEA COUPLER */

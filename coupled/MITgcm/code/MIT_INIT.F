@@ -54,7 +54,6 @@ C--   Get C preprocessor options
 #include "CPP_OPTIONS.h"
 
 #ifdef ENEA_COUPLER
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C !ROUTINE: MAIN
@@ -113,13 +112,13 @@ C     !LOCAL VARIABLES:
 C     msgBuf       :: I/O message buffer
 C     I            :: loop counter
 C     myThid       :: thread Id number
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL myTime
       INTEGER myIter
       INTEGER myThid
       INTEGER I
       INTEGER ILOOP
       INTEGER mpic
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 #ifdef USE_OMP_THREADING
       INTEGER OMP_GET_THREAD_NUM
@@ -210,6 +209,6 @@ C--      Each threads sets flag indicating it is done
   999 CONTINUE
       RETURN
       END
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#endif
+
+#endif /* ENEA_COUPLER */

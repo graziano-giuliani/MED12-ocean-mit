@@ -51,46 +51,49 @@
 #ifdef ALLOW_PROFILES
 # include "PROFILES_OPTIONS.h"
 #endif
+#ifdef ALLOW_OBSFIT
+# include "OBSFIT_OPTIONS.h"
+#endif
 #ifdef ALLOW_RBCS
 # include "RBCS_OPTIONS.h"
 #endif
 
 #ifdef ENEA_COUPLER
-!BOP
-!     !ROUTINE: THE_MAIN_LOOP
-!     !INTERFACE:
+CBOP
+C     !ROUTINE: THE_MAIN_LOOP
+C     !INTERFACE:
       SUBROUTINE THE_MAIN_LOOP_FINALIZE( myTime, myIter, myThid )
 
-!     !DESCRIPTION: \bv
-!     *================================================================*
-!     | SUBROUTINE the_main_loop
-!     | o Run the ocean model and evaluate the specified cost function.
-!     *================================================================*
-!     | THE_MAIN_LOOP is the toplevel routine for the Transformation of
-!     | Algorithm in Fortran (TAF).
-!     | For this purpose the initialization of the model was split into
-!     | two parts. Variables that are kept independent of control
-!     | parameters (e.g. horizontal grid dxC, etc.) are set in
-!     | INITIALISE_FIXED, whereas variables that can (potentially) be
-!     | modified by control parameters (e.g. initial temperature and
-!     | salinity) are initialized in INITIALISE_VARIA.
-!     *================================================================*
-!     \ev
+C     !DESCRIPTION: \bv
+C     *================================================================*
+C     | SUBROUTINE the_main_loop
+C     | o Run the ocean model and evaluate the specified cost function.
+C     *================================================================*
+C     | THE_MAIN_LOOP is the toplevel routine for the Transformation of
+C     | Algorithm in Fortran (TAF).
+C     | For this purpose the initialization of the model was split into
+C     | two parts. Variables that are kept independent of control
+C     | parameters (e.g. horizontal grid dxC, etc.) are set in
+C     | INITIALISE_FIXED, whereas variables that can (potentially) be
+C     | modified by control parameters (e.g. initial temperature and
+C     | salinity) are initialized in INITIALISE_VARIA.
+C     *================================================================*
+C     \ev
 
-!     !USES:
+C     !USES:
       IMPLICIT NONE
-!     == Global variables ==
+C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-!**************************************
+c**************************************
 #ifdef ALLOW_AUTODIFF
 # ifndef ALLOW_OPENAD
 
-! These includes are needed for
-! AD-checkpointing.
-! They provide the fields to be stored.
+c These includes are needed for
+c AD-checkpointing.
+c They provide the fields to be stored.
 
 #  include "GRID.h"
 #  include "DYNVARS.h"
@@ -182,7 +185,8 @@
 #  ifdef ALLOW_OFFLINE
 #   include "OFFLINE.h"
 #  endif
-# if (defined ALLOW_CG2D_NSA || defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL)
+# if (defined ALLOW_CG2D_NSA || defined NONLIN_FRSURF || \
+      defined ALLOW_DEPTH_CONTROL)
 #   include "CG2D.h"
 #  endif
 #  ifdef ALLOW_DIVIDED_ADJOINT
@@ -191,7 +195,7 @@
 #   endif
 #  endif
 
-!-- keep tamc.h here without ALLOW_AUTODIFF_TAMC for ALLOW_TAMC_CHECKPOINTING
+C-- keep tamc.h here without ALLOW_AUTODIFF_TAMC for ALLOW_TAMC_CHECKPOINTING
 #  include "tamc.h"
 
 #  ifdef ALLOW_GGL90
@@ -201,10 +205,14 @@
 #   include "PROFILES_SIZE.h"
 #   include "profiles.h"
 #  endif
+#  ifdef ALLOW_OBSFIT
+#   include "OBSFIT_SIZE.h"
+#   include "OBSFIT.h"
+#  endif
 #  ifdef ALLOW_ECCO
 #   include "ecco_cost.h"
 #  endif
-!     it is important that this file is included after SEAICE_SIZE.h
+C     it is important that this file is included after SEAICE_SIZE.h
 #  include "AUTODIFF_STORE.h"
 # endif /* undef ALLOW_OPENAD */
 
@@ -224,14 +232,10 @@
 #ifdef ALLOW_TAPENADE
 # ifdef ALLOW_GMREDI
 #  include "GMREDI.h"
-#  include "GMREDI_TAVE.h"
 # endif
 # ifdef ALLOW_KPP
 #  include "KPP.h"
-!#  include "KPP_PARAMS.h"
-# endif
-# ifdef ALLOW_TIMEAVE
-#  include "TIMEAVE_STATV.h"
+c#  include "KPP_PARAMS.h"
 # endif
 # ifdef ALLOW_EXF
 #  include "EXF_PARAM.h"
@@ -246,27 +250,27 @@
 # endif
 #endif /* ALLOW_TAPENADE */
 
-!**************************************
+c**************************************
 
-!     !INPUT/OUTPUT PARAMETERS:
-!     == Routine arguments ==
-!     note: under the multi-threaded model myIter and
-!           myTime are local variables passed around as routine
-!           arguments. Although this is fiddly it saves the need to
-!           impose additional synchronisation points when they are
-!           updated.
-!     myTime :: time counter for this thread
-!     myIter :: iteration counter for this thread
-!     myThid :: thread number for this instance of the routine.
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     note: under the multi-threaded model myIter and
+C           myTime are local variables passed around as routine
+C           arguments. Although this is fiddly it saves the need to
+C           impose additional synchronisation points when they are
+C           updated.
+C     myTime :: time counter for this thread
+C     myIter :: iteration counter for this thread
+C     myThid :: thread number for this instance of the routine.
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
 
-!     !FUNCTIONS:
-!     == Functions ==
+C     !FUNCTIONS:
+C     == Functions ==
 
-!     !LOCAL VARIABLES:
-!     == Local variables ==
+C     !LOCAL VARIABLES:
+C     == Local variables ==
       INTEGER iloop
 #ifdef STORE_LOADEDREC_TEST
       INTEGER bi,bj
@@ -283,10 +287,13 @@
 #  endif
 # endif /* ALLOW_TAMC_CHECKPOINTING */
 #endif /* ALLOW_AUTODIFF */
-!EOP
+CEOP
+
+c     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STOPS   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 #ifdef ALLOW_ECCO
-!--     Accumulate time averages of temperature, salinity
+c--     Accumulate time averages of temperature, salinity
       CALL TIMER_START('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',myThid)
       CALL COST_AVERAGESFIELDS( endtime, myThid )
       CALL TIMER_STOP ('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',myThid)
@@ -294,18 +301,29 @@
 
 #ifdef ALLOW_PROFILES
       IF ( usePROFILES ) THEN
-!--   Accumulate in-situ time averages of temperature, salinity, SSH.
+c--   Accumulate in-situ time averages of temperature, salinity, SSH.
         CALL TIMER_START('PROFILES_INLOOP    [THE_MAIN_LOOP]', myThid)
         CALL PROFILES_INLOOP( endtime, myThid )
         CALL TIMER_STOP ('PROFILES_INLOOP    [THE_MAIN_LOOP]', myThid)
-!--   Compute all profiles cost function contributions.
-        CALL PROFILES_COST( myIter, myTime, myThid )
+c--   Compute all profiles cost function contributions.
+        CALL PROFILES_COST( myTime, myIter, myThid )
       ENDIF
-#endif
+#endif /* ALLOW_PROFILES */
+
+#ifdef ALLOW_OBSFIT
+      IF ( useOBSFIT ) THEN
+c--   Accumulate in-situ time averages of temperature, salinity, SSH.
+        CALL TIMER_START('OBSFIT_INLOOP      [THE_MAIN_LOOP]', myThid)
+        CALL OBSFIT_INLOOP( endtime, myIter, myThid )
+        CALL TIMER_STOP ('OBSFIT_INLOOP      [THE_MAIN_LOOP]', myThid)
+c--   Compute all obsfit cost function contributions.
+        CALL OBSFIT_COST( myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_OBSFIT */
 
 #ifdef ALLOW_ECCO
-      IF ( useECCO ) then
-!--   Compute all ecco cost function contributions.
+      IF ( useECCO ) THEN
+c--   Compute all ecco cost function contributions.
         CALL TIMER_START('ECCO_COST_DRIVER   [THE_MAIN_LOOP]', myThid)
         CALL ECCO_COST_DRIVER ( endTime, myIter, myThid )
         CALL TIMER_STOP ('ECCO_COST_DRIVER   [THE_MAIN_LOOP]', myThid)
@@ -313,19 +331,19 @@
 #endif /* ALLOW_ECCO */
 
 #ifdef ALLOW_COST
-!--   Sum all cost function contributions.
+c--   Sum all cost function contributions.
       CALL TIMER_START('COST_FINAL         [ADJOINT SPIN-DOWN]', myThid)
       CALL COST_FINAL ( myThid )
       CALL TIMER_STOP ('COST_FINAL         [ADJOINT SPIN-DOWN]', myThid)
 
 # ifdef ALLOW_OPENAD
-!$openad DEPENDENT(fc)
+c$openad DEPENDENT(fc)
 # endif /* ALLOW_OPENAD */
 
 #endif /* ALLOW_COST */
 
 #ifdef USE_PDAF
-!     PDAF finalization
+C     PDAF finalization
       CALL FINALIZE_PDAF( )
 #endif
 
@@ -338,4 +356,4 @@
 
       RETURN
       END
-#endif
+#endif /* ENEA_COUPLER */

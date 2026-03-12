@@ -553,12 +553,7 @@ C     Apply runoff, masks and exchanges
         DO j = 1,sNy
          DO i = 1,sNx
 #ifdef ALLOW_RUNOFF
-# ifdef ENEA_COUPLER
-          sflux(i,j,bi,bj) = (sflux(i,j,bi,bj) - runoff(i,j,bi,bj))
-     &                          *EmPmR_Atlantic(i,j,bi,bj)
-# else
           sflux(i,j,bi,bj) = sflux(i,j,bi,bj) - runoff(i,j,bi,bj)
-# endif /* ENEA_COUPLER */
 #endif /* ALLOW_RUNOFF */
           hflux(i,j,bi,bj) = hflux(i,j,bi,bj)*maskC(i,j,ks,bi,bj)
           sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskC(i,j,ks,bi,bj)
