@@ -224,7 +224,6 @@ C     !LOCAL VARIABLES:
       _RL tmpVol, volGlob, sumGlob, theMean
       _RL meanCorr
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-#ifdef ALLOW_ADDFLUID
 #ifdef ENEA_COUPLER
 #ifdef MED_12_ATLANTIC
       _RL theMean_A, sumGlob_A
@@ -237,10 +236,8 @@ C     !LOCAL VARIABLES:
       INTEGER iG, jG, iGo, jGo
 #endif
 #endif
-#endif
 CEOP
 
-#ifdef ALLOW_ADDFLUID
 #if defined(ENEA_COUPLER) && defined(MED_12_ATLANTIC)
       theMean_A = 0.
       theVol_A = 0.
@@ -312,8 +309,12 @@ CEOP
               iG = myXGlobalLo-1+(bi-1)*sNx+I
               IF ( iG > 2 .and. iG <= IG_BEGIN_ATLANTIC ) then
                IF (arrMask(I,J,bi,bj).NE.0.) THEN
-                addmass(I,J,2,bi,bj) = 0.8*theMean
-                addmass(I,J,3,bi,bj) = 0.2*theMean
+#ifdef ALLOW_ADDFLUID
+                addmass(I,J,2,bi,bj) = 0.5*theMean
+                addmass(I,J,3,bi,bj) = 0.5*theMean
+#else
+                arrFld(i,j,k,bi,bj) = arrFld(i,j,k,bi,bj) - theMean
+#endif
                ENDIF
               ENDIF
              ENDDO
@@ -328,7 +329,6 @@ CEOP
       ELSE
        meanCorr = 0.0
       ENDIF
-#endif
 #else
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)

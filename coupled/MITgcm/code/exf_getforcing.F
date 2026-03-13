@@ -154,8 +154,8 @@ C     == local variables ==
       INTEGER bi,bj
       INTEGER i,j,ks
 #ifdef ENEA_COUPLER
-      _RL uwindESMF (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL vwindESMF (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL uTEMP (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vTEMP (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif /* ENEA_COUPLER */
 #if ( defined ALLOW_DOWNWARD_RADIATION ) || \
@@ -215,12 +215,17 @@ C     Get the surface forcing fields.
          DO bi = mybxlo(mythid),mybxhi(mythid)
           DO j = 1-oly,sny+oly
            DO i = 1-olx,snx+olx
-            ustress(i,j,bi,bj) = ustress_ESMF(i,j,bi,bj)
-            vstress(i,j,bi,bj) = vstress_ESMF(i,j,bi,bj)
+            uTEMP(i,j,bi,bj) = ustress_ESMF(i,j,bi,bj)
+            vTEMP(i,j,bi,bj) = vstress_ESMF(i,j,bi,bj)
            ENDDO
           ENDDO
          ENDDO
         ENDDO
+        CALL ROTATE_WIND_RL(
+     &            ustress, vstress,
+     &            UTEMP, VTEMP,
+     &            .FALSE., .FALSE. , .TRUE.,  mythid
+     &                     )
        ELSE
         WRITE(msgBuf,'(A)')
      &       'COUPLER_CHECK: useAtmWind is false but no STRESS present.'
@@ -347,15 +352,15 @@ C     Set radiative fluxes
          DO bi = mybxlo(mythid),mybxhi(mythid)
           DO j = 1-oly,sny+oly
            DO i = 1-olx,snx+olx
-            uwindESMF(i,j,bi,bj) = uwind_ESMF(i,j,bi,bj)
-            vwindESMF(i,j,bi,bj) = vwind_ESMF(i,j,bi,bj)
+            uTEMP(i,j,bi,bj) = uwind_ESMF(i,j,bi,bj)
+            vTEMP(i,j,bi,bj) = vwind_ESMF(i,j,bi,bj)
            ENDDO
           ENDDO
          ENDDO
         ENDDO
         CALL ROTATE_WIND_RL(
      &            uwind, vwind,
-     &            uwindESMF, vwindESMF,
+     &            uTEMP, vTEMP,
      &            .FALSE., .FALSE. , .TRUE.,  mythid
      &                     )
        ELSE
@@ -503,9 +508,8 @@ CADJ STORE wstress      = comlev1, key=ikey_dynamics, kind=isbyte
 C     Compute turbulent fluxes (and surface stress) from bulk formulae
 #  ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE evap         = comlev1, key=ikey_dynamics, kind=isbyte
-#  endif /* ALLOW_AUTODIFF_TAMC */
+#  endif
 #endif /* ALLOW_ATM_TEMP */
-
 #ifdef ALLOW_RUNOFF
 # ifdef ENEA_COUPLER
        IF ( WHAT_IS_IN_ESMF(HAS_ESMF_RUNOFF) ) THEN
@@ -532,7 +536,7 @@ CADJ STORE evap         = comlev1, key=ikey_dynamics, kind=isbyte
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
 #ifdef ALLOW_ATM_TEMP
-C       compute hflux & sflux from multiple components
+C     compute hflux & sflux from multiple components
         DO j = 1,sNy
          DO i = 1,sNx
 C     Net surface heat flux.
@@ -543,7 +547,7 @@ C     Net surface heat flux.
 #ifndef SHORTWAVE_HEATING
      &         + swflux(i,j,bi,bj)
 #endif
-C         fresh-water flux from Precipitation and Evaporation.
+C             fresh-water flux from Precipitation and Evaporation.
           sflux(i,j,bi,bj) = evap(i,j,bi,bj) - precip(i,j,bi,bj)
          ENDDO
         ENDDO
@@ -554,7 +558,7 @@ C     Apply runoff, masks and exchanges
          DO i = 1,sNx
 #ifdef ALLOW_RUNOFF
           sflux(i,j,bi,bj) = sflux(i,j,bi,bj) - runoff(i,j,bi,bj)
-#endif /* ALLOW_RUNOFF */
+#endif
           hflux(i,j,bi,bj) = hflux(i,j,bi,bj)*maskC(i,j,ks,bi,bj)
           sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskC(i,j,ks,bi,bj)
          ENDDO
@@ -573,7 +577,6 @@ c     _EXCH_XY_RL(sflux,   myThid)
       ELSE
        CALL EXCH_UV_AGRID_3D_RL(ustress, vstress, .TRUE., 1, myThid)
       ENDIF
-
 #ifdef SHORTWAVE_HEATING
 c     _EXCH_XY_RL(swflux, myThid)
 #endif
@@ -630,7 +633,7 @@ C     Map the forcing fields onto the corresponding model fields.
 # ifdef ALLOW_AUTODIFF_MONITOR
       IF ( .NOT. useSEAICE )
      &     CALL EXF_ADJOINT_SNAPSHOTS( 3, myTime, myIter, myThid )
-# endif /* ALLOW_AUTODIFF_MONITOR */
+# endif
 #endif /* ALLOW_AUTODIFF */
 
       RETURN

@@ -8,7 +8,7 @@ C--   Contents
 C--   o ROTATE_WIND_RL
 C--   o ROTATE_WIND_RS
 
-      subroutine rotate_wind_rl(
+      subroutine ROTATE_WIND_RL(
      U          uFldX, vFldY,
      U          uFldE, vFldN,
      I          xy2en, switchGrid, applyMask,  mythid
@@ -65,8 +65,6 @@ c     == end of interface ==
 
       do bj = mybylo(mythid),mybyhi(mythid)
        do bi = mybxlo(mythid),mybxhi(mythid)
-
-
 
         if ( xy2en ) then
 c go from uFldX/vFldY to uFldE/vFldN
@@ -175,7 +173,7 @@ c        enddo
       end
 
 
-      subroutine rotate_wind_rs(
+      subroutine ROTATE_WIND_RS(
      U          uFldX, vFldY,
      U          uFldE, vFldN,
      I          xy2en, switchGrid, applyMask,  mythid
