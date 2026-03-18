@@ -409,6 +409,7 @@ C     Set wind fields
 #endif
 
 #ifdef ENEA_COUPLER
+# ifdef ATMOSPHERIC_LOADING
        IF ( WHAT_IS_IN_ESMF(HAS_ESMF_APRESSURE) ) THEN
         DO bj = mybylo(mythid),mybyhi(mythid)
          DO bi = mybxlo(mythid),mybxhi(mythid)
@@ -420,6 +421,7 @@ C     Set wind fields
          ENDDO
         ENDDO
        ENDIF
+#endif
 #endif
 
 #ifdef ENEA_COUPLER

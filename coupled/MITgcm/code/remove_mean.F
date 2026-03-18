@@ -226,12 +226,9 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ENEA_COUPLER
 #ifdef MED_12_ATLANTIC
-      _RL theMean_A, sumGlob_A
-      _RL theVol_A, volGlob_A
       _RL theMean_M, sumGlob_M
       _RL theVol_M, volGlob_M
-      _RL theMean_B, sumGlob_B
-      _RL theVol_B, volGlob_B
+      _RL theVol_T, volGlob_T
       _RL tmpVal
       INTEGER iG, jG, iGo, jGo
 #endif
@@ -239,12 +236,18 @@ C     !LOCAL VARIABLES:
 CEOP
 
 #if defined(ENEA_COUPLER) && defined(MED_12_ATLANTIC)
-      theMean_A = 0.
-      theVol_A = 0.
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO J=1,sNy
+         DO I=1,sNx
+          med12_buffer(I,J,bi,bj) = 0.
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
       theMean_M = 0.
       theVol_M = 0.
-      theMean_B = 0.
-      theVol_B = 0.
+      theVol_T = 0.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         IF ( arrDr(1).GE.zeroRS ) THEN
@@ -253,31 +256,15 @@ CEOP
            DO I=1,sNx
             jG = myYGlobalLo-1+(bj-1)*sNy+J
             iG = myXGlobalLo-1+(bi-1)*sNx+I
-            tmpVal = arrFld(I,J,K,bi,bj)
-            IF ( iG > 2 .and. iG <= IG_BEGIN_ATLANTIC ) THEN
-             IF (arrMask(I,J,bi,bj).NE.0.) THEN
-              tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
-              theVol_A = theVol_A   + tmpVol
-              theMean_A = theMean_A + tmpVol*tmpVal
-             ENDIF
-            ENDIF
-            IF ( iG > IG_BEGIN_ATLANTIC .and.
-     &         ( iG < IG_BEGIN_BLACKSEA .and.
-     &           jG < JG_BEGIN_BLACKSEA ) )THEN
-             IF (arrMask(I,J,bi,bj).NE.0.) THEN
-              tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
-              theVol_M = theVol_M   + tmpVol
-              theMean_M = theMean_M + tmpVol*tmpVal
-             ENDIF
-            ENDIF
-            IF ( iG > IG_BEGIN_ATLANTIC .and.
-     &         ( iG >= IG_BEGIN_BLACKSEA .and.
-     &           jG >= JG_BEGIN_BLACKSEA ) )THEN
-             IF (arrMask(I,J,bi,bj).NE.0.) THEN
-              tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
-              theVol_B = theVol_B   + tmpVol
-              theMean_B = theMean_B + tmpVol*tmpVal
-             ENDIF
+            IF (arrMask(I,J,bi,bj).NE.0.) THEN
+             tmpVal = arrFld(I,J,K,bi,bj)
+             tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
+             theVol_M = theVol_M   + tmpVol
+             theMean_M = theMean_M + tmpVol*tmpVal
+             IF ( iG >  IG_BEGIN_ATLANTIC_BUFFER .AND.
+     &            iG <= IG_END_ATLANTIC_BUFFER ) THEN
+              theVol_T = theVol_T + tmpVol
+             END IF
             ENDIF
            ENDDO
           ENDDO
@@ -286,41 +273,28 @@ CEOP
        ENDDO
       ENDDO
 
-      CALL GLOBAL_SUM_TILE_RL( theVol_A, volGlob_A, myThid )
-      CALL GLOBAL_SUM_TILE_RL( theMean_A, sumGlob_A, myThid )
       CALL GLOBAL_SUM_TILE_RL( theVol_M, volGlob_M, myThid )
       CALL GLOBAL_SUM_TILE_RL( theMean_M, sumGlob_M, myThid )
-      CALL GLOBAL_SUM_TILE_RL( theVol_B, volGlob_B, myThid )
-      CALL GLOBAL_SUM_TILE_RL( theMean_B, sumGlob_B, myThid )
+      CALL GLOBAL_SUM_TILE_RL( theVol_T, volGlob_T, myThid )
 
-      tmpVal = sumGlob_A+sumGlob_M+sumGlob_B
-      tmpVol = volGlob_A+volGlob_M+volGlob_B
-      IF (tmpVal > 0.0 ) THEN
-       IF (tmpVol .GT. 0.) THEN
-        meanCorr = tmpVal/tmpVol
-        theMean = tmpVal/volGlob_A
+      IF (volGlob_M .GT. 0. .AND. volGlob_T .GT. 0.) THEN
+       IF (sumGlob_M .GT. 0.) THEN
+        meanCorr = sumGlob_M/volGlob_M
+        theMean = sumGlob_M/volGlob_T
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          IF ( arrDr(1).GE.zeroRS ) THEN
-           DO K=1,myNr
-            DO J=1,sNy
-             DO I=1,sNx
-              jG = myYGlobalLo-1+(bj-1)*sNy+J
-              iG = myXGlobalLo-1+(bi-1)*sNx+I
-              IF ( iG > 2 .and. iG <= IG_BEGIN_ATLANTIC ) then
-               IF (arrMask(I,J,bi,bj).NE.0.) THEN
-#ifdef ALLOW_ADDFLUID
-                addmass(I,J,2,bi,bj) = 0.5*theMean
-                addmass(I,J,3,bi,bj) = 0.5*theMean
-#else
-                arrFld(i,j,k,bi,bj) = arrFld(i,j,k,bi,bj) - theMean
-#endif
-               ENDIF
-              ENDIF
-             ENDDO
-            ENDDO
+          DO J=1,sNy
+           DO I=1,sNx
+            IF (arrMask(I,J,bi,bj).NE.0.) THEN
+             jG = myYGlobalLo-1+(bj-1)*sNy+J
+             iG = myXGlobalLo-1+(bi-1)*sNx+I
+             IF ( iG >  IG_BEGIN_ATLANTIC_BUFFER .AND.
+     &            iG <= IG_END_ATLANTIC_BUFFER ) THEN
+              med12_buffer(I,J,bi,bj) = -theMean
+             ENDIF
+            ENDIF
            ENDDO
-          ENDIF
+          ENDDO
          ENDDO
         ENDDO
        ELSE
