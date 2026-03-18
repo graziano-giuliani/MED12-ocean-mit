@@ -165,7 +165,7 @@ C       Print some statistics about input forcing fields
         ENDIF
 #endif /* ALLOW_ATM_TEMP */
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
-        IF ( swdownfile .NE. ' ' .OR. swfluxfile .NE. 'XXX' ) THEN
+        IF ( swdownfile .NE. ' ' .OR. swfluxfile .NE. ' ' ) THEN
           CALL MON_WRITESTATS_RL( 1, swflux,  '_swflux',
      &             maskInC, maskInC, rA , drF, dummyRL, myThid )
         ENDIF
