@@ -26,191 +26,261 @@
 !     &     stat_fname, diagSt_mnc,
 !     &     set_regMask, val_regMask,
 !     &     diagSt_regMaskFile, nSetRegMskFile
-!-------------------- 
- &diagnostics_list
+!--------------------
+&diagnostics_list
   diag_mnc=.FALSE.,
-!  diag_pickup_read=.TRUE.,   
+!  diag_pickup_read=.TRUE.,
 !  diag_pickup_write=.TRUE.,
 !  diag_pickup_read_mnc=.TRUE.,
 !  diag_pickup_write_mnc=.TRUE.,
 !---------------------------
 
-
 !---------------------------
-!  ELEVATION 
+! ETAN
+! Surface Height Anomaly [m]
 !---------------------------
   filename(1)     = 'ELEVATION',
-  fields(1,1)     = 'ETAN   ',
+  fields(1,1)     = 'ETAN',
  frequency(1)     =  2592000.,
+
 !---------------------------
-!  Salt 
+! SALT
+! Salinity [g/kg]
 !---------------------------
   filename(2)     = 'SALT',
-  fields(1,2)     = 'SALT ',
+  fields(1,2)     = 'SALT',
  frequency(2)     =  2592000.,
+
 !---------------------------
-!  Theta 
+! THETA
+! Potential Temperature [degC]
 !---------------------------
   filename(3)     = 'THETA',
   fields(1,3)     = 'THETA',
  frequency(3)     =  2592000.,
+
 !---------------------------
-!  Density Anomaly (=Rho-rhoConst) kg/m^3 
+! RHOAnoma
+! Density Anomaly (=Rho-rhoConst) [kg/m^3]
 !---------------------------
   filename(4)     = 'RHO',
   fields(1,4)     = 'RHOAnoma',
  frequency(4)     =  2592000.,
 
 !---------------------------
-! Mixed-Layer Depth (>0) m
+! MXLDEPTH
+! Mixed-Layer Depth (>0) [m]
 !---------------------------
   filename(5)     = 'MLD',
   fields(1,5)     = 'MXLDEPTH',
  frequency(5)     =  2592000.,
+
 !---------------------------
-!  Uvel 
+! UVEL
+! Zonal Component of Velocity [m/s]
 !---------------------------
   filename(6)     = 'UVEL',
   fields(1,6)     = 'UVEL',
  frequency(6)     =  2592000.,
+
 !---------------------------
-!  Vvel 
+! VVEL
+! Meridional Component of Velocity [m/s]
 !---------------------------
   filename(7)     = 'VVEL',
   fields(1,7)     = 'VVEL',
  frequency(7)     =  2592000.,
+
 !---------------------------
-! Wvel 
+! WVEL
+! Vertical Component of Velocity [m/s]
 !---------------------------
   filename(8)     = 'WVEL',
   fields(1,8)     = 'WVEL',
  frequency(8)     =  2592000.,
 
 !---------------------------
-! HEAT FLUX (imposed hflux) 
+! oceQnet (imposed hflux)
+! net surface heat flux into the ocean (+=down), >0 increases theta
 !---------------------------
   filename(9)     = 'HFLUX',
- frequency(9)     =  2592000.,
   fields(1,9)     = 'oceQnet',
-!---------------------------
+ frequency(9)     =  2592000.,
 
 !---------------------------
-! HEAT FLUX (imposed swave)
+! oceQsw (imposed swave)
+! net Short-Wave radiation (+=down), >0 increases theta
 !---------------------------
   filename(10)     = 'SWAVE',
- frequency(10)     =  2592000.,
   fields(1,10)     = 'oceQsw',
-!---------------------------
+ frequency(10)     =  2592000.,
 
 !---------------------------
 !  oceFWflx
-!  net upward freshwater flux, > 0 increases salinity [kg/m^2/s]
+!  net upward freshwater flux, > 0 dereases salinity [kg/m^2/s]
 !---------------------------
   filename(11)     = 'oceFWflx',
- frequency(11)     =  2592000.,
   fields(1,11)     = 'oceFWflx',
-!---------------------------
+ frequency(11)     =  2592000.,
 
 !---------------------------
 !  EXFevap
 !  Evaporation > 0 increases salinity [m/s]
 !---------------------------
-   filename(12)     = 'EXFevap',
-   frequency(12)    =  2592000.,
-   fields(1,12)     = 'EXFevap',
+  filename(12)     = 'EXFevap',
+  fields(1,12)     = 'EXFevap',
+ frequency(12)    =  2592000.,
+
+!---------------------------
+!  EXFpreci
+!  Precipitation > 0 decrease salinity [m/s]
+!---------------------------
+  filename(13)     = 'EXFpreci',
+  fields(1,13)     = 'EXFpreci',
+ frequency(13)    =  2592000.,
+
+!---------------------------
+!  EXFroff
+!  Runoff > 0 decrease salinity [m/s]
+!---------------------------
+  filename(14)     = 'EXFroff',
+  fields(1,14)     = 'EXFroff',
+ frequency(14)    =  2592000.,
+
+!---------------------------
+!  EXFtaux
+!  zonal surface wind stress, >0 increases uVel
+!---------------------------
+  filename(15)     = 'EXFtaux',
+  fields(1,15)     = 'EXFtaux',
+ frequency(15)    =  2592000.,
+
+!---------------------------
+!  EXFtauy
+!  zonal surface wind stress, >0 increases uVel
+!---------------------------
+  filename(16)     = 'EXFtauy',
+  fields(1,16)     = 'EXFtauy',
+ frequency(16)    =  2592000.,
+
+!---------------------------
+!  EXFlwnet
+!  Net upward longwave radiation, >0 decreases theta
+!---------------------------
+  filename(17)     = 'EXFlwnet',
+  fields(1,17)     = 'EXFlwnet',
+ frequency(17)    =  2592000.,
+
+!---------------------------
+!  EXFswnet
+!  Net upward shortwave radiation, >0 decreases theta
+!---------------------------
+  filename(18)     = 'EXFswnet',
+  fields(1,18)     = 'EXFswnet',
+ frequency(18)    =  2592000.,
+
+!---------------------------
+!  EXFhs
+!  Sensible heat flux into ocean, >0 increases theta
+!---------------------------
+  filename(19)     = 'EXFhs',
+  fields(1,19)     = 'EXFhs',
+ frequency(19)    =  2592000.,
 !---------------------------
 
 !---------------------------
-! SFLUX (=total salt flux, match salt-content variations [g/m2/s])
+!  EXFhl
+!  Latent heat flux into ocean, >0 increases theta
 !---------------------------
-   filename(13)     = 'T_SFLUX',
-  frequency(13)     =  2592000.,
-   fields(1,13)     = 'SFLUX',
-!---------------------------
+  filename(20)     = 'EXFhl',
+  fields(1,20)     = 'EXFhl',
+ frequency(20)    =  2592000.,
 
 !---------------------------
-! TFLUX (=total heat flux, match heat-content variations, [W/m2]) 
+! SFLUX
+! total salt flux, match salt-content variations [g/m2/s]
 !---------------------------
-  filename(14)     = 'T_TFLUX',
- frequency(14)     =  2592000.,
-  fields(1,14)     = 'TFLUX',
-!---------------------------
+  filename(21)     = 'T_SFLUX',
+  fields(1,21)     = 'SFLUX',
+ frequency(21)     =  2592000.,
 
 !---------------------------
-! U WIND STRESS 
+! TFLUX
+! total heat flux, match heat-content variations [W/m2]
 !---------------------------
-  filename(15)     = 'U_WSTRESS',
- frequency(15)     =  2592000.,
-  fields(1,15)     = 'oceTAUX',
-!---------------------------
+  filename(22)     = 'T_TFLUX',
+  fields(1,22)     = 'TFLUX',
+ frequency(22)     =  2592000.,
 
 !---------------------------
-! V WIND STRESS                                    
+! U WIND STRESS
 !---------------------------
-  filename(16)     = 'V_WSTRESS',
- frequency(16)     =  2592000.,
-  fields(1,16)     = 'oceTAUY',
-!---------------------------
+  filename(23)     = 'U_WSTRESS',
+  fields(1,23)     = 'oceTAUX',
+ frequency(23)     =  2592000.,
 
 !---------------------------
-! Zonal Transport of Pot Temp degC.m/s  
+! V WIND STRESS
 !---------------------------
-  filename(17)     = 'UTHMASS',
-  fields(1,17)     = 'UTHMASS',
- frequency(17)     =  2592000.,
+  filename(24)     = 'V_WSTRESS',
+  fields(1,24)     = 'oceTAUY',
+ frequency(24)     =  2592000.,
 
 !---------------------------
-! Meridional Transport of Pot Temp degC.m/s  
+! Zonal Transport of Pot Temp degC.m/s
 !---------------------------
-  filename(18)     = 'VTHMASS',
-  fields(1,18)     = 'VTHMASS',
- frequency(18)     =  2592000.,
+  filename(25)     = 'UTHMASS',
+  fields(1,25)     = 'UTHMASS',
+ frequency(25)     =  2592000.,
+
 !---------------------------
-! Zonal Transport of Salt psu.m/s  
+! Meridional Transport of Pot Temp degC.m/s
 !---------------------------
-  filename(19)     = 'USLTMASS',
-  fields(1,19)     = 'USLTMASS',
- frequency(19)     =  2592000.,
+  filename(26)     = 'VTHMASS',
+  fields(1,26)     = 'VTHMASS',
+ frequency(26)     =  2592000.,
+
 !---------------------------
-! Meridional Transport of Salt psu.m/s  
+! Zonal Transport of Salt psu.m/s
 !---------------------------
-  filename(20)     = 'VSLTMASS',
-  fields(1,20)     = 'VSLTMASS',
- frequency(20)     =  2592000.,
-!---------------------------
+  filename(27)     = 'USLTMASS',
+  fields(1,27)     = 'USLTMASS',
+ frequency(27)     =  2592000.,
+
 !---------------------------
 ! Meridional Transport of Salt psu.m/s
 !---------------------------
-  filename(21)     = 'VVELMASS',
-  fields(1,21)     = 'VVELMASS',
- frequency(21)     =  2592000.,
+  filename(28)     = 'VSLTMASS',
+  fields(1,28)     = 'VSLTMASS',
+ frequency(28)     =  2592000.,
+
 !---------------------------
+! Meridional Transport of Salt psu.m/s
+!---------------------------
+  filename(29)     = 'VVELMASS',
+  fields(1,29)     = 'VVELMASS',
+ frequency(29)     =  2592000.,
 
 !---------------------------
 ! Zonal Transport of Salt psu.m/s
 !---------------------------
-  filename(22)     = 'UVELMASS',
-  fields(1,22)     = 'UVELMASS',
- frequency(22)     =  2592000.,
-!---------------------------
-
+  filename(30)     = 'UVELMASS',
+  fields(1,30)     = 'UVELMASS',
+ frequency(30)     =  2592000.,
 
 !---------------------------
 ! Zonal Transport of Salt psu.m/s
 !---------------------------
-!  filename(23)     = 'TRELAX',
-!  fields(1,23)     = 'TRELAX',
-! frequency(23)     =  86400,
-!---------------------------
-
+!  filename(31)     = 'TRELAX',
+!  fields(1,31)     = 'TRELAX',
+! frequency(31)     =  86400,
 
 !---------------------------
 ! Zonal Transport of Salt psu.m/s
 !---------------------------
-!  filename(24)     = 'SRELAX',
-!  fields(1,24)     = 'SRELAX',
-! frequency(24)     =  86400,
-!---------------------------
+!  filename(32)     = 'SRELAX',
+!  fields(1,32)     = 'SRELAX',
+! frequency(32)     =  86400,
  /
 
 ! Parameter for Diagnostics of per level statistics:

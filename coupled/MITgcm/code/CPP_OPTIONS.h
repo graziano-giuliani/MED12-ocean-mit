@@ -31,7 +31,7 @@ C   (3-D generalisation of oceanic real-fresh water flux)
 #undef ALLOW_ADDFLUID
 
 C o Include pressure loading code
-#undef ATMOSPHERIC_LOADING
+#define ATMOSPHERIC_LOADING
 
 C o Include/exclude balancing surface forcing fluxes code
 #define ALLOW_BALANCE_FLUXES

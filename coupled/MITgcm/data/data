@@ -40,8 +40,9 @@
  NonLinFreeSurf = 4,
  freeSurfFac = 1.0,
  useRealFreshWaterFlux = .true.,
- selectAddFluid = 1,
- balanceEmPmR = .true.,
+ selectBalanceEmPmR = 1,
+ balanceThetaClimRelax = .true.,
+ balanceSaltClimRelax = .true.,
  balancePrintMean = .true.,
  hMixCriteria = -0.2,
  allowFreezing = .true.,
@@ -97,7 +98,7 @@
  !
  &PARM05
  bathyFile = 'BATHYMETRY.bin',
- pSurfInitFile = 'mitgcm_init/oras5_sossheig_197908_1_decades.bin',
+ !pSurfInitFile = 'mitgcm_init/oras5_sossheig_197908_1_decades.bin',
  hydrogSaltFile = 'mitgcm_init/medhymap_salinity_197908_1_decades.bin',
  hydrogThetaFile = 'mitgcm_init/medhymap_temperature_197908_1_decades.bin',
  /

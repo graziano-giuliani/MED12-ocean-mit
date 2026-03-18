@@ -181,7 +181,7 @@ C       Print some statistics about input forcing fields
         ENDIF
 #endif
 #ifdef ATMOSPHERIC_LOADING
-        IF ( apressurefile .NE. ' ' ) THEN
+        IF ( apressurefile .NE. 'XXX' ) THEN
            CALL MON_WRITESTATS_RL( 1,apressure,'_apressure',
      &              maskInC, maskInC, rA , drF, dummyRL, myThid )
         ENDIF
