@@ -1,11 +1,11 @@
 &iniparam
  model_nsteps = 300,
  thrriv = 5400.0,
- efficiency = 0.9999,
+ efficiency = 0.998,
  nfarm = 1,
  ifarm = 76,
- irloss = 0.10,
- irmonfac = 0.8, 0.2, 0.5, 1.0, 1.0, 1.8, 1.9, 1.9, 1.9, 1.0, 0.5, 0.8,
+ irloss = 0.08,
+ irmonfac = 0.5, 0.2, 0.5, 1.0, 1.0, 1.8, 1.9, 1.8, 1.8, 1.0, 0.5, 0.5,
 /
 
 &inputparam
@@ -21,6 +21,6 @@
 ! UNUSED
 &timeparam
  sdate = 1979080100, ! Start date in YYYYMMDDHH
- edate = 1987123100, ! Start date in YYYYMMDDHH
+ edate = 1987123100, ! End date in YYYYMMDDHH
  calendar = 'gregorian',
 /
