@@ -278,28 +278,24 @@ CEOP
       CALL GLOBAL_SUM_TILE_RL( theVol_T, volGlob_T, myThid )
 
       IF (volGlob_M .GT. 0. .AND. volGlob_T .GT. 0.) THEN
-       IF (sumGlob_M .GT. 0.) THEN
-        meanCorr = sumGlob_M/volGlob_M
-        theMean = sumGlob_M/volGlob_T
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1,sNy
-           DO I=1,sNx
-            IF (arrMask(I,J,bi,bj).NE.0.) THEN
-             jG = myYGlobalLo-1+(bj-1)*sNy+J
-             iG = myXGlobalLo-1+(bi-1)*sNx+I
-             IF ( iG >  IG_BEGIN_ATLANTIC_BUFFER .AND.
-     &            iG <= IG_END_ATLANTIC_BUFFER ) THEN
-              med12_buffer(I,J,bi,bj) = -theMean
-             ENDIF
+       meanCorr = sumGlob_M/volGlob_M
+       theMean = sumGlob_M/volGlob_T
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO J=1,sNy
+          DO I=1,sNx
+           IF (arrMask(I,J,bi,bj).NE.0.) THEN
+            jG = myYGlobalLo-1+(bj-1)*sNy+J
+            iG = myXGlobalLo-1+(bi-1)*sNx+I
+            IF ( iG >  IG_BEGIN_ATLANTIC_BUFFER .AND.
+     &           iG <= IG_END_ATLANTIC_BUFFER ) THEN
+             med12_buffer(I,J,bi,bj) = -theMean
             ENDIF
-           ENDDO
+           ENDIF
           ENDDO
          ENDDO
         ENDDO
-       ELSE
-        meanCorr = 0.0
-       ENDIF
+       ENDDO
       ELSE
        meanCorr = 0.0
       ENDIF
