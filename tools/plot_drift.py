@@ -27,6 +27,8 @@ paths = [ 'initial', 'loop?' ]
 sdir = pathlib.Path(sys.argv[1]) 
 bases = sys.argv[2:]
 
+reference_path='/leonardo_work/ICT26_ESP/MITGCM/MED12-ocean-mit/ORAS5_MIT'
+
 ocean_shapes = 'Mediterraneo.shp'
 gdf = geopandas.read_file(ocean_shapes)
 regions = regionmask.from_geopandas(gdf, names='SUB_REGION',
@@ -63,7 +65,7 @@ for base in bases:
                     vv = xv-xv.mean(dim="time")
                 else:
                     vv = xx.mean(dim=('lat','lon','depth')) 
-                vv = vv-vv[0]
+                #vv = vv-vv[0]
                 if np.sum(~np.isnan(vv)) > 0:
                     print(subregion+' : '+d['name'])
                     plt.plot(vv)
@@ -82,12 +84,16 @@ for base in bases:
                 vv = xv-xv.mean(dim="time")
             else:
                 vv = xx.mean(dim=('lat','lon'))
-            vv = vv-vv[0]
+            #vv = vv-vv[0]
             if np.sum(~np.isnan(vv)) > 0:
                 print(subregion+' : surface')
                 plt.plot(vv)
-                plt.title(subregion.lower( ).capitalize( )+'\n'+
-                    long_name+' anomaly ['+units+']')
+                if 'Anomaly' in long_name:
+                    plt.title(subregion.lower( ).capitalize( )+'\n'+
+                        long_name+' ['+units+']')
+                else:
+                    plt.title(subregion.lower( ).capitalize( )+'\n'+
+                        long_name+' anomaly ['+units+']')
                 oname = base+'-'+'_'.join(subregion.lower( ).split())
                 oname = oname.translate(str.maketrans(',','_'))
                 oname = oname+'.png'

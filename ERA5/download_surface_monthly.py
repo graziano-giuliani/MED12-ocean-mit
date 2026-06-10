@@ -5,6 +5,8 @@ import cdsapi
 
 c = cdsapi.Client()
 
+dest = '/leonardo/home/userexternal/ggiulian/project/OBS/ERA5/monthly'
+
 ys = 1950
 ye = 2023
 
@@ -16,6 +18,8 @@ vname = { '2m_temperature' : 'tas',
           'evaporation': 'evp',
           'surface_net_solar_radiation' : 'nssw',
           'surface_net_thermal_radiation' : 'nslw',
+          'instantaneous_eastward_turbulent_surface_stress' : 'tauu',
+          'instantaneous_northward_turbulent_surface_stress' : 'tauv',
           '10m_u_component_of_wind' : 'uas',
           '10m_v_component_of_wind' : 'vas',
         }
@@ -23,13 +27,13 @@ vname = { '2m_temperature' : 'tas',
 for year in range(ys,ye+1):
     yy = '%04d' % year
     try:
-        os.mkdir(yy)
+        os.mkdir(os.path.join(dest,yy))
     except OSError:
         pass
     for month in range(1,13):
         mm = '%02d' % month
         for var in vname:
-            netcdf = os.path.join(str(year),(vname[var]+"_"+yy+'_'+mm+'.nc'))
+            netcdf = os.path.join(dest,yy,(vname[var]+"_"+yy+'_'+mm+'.nc'))
             if not os.path.isfile(netcdf):
                 c.retrieve(
                   'reanalysis-era5-single-levels-monthly-means',
@@ -41,6 +45,5 @@ for year in range(ys,ye+1):
                     'time': '00:00',
                     'product_type': 'monthly_averaged_reanalysis',
                   }, netcdf)
-                os.system('compressnc '+netcdf)
             else:
                 print('File '+netcdf+' already on disk.')

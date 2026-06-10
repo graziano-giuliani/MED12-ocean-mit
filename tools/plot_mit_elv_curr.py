@@ -21,7 +21,8 @@ subplot_kws = dict(projection = ccrs.PlateCarree( ),
 
 cbar_kws = dict(fraction= 0.05, pad=0.06)
 
-levels = { "zos"     : np.linspace(-0.5,0.5,21),
+levels = { "zos"     : np.linspace(-0.8,-0.2,21),
+           "speed"   : np.linspace(0.0,1.6,19),
          }
 
 colors = { "zos"    : cmocean.cm.balance,
@@ -46,16 +47,17 @@ for ncf in sys.argv[1:]:
     dsc["speed"] = np.sqrt(dsc.uo**2 + dsc.vo**2)
     dsc["speed"] = dsc["speed"].assign_attrs(long_name = "Current Speed",
                                              units = "m s-1")
+    #  Varying line width along a streamline
+    # Assume 1.5 m/s max velocity
+    lw = [10.0/1.5]*dsc["speed"].values
     p1 = dsc.plot.streamplot(x = "lon", y = "lat",
                              u = "uo", v = "vo",
-                             hue = "speed", hue_style = "continuous",
-                             cmap = cmocean.cm.dense.reversed( ),
                              cbar_kwargs = { "location" : "bottom",
                                              "shrink" : 0.60,
                                              "pad"    : 0.06,
                                              "fraction" : 0.05,
                                              "aspect" : 40.0,},
-                             density=5.0, linewidth=1.0)
+                             density=10.0, color='k', linewidth=lw)
     p.axes.gridlines(draw_labels=True,
                      dms=True, x_inline=False, y_inline=False)
     p.axes.set_extent((-8,43,30,45))

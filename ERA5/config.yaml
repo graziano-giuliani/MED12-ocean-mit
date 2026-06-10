@@ -1,4 +1,4 @@
-era5_data: /leonardo_work/ICT24_ESP/OBS/ERA5/monthly
+era5_data: /leonardo_work/ICT26_ESP/OBS/ERA5/monthly
 variables:
         apressure:
                 description: Atmospheric surface pressure field
@@ -106,30 +106,46 @@ variables:
         #        units: m/s
         #        range_low: 0
         #        range_max: 10
-        #hs:
-        #        description: Sensible heat flux INTO ocean
-        #        notes: gt 0 for increase in theta (ocean warming)
-        #        units: W/m^2
-        #        range_low: -300
-        #        range_max: 300
-        #hl:
-        #        description: Latent heat flux INTO ocean
-        #        notes: gt 0 for increase in theta (ocean warming)
-        #        units: W/m^2
-        #        range_low: -300
-        #        range_max: 300
-        #ustress:
-        #        description: Zonal surface wind stress
-        #        notes: gt 0 for increase in uVel West to East
-        #        units: N/m^2
-        #        range_low: -0.5
-        #        range_max: 0.5
-        #vstress:
-        #        description: Meridional surface wind stress
-        #        notes: gt 0 for increase in vVel South to North
-        #        units: N/m^2
-        #        range_low: -0.5
-        #        range_max: 0.5
+        hs:
+                description: Sensible heat flux INTO ocean
+                notes: gt 0 for increase in theta (ocean warming)
+                units: W/m^2
+                range_low: -300
+                range_max: 300
+                era5factor: 1.0
+                era5offset: 0.0
+                era5fname: sflx
+                era5vname: ishf
+        hl:
+                description: Latent heat flux INTO ocean
+                notes: gt 0 for increase in theta (ocean warming)
+                units: W/m^2
+                range_low: -300
+                range_max: 300
+                era5factor: 0.0000115741
+                era5offset: 0.0
+                era5fname: lflx
+                era5vname: slhf
+        ustress:
+                description: Zonal surface wind stress
+                notes: gt 0 for increase in uVel West to East
+                units: N/m^2
+                range_low: -0.5
+                range_max: 0.5
+                era5factor: 1.0
+                era5offset: 0.0
+                era5fname: tauu
+                era5vname: iews
+        vstress:
+                description: Meridional surface wind stress
+                notes: gt 0 for increase in vVel South to North
+                units: N/m^2
+                range_low: -0.5
+                range_max: 0.5
+                era5factor: 1.0
+                era5offset: 0.0
+                era5fname: tauv
+                era5vname: inss
         #hflux:
         #        description: Net upward surface heat flux including shortwave
         #        notes: latent+sensible+lwflux+swflux gt 0 for decrease in theta

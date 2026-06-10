@@ -1,0 +1,13 @@
+ofile: gridfile.nc
+grid_type: regular_latlon
+output_2d: True
+regular_latlon:
+    resolution: 0.01
+    south_latitude: -30.39
+    north_latitude: -19.6
+    west_longitude: 309.05
+    east_longitude: 322.0
+orca_grid:
+    gridfile : orca_coordinates.nc
+scrip_grid:
+    gridfile : SCRIP_csam.nc
