@@ -25,7 +25,7 @@ fi
 set -x
 {
 cd CHyM_cpl && make && cd $basedir
-cd RegCM && git checkout CORDEX-5 && autoreconf -f -i && \
+cd RegCM && autoreconf -f -i && \
     ./configure --enable-clm45 --enable-cpl && \
     make version && make install && cd $basedir
 cd MITgcm && bash leonardo_install_intelifx.sh && cd $basedir
