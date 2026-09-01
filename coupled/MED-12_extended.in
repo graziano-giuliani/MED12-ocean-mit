@@ -1,11 +1,15 @@
  &dimparam
- iy     = 275,
- jx     = 405,
- kz     = 32,
+ iy     = 308,
+ jx     = 438,
+ kz     = 30,
  /
 
  &coreparam
  idynamic = 3,
+ /
+
+ &molochparam
+ mo_top_nudge = .true.,
  /
 
  &geoparam
@@ -13,47 +17,52 @@
  ds = -0.11,
  clat = 42.02,
  clon = 15.75,
- plat = 39.25,
- plon = 198.0,
+ plat = 47.98,
+ plon = 195.75,
  /
 
  &terrainparam
  domname  = 'MED-12',
- lsmoist = .true.,
- h2opct = 50.,
+ lsmoist = .false.,
+ smthbdy = .true.,
+ nsmthbdy = 16,
+ ismthlev = 0,
+ roidem = 0.5,
+ h2opct = 50.0,
  h2ohgt = .false.,
- dirter = '/leonardo_scratch/large/userexternal/ggiulian/run/input/',
+ texsrc = 'HWSD',
+ dirter = '/leonardo_work/ICT26_ESP/COUPLED/atmonly/input/',
  inpter = '/leonardo_work/ICT26_ESP/RCMDATA/ALTERNATE',
  lclm45lake = .true.
  /
 
  &boundaryparam
- nspgx  = 41,
- nspgd  = 41,
- high_nudge =    8.0D0,
- medium_nudge =  6.0D0,
- low_nudge =     4.0D0,
+ nspgx = 18,
+ nspgd = 18,
+ high_nudge   = 3.0,
+ medium_nudge = 2.5,
+ low_nudge    = 2.0,
  /
 
  &globdatparam
  ssttyp = 'ERA5D',
  dattyp = 'ERA5',
  gdate1 = 1979080100,
- gdate2 = 1987090100,
+ gdate2 = 1987080100,
  calendar = 'gregorian',
- dirglob = '/leonardo_scratch/large/userexternal/ggiulian/run/input',
- inpglob = '/leonardo_work/ICT26_ESP/RCMDATA',
+ dirglob = '/leonardo_work/ICT26_ESP/COUPLED/atmonly/input/',
+ inpglob = '/leonardo_work/ICT26_ESP/RCMDATA/ALTERNATE',
  /
 
  &restartparam
- ifrest  = .false.,
- mdate0  = 1979080100,
- mdate1  = 1979080100,
- mdate2  = 1987090100,
+ ifrest = .false.,
+ mdate0 = 1979080100,
+ mdate1 = 1979080100,
+ mdate2 = 1987080100,
  /
 
  &timeparam
- dt     =    100,
+ dt = 100,
  /
 
  &outparam
@@ -64,35 +73,28 @@
  /
 
  &physicsparam
- iboudy  =          5,
- ibltyp  =          1,
- icup_lnd =         5,
- icup_ocn =         5,
- ipptls  =          2,
- iocnflx =          2,
-   iocnrough =      1,
-   iocnzoq =        1,
- scenario =   'SSP370',
- iocncpl  =         1,
- idcsst   =         0,
- iseaice  =         1,
- iconvlwp =         0,
- icldfrac =         0,
- irrtm    =         0,
- iclimao3 =         1,
- isolconst =        0,
- iclimaaer =        2,
+ iboudy      = 5,
+ ibltyp      = 1,
+ icup_lnd    = 5,
+ icup_ocn    = 5,
+ ipptls      = 2,
+ iocnflx     = 2,
+ iocnrough   = 5,
+ iocnzoq     = 4,
+ scenario    = 'SSP370',
+ iocncpl     = 1,
+ idcsst      = 0,
+ iseaice     = 1,
+ iconvlwp    = 0,
+ icldfrac    = 0,
+ irrtm       = 0,
+ iclimao3    = 1,
+ isolconst   = 0,
+ iclimaaer   = 2,
  radclimpath = '/leonardo_work/ICT26_ESP/RCMDATA/MERRA2/OPPMONTH',
  /
 
  &cldparam
- ncld = 0,
- rhmax = 1.0,
- rhmin = 1e-5,
- cftotmax = 0.9,
- rh0land = 0.85,
- rh0oce = 0.93,
- tc0 = 100,
  /
 
  &subexparam
@@ -102,21 +104,20 @@
  /
 
  &holtslagparam
- ricr_lnd = 0.3,
- zhnew_fac = 0.5,
- holtth10iter = 5,
  /
 
  &clm_inparm
- DoForceRestart = .true.,
  fpftcon = 'pft-physiology.c130503.nc',
  fsnowoptics = 'snicar_optics_5bnd_c090915.nc',
  fsnowaging = 'snicar_drdt_bst_fit_60_c070416.nc',
  urban_hac = 'ON_WASTEHEAT',
- hist_nhtfrq = 0, 24
- hist_fincl2(1:13) = 'EFLX_LH_TOT_U', 'FGR_U', 'FIRA_U', 'FSA_U', 'FSH_U',
-                     'FSM_U', 'QRUNOFF_U', 'RH2M_U', 'SoilAlpha_U', 'TG_U',
-                     'TREFMNAV_U', 'TREFMXAV_U', 'TSA_U'
+ hist_nhtfrq = 0, 24,
+ hist_fincl2(1:4)   = 'EFLX_LH_TOT_U','EFLX_LH_TOT_R','FGR_U','FGR_R',
+ hist_fincl2(5:9)   = 'FIRA_U','FIRA_R','FSA_U','FSA_R','FSH_U',
+ hist_fincl2(10:14) = 'FSH_R','FSM_U','FSM_R','QRUNOFF_U','QRUNOFF_R',
+ hist_fincl2(15:19) = 'RH2M_U','RH2M_R','SoilAlpha_U','TG_U','TG_R',
+ hist_fincl2(20:23) = 'TREFMNAV_U','TREFMNAV_R','TREFMXAV_U','TREFMXAV_R',
+ hist_fincl2(24:25) = 'TSA_U','TSA_R',
  /
 
  &clm_soilhydrology_inparm

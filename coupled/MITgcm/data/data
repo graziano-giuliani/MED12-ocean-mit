@@ -57,7 +57,7 @@
 ! Time stepping parameters
  &PARM03
  startTime  =           0.,
- endTime    =   255139200.,
+ endTime    =   252460800.,
  !pickupSuff = '0001683072',
 !----------------------
  deltaT = 150.,
@@ -98,7 +98,7 @@
  !
  &PARM05
  bathyFile = 'BATHYMETRY.bin',
- !pSurfInitFile = 'mitgcm_init/oras5_sossheig_197908_1_decades.bin',
+ pSurfInitFile = 'mitgcm_init/oras5_sossheig_197908_1_decades.bin',
  hydrogSaltFile = 'mitgcm_init/medhymap_salinity_197908_1_decades.bin',
  hydrogThetaFile = 'mitgcm_init/medhymap_temperature_197908_1_decades.bin',
  /

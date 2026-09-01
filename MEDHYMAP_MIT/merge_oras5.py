@@ -48,6 +48,15 @@ for year in range(1969,2016):
             ds2 = Dataset(f2,'r')
             v2 = ds2.variables[var2][:]
             v1 = np.where(mask,v2,v1)
-            ds1.variables[var1][:] = v1
+            if var == 'salinity':
+                marmara = v1[:,0:10,171:188,448:485]
+                azov = v1[:,:,292:,532:]
+                marmara = np.where(marmara > 0.0,
+                                20.0 + marmara-26.0, marmara)
+                azov = np.where(azov > 0.0,
+                                11.0 + azov-19.0, azov)
+                v1[:,0:10,171:188,448:485] = marmara
+                v1[:,:,292:,532:] = azov
+            ds1.variables[var1][:] = v1[:]
             ds2.close( )
             ds1.close( )
