@@ -1,10 +1,13 @@
 &iniparam
  model_nsteps = 300,
  thrriv = 5400.0,
- efficiency = 0.998,
- nfarm = 1,
+ efficiency = 1.0,
+ minh2o = 25.0,
+ h2o2h2o_tuning_coefficient = 1.5,
+ riverrad = 50.0,
+ nfarm = 0,
  ifarm = 76,
- irloss = 0.08,
+ irloss = 0.0,
  irmonfac = 0.5, 0.2, 0.5, 1.0, 1.0, 1.8, 1.9, 1.8, 1.8, 1.0, 0.5, 0.5,
 /
 
@@ -21,6 +24,6 @@
 ! UNUSED
 &timeparam
  sdate = 1979080100, ! Start date in YYYYMMDDHH
- edate = 1987123100, ! End date in YYYYMMDDHH
+ edate = 1987080100, ! End date in YYYYMMDDHH
  calendar = 'gregorian',
 /

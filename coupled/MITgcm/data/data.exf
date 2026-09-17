@@ -70,5 +70,11 @@
  obcsWstartdate1     = 19790801,
  obcsWstartdate2     = 00000,
  obcsWperiod         = 2635200.,
+ obcsNstartdate1     = 19790801,
+ obcsNstartdate2     = 00000,
+ obcsNperiod         = 2635200.,
+ obcsSstartdate1     = 19790801,
+ obcsSstartdate2     = 00000,
+ obcsSperiod         = 2635200.,
  /
 !

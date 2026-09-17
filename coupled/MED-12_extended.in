@@ -110,6 +110,7 @@
  fpftcon = 'pft-physiology.c130503.nc',
  fsnowoptics = 'snicar_optics_5bnd_c090915.nc',
  fsnowaging = 'snicar_drdt_bst_fit_60_c070416.nc',
+ DoForceRestart = .true.
  urban_hac = 'ON_WASTEHEAT',
  hist_nhtfrq = 0, 24,
  hist_fincl2(1:4)   = 'EFLX_LH_TOT_U','EFLX_LH_TOT_R','FGR_U','FGR_R',
