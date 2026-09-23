@@ -41,7 +41,7 @@
 !---------------------------
   filename(1)     = 'ELEVATION',
   fields(1,1)     = 'ETAN',
- frequency(1)     =  2592000.,
+ frequency(1)     =  86400.,
 
 !---------------------------
 ! SALT
@@ -277,19 +277,12 @@
   levels(1,31)    = 1,
 
 !---------------------------
-! Zonal Transport of Salt psu.m/s
+! Daily Salinity
 !---------------------------
-!  filename(32)     = 'TRELAX',
-!  fields(1,32)     = 'TRELAX',
-! frequency(32)     =  86400,
-
-!---------------------------
-! Zonal Transport of Salt psu.m/s
-!---------------------------
-!  filename(33)     = 'SRELAX',
-!  fields(1,33)     = 'SRELAX',
-! frequency(33)     =  86400,
- /
+  filename(32)    = 'SOS',
+  fields(1,32)    = 'SALT',
+  frequency(32)   = 86400.0,
+  levels(1,32)    = 1,
 
 ! Parameter for Diagnostics of per level statistics:
 !-----------------
