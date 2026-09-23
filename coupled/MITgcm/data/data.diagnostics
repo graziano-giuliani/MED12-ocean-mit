@@ -283,6 +283,7 @@
   fields(1,32)    = 'SALT',
   frequency(32)   = 86400.0,
   levels(1,32)    = 1,
+ /
 
 ! Parameter for Diagnostics of per level statistics:
 !-----------------
