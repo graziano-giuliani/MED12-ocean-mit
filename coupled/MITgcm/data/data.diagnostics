@@ -269,18 +269,26 @@
  frequency(30)     =  2592000.,
 
 !---------------------------
-! Zonal Transport of Salt psu.m/s
+! Daily SST
 !---------------------------
-!  filename(31)     = 'TRELAX',
-!  fields(1,31)     = 'TRELAX',
-! frequency(31)     =  86400,
+  filename(31)    = 'SST',
+  fields(1,31)    = 'THETA',
+  frequency(31)   = 86400.0,
+  levels(1,31)    = 1,
 
 !---------------------------
 ! Zonal Transport of Salt psu.m/s
 !---------------------------
-!  filename(32)     = 'SRELAX',
-!  fields(1,32)     = 'SRELAX',
+!  filename(32)     = 'TRELAX',
+!  fields(1,32)     = 'TRELAX',
 ! frequency(32)     =  86400,
+
+!---------------------------
+! Zonal Transport of Salt psu.m/s
+!---------------------------
+!  filename(33)     = 'SRELAX',
+!  fields(1,33)     = 'SRELAX',
+! frequency(33)     =  86400,
  /
 
 ! Parameter for Diagnostics of per level statistics:
