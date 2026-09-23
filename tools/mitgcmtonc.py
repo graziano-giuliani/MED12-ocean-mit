@@ -132,7 +132,7 @@ names = {
           'THETA'       : { 'esgf_name'     : 'thetao',
      'standard_name' : 'sea_water_potential_temperature',
      'long_name'     : 'Ocean potential temperature',
-     'units'         : 'degree_C',
+     'units'         : 'degC',
      'dimensions'    : 3,
      'stagger'       : 'c',
      'coordinates'   : 'lat lon',
@@ -247,7 +247,7 @@ names = {
           'UTHMASS'     : { 'esgf_name'     : 'uthmo',
      'standard_name' : 'zonal_mass-weight_potential_temperature_transport',
      'long_name'     : 'Zonal Mass-weight Potntial Temperature Transport',
-     'units'         : 'degree_C m s-1',
+     'units'         : 'degC m s-1',
      'dimensions'    : 3,
      'stagger'       : 'c',
      'coordinates'   : 'lat lon',
@@ -255,7 +255,7 @@ names = {
           'VTHMASS'     : { 'esgf_name'     : 'vthmo',
      'standard_name' : 'meridional_mass-weight_potential_temperature_transport',
      'long_name'     : 'Meridional Mass-weight Potntial Temperature Transport',
-     'units'         : 'degree_C m s-1',
+     'units'         : 'degC m s-1',
      'dimensions'    : 3,
      'stagger'       : 'c',
      'coordinates'   : 'lat lon',
@@ -319,7 +319,15 @@ names = {
           'SST'      : { 'esgf_name'     : 'tos',
      'standard_name' : 'sea_surface_temperature',
      'long_name'     : 'Sea Surface Temperature',
-     'units'         : 'K',
+     'units'         : 'degC',
+     'dimensions'    : 2,
+     'stagger'       : 'c',
+     'coordinates'   : 'lat lon',
+                          },
+          'SOS'      : { 'esgf_name'     : 'sos',
+     'standard_name' : 'sea_surface_salinity',
+     'long_name'     : 'Sea Surface Salinity',
+     'units'         : '0.001',
      'dimensions'    : 2,
      'stagger'       : 'c',
      'coordinates'   : 'lat lon',
@@ -358,7 +366,7 @@ for binfile in sys.argv[1:]:
     stime = float(vdate)*timestep
     e_ym = (datetime.datetime.fromisoformat(start_simulation)+
             datetime.timedelta(seconds=stime))
-    if vname == 'SST':
+    if vname in ['SST', 'SOS', 'ELEVATION']:
         s_ym = e_ym + dateutil.relativedelta.relativedelta(days=-1)
         cfrq = 'day'
     else:
