@@ -12,8 +12,15 @@
 
 source /leonardo/home/userexternal/ggiulian/modules_new
 
+[ $# -lt 3 ] && exit 1
+
 datadir=$1
-idate=$2
+output=$2
+idate=$3
+
+echo 'Input directory : '$datadir
+echo 'Output directory : '$output
+echo 'Processing date(s): '$idate
 
 pycordex=/leonardo/home/userexternal/ggiulian/RegCM-CORDEX5/Tools/Scripts/pycordexer
 mail=ggiulian@ictp.it
@@ -22,7 +29,6 @@ global=ERA5
 experiment=evaluation
 ensemble=r1i1p1f1
 notes="None"
-output="."
 proc=20
 regcm_model=RegCM-ES
 regcm_release=1.1

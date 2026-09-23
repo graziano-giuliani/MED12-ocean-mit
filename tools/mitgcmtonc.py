@@ -7,6 +7,7 @@ import dateutil
 import glob
 import uuid
 import numpy as np
+import shutil
 import xarray as xr
 from MITgcmutils import mds
 import f90nml
@@ -315,6 +316,14 @@ names = {
      'stagger'       : 'v',
      'coordinates'   : 'lat lon',
                           },
+          'SST'      : { 'esgf_name'     : 'tos',
+     'standard_name' : 'sea_surface_temperature',
+     'long_name'     : 'Sea Surface Temperature',
+     'units'         : 'K',
+     'dimensions'    : 2,
+     'stagger'       : 'c',
+     'coordinates'   : 'lat lon',
+                          },
          #'pickup'      : { 'esgf_name'     : 'pickup',
          #                  'standard_name' : 'pickup',
          #                  'long_name'     : 'Pickup field',
@@ -349,7 +358,12 @@ for binfile in sys.argv[1:]:
     stime = float(vdate)*timestep
     e_ym = (datetime.datetime.fromisoformat(start_simulation)+
             datetime.timedelta(seconds=stime))
-    s_ym = e_ym + dateutil.relativedelta.relativedelta(months=-1)
+    if vname == 'SST':
+        s_ym = e_ym + dateutil.relativedelta.relativedelta(days=-1)
+        cfrq = 'day'
+    else:
+        s_ym = e_ym + dateutil.relativedelta.relativedelta(months=-1)
+        cfrq = 'mon'
 
     print(vname,s_ym)
 
@@ -500,8 +514,8 @@ for binfile in sys.argv[1:]:
     ds.attrs['source_id'] = 'RegCM-ES1-1'
     ds.attrs['source_type'] = 'AORCM'
     ds.attrs['realm'] = 'ocean'
-    ds.attrs['table_id'] = 'Table mon'
-    ds.attrs['frequency'] = 'mon'
+    ds.attrs['table_id'] = 'Table '+cfrq
+    ds.attrs['frequency'] = cfrq
     ds.attrs['variable_id'] = infname
     ds.attrs['version_realization'] = 'v1-r1'
     ds.attrs['version_realization_info'] = 'none'
@@ -533,13 +547,19 @@ for binfile in sys.argv[1:]:
         opath = '.'
     else:
         opath = os.path.join(outpath,'CORDEX-CMIP6','DD',domain,myinst,
-              gmodel,experiment,gmemb,'RegCM-ES1-1','v1-r1','mon',
+              gmodel,experiment,gmemb,'RegCM-ES1-1','v1-r1',cfrq,
               infname)
         os.makedirs(opath,exist_ok=True)
-    ncfile = os.path.join(opath, infname + '_' + domain + '_' + gmodel +
+    if cfrq == 'day':
+      ncfile = os.path.join(opath, infname + '_' + domain + '_' + gmodel +
             '_' + experiment + '_' + gmemb + '_' + myinst +
-            '_RegCM-ES1-1_v1-r1_mon_' + s_ym.strftime('%Y%m') + '-' +
-            e_ym.strftime('%Y%m') + '.nc')
+            '_RegCM-ES1-1_v1-r1_'+cfrq+'_'+
+            s_ym.strftime('%Y%m%d') + '-' + e_ym.strftime('%Y%m%d') + '.nc')
+    else:
+      ncfile = os.path.join(opath, infname + '_' + domain + '_' + gmodel +
+            '_' + experiment + '_' + gmemb + '_' + myinst +
+            '_RegCM-ES1-1_v1-r1_'+cfrq+'_'+
+            s_ym.strftime('%Y%m') + '-' + e_ym.strftime('%Y%m') + '.nc')
     encode = { infname : { 'zlib': True,
                            'complevel' : 6,
                            'significant_digits' : 4,
@@ -563,4 +583,8 @@ for binfile in sys.argv[1:]:
             os.rename(binfile, os.path.join('mitgcm_output',binfile))
             os.rename(metafile, os.path.join('mitgcm_output',metafile))
         except:
-            pass
+            try:
+                shutil.move(binfile, os.path.join('mitgcm_output',binfile))
+                shutil.move(metafile, os.path.join('mitgcm_output',metafile))
+            except:
+                pass
