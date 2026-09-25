@@ -83,13 +83,13 @@
  ! standard for Non-Linear Free Surface (rstar) and Flux Limiters
  staggerTimeStep     = .true.,
  ! Criterion fom mixed layer depth. The model calculates the equivalent
- ! density drop. This would not produce CMIP6 variable mlotst, though...
- ! The reference for MITgcm is the first layer, in CMIP is 10m.
- ! This one depends on vertical spacing.
- ! Density threshold (kg/m^3) to approximate mlot/mlotst
- hMixCriteria        = 0.03,
- dRhoSmall           = 1.0e-6,
- allowFreezing       = .true., ! Azov sea may freeze
+ ! density drop corresponding to a 0.2C temperature drop using the thermal
+ ! expansion coefficient.
+ ! NOTE: CMIP6 mlot, mlotst are NOT this variable. Need to compute mixed
+ ! layer from SALT, THETA offline.
+ hMixCriteria        = -0.2,
+ ! Azov sea may freeze
+ allowFreezing       = .true.,
  ! -- Water mass balance for evaporation --
  ! -- This is hacked in the code. The missing water is put back in an
  ! -- area just west of Gibraltar where the relaxation is not activated.
