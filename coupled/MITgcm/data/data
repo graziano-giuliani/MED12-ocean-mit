@@ -5,7 +5,9 @@
 ! Continuous equation parameters
 !
  &PARM01
- ! --- Reference Profiles (75 Vertical Levels) ---
+ ! -- Reference vertical status Profiles (75 Vertical Levels)
+ ! -- We initialize the state, but a reference must be present in model
+ ! -- setting.
  tRef = 18.50, 18.20, 17.90, 17.50, 17.00, 16.50, 16.00, 15.60, 15.20, 14.90,
     14.70, 14.55, 14.45, 14.40, 14.38, 14.35, 14.32, 14.30, 14.25, 14.20,
     14.15, 14.10, 14.05, 14.00, 13.95, 13.90, 13.87, 13.85, 13.83, 13.81,
@@ -22,14 +24,27 @@
     38.50, 38.50, 38.50, 38.50, 38.50, 38.50, 38.50, 38.50, 38.50, 38.50,
     38.50, 38.50, 38.50, 38.50, 38.50, 38.50, 38.50, 38.50, 38.50, 38.50,
     38.50, 38.50, 38.50, 38.50, 38.50,
- ! --- Implicit Physics & Vertical Mixing ---
+ ! -- Implicit Physics & Vertical Mixing --
  implicitDiffusion   = .true.,
  implicitViscosity   = .true.,
+ ! The setting to 10 is EVD recommended for GGL90 to work to handle
+ ! static instability.
  ivdc_kappa          = 10.0,
+ ! Background vertical eddy viscosity coefficient. Avoid stagnating
+ ! deep waters to avoid numerical oscillations. Surface is handled
+ ! by GGL90 scheme.
  viscAz              = 1.0E-5,
+ ! Use Leith so set these terms to zero.
  diffKhT             = 0.0D0,
  diffKhS             = 0.0D0,
- ! --- Leith Biharmonic Horizontal Viscosity ---
+ ! -- Leith Biharmonic Horizontal Viscosity --
+ ! -- Enstrophy-cascade-based closures used in eddy-permitting and
+ ! -- eddy-resolving. Scales eddy viscosity based on vorticity gradients
+ ! -- rather than strain rates. Use a biharmonic (fourth-order) friction
+ ! -- operator.
+ ! -- Leith, Cecil E. (1996)
+ ! -- Fox-Rabinovitz, Michael S. (1996)
+ ! -- Griffies, S. M., & Hallberg, R. W. (2000)
  viscA4              = 0.0D0,
  viscA4Grid          = 0.0D0,
  useStrainTensionVisc= .false.,
@@ -39,11 +54,17 @@
  vectorInvariantMomentum = .true.,
  no_slip_sides       = .true.,
  no_slip_bottom      = .true.,
+ ! Arbic & Scott, 2008 says between 0.0015 and 0.0025. Standard bulk.
  bottomDragQuadratic = 0.002,
  ! --- Coriolis & EOS ---
  f0                  = 0.8543851429E-4,
  beta                = 0.E-11,
- eosType             = 'JMD95Z',
+ ! Equation of State (EOS) used to calculate fluid density from temperature,
+ ! salinity, and pressure/depth
+ ! McDougall et al. (2003) formulation
+ ! Rational-function fit to TEOS-10 / UNESCO data using hydrostatic pressure
+ ! Best for Mediterranean deep waters with high salinity and warm temperature.
+ eosType             = 'MDJWF',
  ! --- Free Surface & r* Coordinates ---
  rigidLid            = .false.,
  implicitFreeSurface = .true.,
@@ -53,12 +74,27 @@
  exactConserv        = .true.,
  useRealFreshWaterFlux = .true.,
  hFacMin             = 0.2,
- ! --- Advection & Time Stepping ---
+ ! -- Advection & Time Stepping --
+ ! 3rd-order Flux-Limiting Advection Scheme using a DST3 (Direct Space-Time
+ ! 3rd-order) formulation with a Multi-Dimensional Flux Limiter
+ ! Standard choice for T and S in realistic ocean runs.
  tempAdvScheme       = 33,
  saltAdvScheme       = 33,
+ ! standard for Non-Linear Free Surface (rstar) and Flux Limiters
  staggerTimeStep     = .true.,
- hMixCriteria        = -0.2,
+ ! Criterion fom mixed layer depth. The model calculates the equivalent
+ ! density drop. This would not produce CMIP6 variable mlotst, though...
+ ! The reference for MITgcm is the first layer, in CMIP is 10m.
+ ! This one depends on vertical spacing.
+ ! Density threshold (kg/m^3) to approximate mlot/mlotst
+ hMixCriteria        = 0.03,
+ dRhoSmall           = 1.0e-6,
  allowFreezing       = .true., ! Azov sea may freeze
+ ! -- Water mass balance for evaporation --
+ ! -- This is hacked in the code. The missing water is put back in an
+ ! -- area just west of Gibraltar where the relaxation is not activated.
+ selectBalanceEmPmR  = 1,
+ balancePrintMean = .true.,
  ! --- I/O Precision ---
  readBinaryPrec      = 32,
  useSingleCpuIO      = .true.,

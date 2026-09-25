@@ -1,21 +1,39 @@
+!
 ! =====================================================================
 ! | Parameters for Gaspar et al. (1990)'s TKE vertical mixing scheme |
 ! =====================================================================
 !
 &GGL90_PARM01
+ ! -- Background and surface lower values for TKE in case of weak winds
  GGL90TKEmin          = 1.0e-6,
  GGL90TKEsurfMin      = 1.0e-4,
+ ! -- Low value of TKE at bottom (use same as GGL90TKEmin)
  GGL90TKEbottom       = 1.0e-6
+ ! -- Cap placed on vertical viscosity to avoid CFL at 1/12 deg.
  GGL90viscMax         = 1.0e-1,
  GGL90diffMax         = 1.0e-1,
+ ! -- Dissable horizontal diffusion of TKE. Safe to disable at 1/12 deg.
  GGL90diffTKEh        = 0.0e0,
+ ! -- Kolmogorov constants governing turbulent kinetic energy generation
+ ! -- and dissipation rate. Use values from Gaspar et al. (1990)
  GGL90ck              = 0.1,
  GGL90ceps            = 0.7,
+ ! -- Ratio of vertical eddy diffusivity (Km) to vertical eddy viscosity (Kv).
+ ! -- Ensure unity Prandtl number for turbulent transport in neutral stability
  GGL90alpha           = 1.0,
+ ! -- Relationship between wind stress friction velocity (u*) to the flux of
+ ! -- TKE at the surface boundary layer. Value from Blanke and Delecluse (1993)
  GGL90m2              = 3.75,
+ ! -- Minimum mixing length scale (1 mm) preventing division-by-zero
  GGL90mixingLengthMin = 1.0e-3
+ ! -- Constrains the mixing length (lm) by the distance to both the ocean
+ ! -- surface and the seabed
  mxlMaxFlag           = 2,
+ ! -- Forces the shear production term to be calculated on cell faces using
+ ! -- mean velocity components
  calcMeanVertShear    = .true.,
+ ! -- Applies Dirichlet boundary conditions for TKE at the surface
  GGL90_dirichlet      = .true.,
+ ! -- Ensure the saving in a pickup file of the TKE status
  GGL90writeState      = .true.,
 /
