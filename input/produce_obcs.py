@@ -87,7 +87,7 @@ if source == 'oras5':
         fout = { }
         for bndy in bndys:
             outname = os.path.join('obcs',bndy + '_' + var + '_' +
-                       repr(startdate) + '_' +repr(enddate)+'.bin')
+                       repr(startdate) + '_' +repr(enddate)+'.data')
             try:
                 os.unlink(outname)
             except:
@@ -114,7 +114,7 @@ else:
         fout = { }
         for bndy in bndys:
             outname = os.path.join('obcs',bndy + '_' + var + '_' +
-                       repr(startdate) + '_' +repr(enddate)+'.bin')
+                       repr(startdate) + '_' +repr(enddate)+'.data')
             try:
                 os.unlink(outname)
             except:
