@@ -404,15 +404,18 @@ for binfile in sys.argv[1:]:
     if vname not in names.keys( ):
         continue
 
-    stime = float(vdate)*timestep
+    etime = float(vdate)*timestep
     e_ym = (datetime.datetime.fromisoformat(start_simulation)+
-            datetime.timedelta(seconds=stime))
+            datetime.timedelta(seconds=etime))
     if vname in ['SST', 'SOS', 'ELEVATION']:
         s_ym = e_ym + relativedelta(days=-1)
         cfrq = 'day'
     else:
         s_ym = e_ym + relativedelta(months=-1)
         cfrq = 'mon'
+
+    absolute_difference = e_ym - s_ym
+    stime = etime - absolute_difference.total_seconds( )
 
     print(vname,s_ym)
 
@@ -482,11 +485,17 @@ for binfile in sys.argv[1:]:
                           dims = ["field"],
                           attrs = dict(standard_name = "field",
                                        units = "1"))
+    xtime_bnds = xr.DataArray(name="time_bnds",
+                              data=np.array([[stime, etime]]),
+                              dims=["time", "bnds"],
+                              attrs=dict(standard_name="time")
+                             )
     xtime = xr.DataArray(name = "time",
-                         data = np.array((stime,)),
+                         data = np.array((etime,)),
                          dims = ["time"],
                          attrs = dict(standard_name = "time",
                                       calendar = calendar,
+                                      bounds = "time_bnds",
                                       units = "seconds since "+
                                       start_simulation+' UTC'))
     if names[vname]['dimensions'] == 2:
@@ -533,10 +542,11 @@ for binfile in sys.argv[1:]:
     ds = da.to_dataset( )
     if names[vname]['dimensions'] == 3:
         ds["depth_bnds"] = xbnds
+    ds["time_bnds"] = xtime_bnds
     now = datetime.datetime.now( ).isoformat( )
     ds.attrs['Conventions'] = "CF-1.11"
     ds.attrs['creation_date'] = now
-    ds.attrs['tracking_id'] = 'hdl:21.14103/'+str(uuid.uuid1( ))
+    ds.attrs['tracking_id'] = 'hdl:21.14103/'+str(uuid.uuid4( ))
     ds.attrs['description'] = domain+' simulation'
     ds.attrs['title'] = 'Coupled RegCM-ES1-1 simulation. Ocean Component is MITgcm checkpoint69e. Output prepared for CORDEX experiment'
     ds.attrs['activity_id'] = 'CORDEX'
