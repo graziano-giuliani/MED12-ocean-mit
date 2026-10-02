@@ -1,9 +1,37 @@
 #!/usr/bin/env python3
 
+"""
+mitgcmtonc.py — Convert MITgcm binary output to CORDEX-CMIP6 NetCDF4.
+
+Usage:
+    mitgcmtonc.py <binfile> [<binfile> ...]
+
+Each <binfile> must be a MITgcm diagnostic output file named as
+<VARNAME>.<ITER>.data (e.g. THETA.0000043200.data).  The script reads
+the matching .meta file implicitly via MITgcmutils.mds.
+
+Required files in the working directory:
+    hFacC.data / hFacC.meta   land/sea mask and grid dimensions
+    XC.data, YC.data          tracer (C-grid) lon/lat
+    XG.data, YG.data          u/v-point (G-grid) lon/lat
+    RC.data                   cell-centre depths (negative, m)
+    RF.data                   cell-face depths  (negative, m)
+    data, data.pkg, ...       f90 namelist files (written to NC global attrs)
+
+Output is written to:
+    <outpath>/CORDEX-CMIP6/DD/<domain>/<inst>/<driver>/<experiment>/
+    <member>/<source_id>/<version>/<freq>/<variable>/
+    <variable>_<domain>_..._<freq>_<start>-<end>.nc
+
+Dependencies:
+    numpy, xarray, MITgcmutils, f90nml, python-dateutil
+"""
+
 import os
 import sys
 import datetime
 import dateutil
+from dateutil.relativedelta import relativedelta
 import glob
 import uuid
 import numpy as np
@@ -12,17 +40,22 @@ import xarray as xr
 from MITgcmutils import mds
 import f90nml
 
-timestep = 150
-start_simulation = "1979-08-01 00:00:00"
-calendar = "standard"
-domain = 'MED-12'
-myinst = 'ICTP'
-ginst = 'ECMWF'
-gmodel = 'ERA5'
-gmemb = 'r1i1p1f1'
-experiment = 'evaluation'
-outpath = '.'
-# End Setup
+# ---- USER CONFIGURATION ------------------------------------------------
+timestep = 150            # MITgcm timestep in seconds (deltaT in data namelist)
+start_simulation = "1979-08-01 00:00:00"  # simulation t=0 (ISO 8601)
+calendar = "proleptic_gregorian" # CF calendar name;
+                          # pure Gregorian without Julian cutover
+domain = 'MED-12'         # CORDEX domain_id
+myinst = 'ICTP'           # institution_id
+ginst  = 'ECMWF'          # driving_institution_id
+gmodel = 'ERA5'           # driving_source_id
+gmemb  = 'r1i1p1f1'       # driving_variant_label
+experiment = 'evaluation' # CORDEX experiment_id
+outpath = '.'             # root output directory
+# ---- END CONFIGURATION -------------------------------------------------
+
+table_map = {'mon': 'Omon',
+             'day': 'Oday'}
 
 metainfo = mds.parsemeta('hFacC.meta')
 NX = metainfo['dimList'][0]
@@ -39,6 +72,14 @@ zz = np.empty((len(zc),2), dtype='f4')
 zz[:,0] = zf[0:-1]
 zz[:,1] = zf[1:]
 
+# Variable mapping: MITgcm internal name -> CORDEX-CMIP6 metadata.
+# Keys:  esgf_name     short variable name as published on ESGF
+#        standard_name CF standard name (must match CF table exactly)
+#        long_name     human-readable description
+#        units         CF unit string (space-separated, negative exponents)
+#        dimensions    2 = surface field, 3 = full 3-D field
+#        stagger       'c'=tracer, 'u'=zonal, 'v'=meridional, 'z'=vertical
+#        coordinates   auxiliary coordinate variables to attach
 names = {
           'EXFtaux'     : { 'esgf_name'     : 'ftaux',
      'standard_name' : 'downward_x_stress_at_sea_water_surface',
@@ -61,7 +102,7 @@ names = {
           'EXFevap'     : { 'esgf_name'     : 'fevap',
      'standard_name' : 'evaporation_flux_at_sea_water_surface',
      'long_name'     : 'Evaporation flux at Sea Surface',
-     'units'         : 'm/s',
+     'units'         : 'm s-1',
      'notes'         : 'Ocean salinity increases if positive',
      'dimensions'    : 2,
      'stagger'       : 'c',
@@ -70,7 +111,7 @@ names = {
           'EXFpreci'    : { 'esgf_name'     : 'fpr',
      'standard_name' : 'precipitation_flux_at_sea_water_surface',
      'long_name'     : 'Precipitation flux at Sea Surface',
-     'units'         : 'm/s',
+     'units'         : 'm s-1',
      'notes'         : 'Ocean salinity decreases if positive',
      'dimensions'    : 2,
      'stagger'       : 'c',
@@ -115,16 +156,16 @@ names = {
           'EXFroff'     : { 'esgf_name'     : 'friver',
      'standard_name' : 'water_flux_into_sea_water_from_rivers',
      'long_name'     : 'Forcing River freshwater flux',
-     'units'         : 'm/s',
+     'units'         : 'm s-1',
      'notes'         : 'Ocean salinity decreases if positive',
      'dimensions'    : 2,
      'stagger'       : 'c',
      'coordinates'   : 'lat lon',
                           },
           'SALT'        : { 'esgf_name'     : 'so',
-     'standard_name' : 'sea_water_absolute_salinity',
+     'standard_name' : 'sea_water_practical_salinity',
      'long_name'     : 'Ocean salinity',
-     'units'         : 'g kg-1',
+     'units'         : '1',
      'dimensions'    : 3,
      'stagger'       : 'c',
      'coordinates'   : 'lat lon',
@@ -132,7 +173,7 @@ names = {
           'THETA'       : { 'esgf_name'     : 'thetao',
      'standard_name' : 'sea_water_potential_temperature',
      'long_name'     : 'Ocean potential temperature',
-     'units'         : 'degC',
+     'units'         : 'degrees_Celsius',
      'dimensions'    : 3,
      'stagger'       : 'c',
      'coordinates'   : 'lat lon',
@@ -174,7 +215,7 @@ names = {
           'oceFWflx'    : { 'esgf_name'     : 'sltnf',
      'standard_name' : 'net_freshwater_flux',
      'long_name'     : 'Net Surface Freshwater Flux into the Ocean',
-     'units'         : 'kg/m^2/s',
+     'units'         : 'kg m-2 s-1',
      'notes'         : 'Ocean salinity decreases if positive',
      'dimensions'    : 2,
      'stagger'       : 'c',
@@ -223,13 +264,13 @@ names = {
           'T_TFLUX'     : { 'esgf_name'     : 'thltf',
      'standard_name' : 'total_theta_flux',
      'long_name'     : 'Total Theta Flux',
-     'units'         : 'degC s-1',
+     'units'         : 'degrees_Celsius s-1',
      'dimensions'    : 2,
      'stagger'       : 'c',
      'coordinates'   : 'lat lon',
                           },
           'USLTMASS'    : { 'esgf_name'     : 'usltmo',
-     'standard_name' : 'zonal_mass-weight_salinity_transport',
+     'standard_name' : 'zonal_mass_weight_salinity_transport',
      'long_name'     : 'Zonal Mass-weight Salinity Transport',
      'units'         : 'g kg-1 m s-1',
      'dimensions'    : 3,
@@ -245,9 +286,9 @@ names = {
      'coordinates'   : 'lat lon',
                           },
           'UTHMASS'     : { 'esgf_name'     : 'uthmo',
-     'standard_name' : 'zonal_mass-weight_potential_temperature_transport',
+     'standard_name' : 'zonal_mass_weight_potential_temperature_transport',
      'long_name'     : 'Zonal Mass-weight Potntial Temperature Transport',
-     'units'         : 'degC m s-1',
+     'units'         : 'degrees_Celsius m s-1',
      'dimensions'    : 3,
      'stagger'       : 'c',
      'coordinates'   : 'lat lon',
@@ -255,62 +296,62 @@ names = {
           'VTHMASS'     : { 'esgf_name'     : 'vthmo',
      'standard_name' : 'meridional_mass-weight_potential_temperature_transport',
      'long_name'     : 'Meridional Mass-weight Potntial Temperature Transport',
-     'units'         : 'degC m s-1',
+     'units'         : 'degrees_Celsius m s-1',
      'dimensions'    : 3,
      'stagger'       : 'c',
      'coordinates'   : 'lat lon',
                           },
           'UVEL'        : { 'esgf_name'     : 'uo',
-     'standard_name' : 'zonal_component_of_water_velocity',
-     'long_name'     : 'Zonal Water Velocity',
+     'standard_name' : 'eastward_sea_water_velocity',
+     'long_name'     : 'Eastward Sea Water Velocity',
      'units'         : 'm s-1',
      'dimensions'    : 3,
      'stagger'       : 'u',
      'coordinates'   : 'lat lon',
                           },
           'VVEL'        : { 'esgf_name'     : 'vo',
-     'standard_name' : 'meridional_component_of_water_velocity',
-     'long_name'     : 'Meridional Water Velocity',
+     'standard_name' : 'northward_sea_water_velocity',
+     'long_name'     : 'Northward Sea Water Velocity',
      'units'         : 'm s-1',
      'dimensions'    : 3,
      'stagger'       : 'v',
      'coordinates'   : 'lat lon',
                           },
           'WVEL'        : { 'esgf_name'     : 'wo',
-     'standard_name' : 'vertical_component_of_water_velocity',
-     'long_name'     : 'Vertical Water Velocity',
+     'standard_name' : 'upward_sea_water_velocity',
+     'long_name'     : 'Upward Sea Water Velocity',
      'units'         : 'm s-1',
      'dimensions'    : 3,
      'stagger'       : 'z',
      'coordinates'   : 'lat lon',
                           },
           'UVELMASS'    : { 'esgf_name'     : 'umo',
-     'standard_name' : 'zonal_mass-weighted_component_of_water_velocity',
-     'long_name'     : 'Zonal Mass Weighted Water Velocity',
+     'standard_name' : 'ocean_mass_x_transport',
+     'long_name'     : 'Ocean Mass X Transport',
      'units'         : 'm s-1',
      'dimensions'    : 3,
      'stagger'       : 'u',
      'coordinates'   : 'lat lon',
                           },
           'VVELMASS'    : { 'esgf_name'     : 'vmo',
-     'standard_name' : 'meridional_mass-weighted_component_of_water_velocity',
-     'long_name'     : 'Meridional Mass Weighted Water Velocity',
+     'standard_name' : 'ocean_mass_y_transport',
+     'long_name'     : 'Ocean Mass Y transport',
      'units'         : 'm s-1',
      'dimensions'    : 3,
      'stagger'       : 'v',
      'coordinates'   : 'lat lon',
                           },
           'U_WSTRESS'   : { 'esgf_name'     : 'tauuo',
-     'standard_name' : 'surface_zonal_wind_stress',
-     'long_name'     : 'Surface Zonal Wind Stress',
+     'standard_name' : 'surface_downward_x_stress',
+     'long_name'     : 'Surface Downward X Stress',
      'units'         : 'N m-2',
      'dimensions'    : 2,
      'stagger'       : 'u',
      'coordinates'   : 'lat lon',
                           },
           'V_WSTRESS'   : { 'esgf_name'     : 'tauvo',
-     'standard_name' : 'surface_meridional_wind_stress',
-     'long_name'     : 'Surface Meridional Wind Stress',
+     'standard_name' : 'surface_downward_y_stress',
+     'long_name'     : 'Surface Downward Y Stress',
      'units'         : 'N m-2',
      'dimensions'    : 2,
      'stagger'       : 'v',
@@ -319,7 +360,7 @@ names = {
           'SST'      : { 'esgf_name'     : 'tos',
      'standard_name' : 'sea_surface_temperature',
      'long_name'     : 'Sea Surface Temperature',
-     'units'         : 'degC',
+     'units'         : 'degrees_Celsius',
      'dimensions'    : 2,
      'stagger'       : 'c',
      'coordinates'   : 'lat lon',
@@ -367,10 +408,10 @@ for binfile in sys.argv[1:]:
     e_ym = (datetime.datetime.fromisoformat(start_simulation)+
             datetime.timedelta(seconds=stime))
     if vname in ['SST', 'SOS', 'ELEVATION']:
-        s_ym = e_ym + dateutil.relativedelta.relativedelta(days=-1)
+        s_ym = e_ym + relativedelta(days=-1)
         cfrq = 'day'
     else:
-        s_ym = e_ym + dateutil.relativedelta.relativedelta(months=-1)
+        s_ym = e_ym + relativedelta(months=-1)
         cfrq = 'mon'
 
     print(vname,s_ym)
@@ -433,6 +474,7 @@ for binfile in sys.argv[1:]:
                           data = zc, 
                           dims = ["depth"],
                           attrs = dict(standard_name = "depth",
+                                       positive = "down",
                                        bounds = "depth_bnds",
                                        units = "m"))
     xfield = xr.DataArray(name = "field",
@@ -483,6 +525,7 @@ for binfile in sys.argv[1:]:
     da = xr.DataArray(name = infname, data = h[Ellipsis,nny1:nny2,nnx1:nnx2],
                       dims = dims, coords = coords,
                       attrs = dict(standard_name = names[vname]['standard_name'],
+                                   cell_methods = 'time_mean',
                                    long_name = names[vname]['long_name'],
                                    units = names[vname]['units'],
                                    coordinates = names[vname]['coordinates']),
@@ -522,7 +565,8 @@ for binfile in sys.argv[1:]:
     ds.attrs['source_id'] = 'RegCM-ES1-1'
     ds.attrs['source_type'] = 'AORCM'
     ds.attrs['realm'] = 'ocean'
-    ds.attrs['table_id'] = 'Table '+cfrq
+    ds.attrs['table_id'] = 'Table '+table_map.get(cfrq)
+    ds.attrs['grid_label'] = 'gn'
     ds.attrs['frequency'] = cfrq
     ds.attrs['variable_id'] = infname
     ds.attrs['version_realization'] = 'v1-r1'
@@ -540,6 +584,9 @@ for binfile in sys.argv[1:]:
     if vname == 'pickup':
         ds.attrs['FieldList'] = pickup_flds
 
+    # Append all MITgcm namelist parameters as global attributes so the
+    # exact model configuration is self-documented in the NetCDF file.
+    # Attribute names are prefixed with the namelist stem (e.g. mit_deltaTmom).
     for ff in ['data', 'data.pkg', 'data.cal', 'data.ggl90',
                'data.rbcs', 'data.obcs']:
         att1 = f90nml.read(ff)
