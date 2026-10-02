@@ -60,7 +60,7 @@ nemo_grid = '/leonardo/home/userexternal/ggiulian/project/MITGCM/MED12-ocean-mit
 # ---- END CONFIGURATION -------------------------------------------------
 
 def getcoordbounds(fname,which,i1,i2,j1,j2):
-    if which == 'c':
+    if (which == 'c' or which == 'z'):
         with Dataset(fname) as mesh:
             glam = mesh.variables['glamf'][0]
             gphi =  mesh.variables['gphif'][0]
