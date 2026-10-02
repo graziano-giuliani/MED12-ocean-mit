@@ -38,6 +38,7 @@ import numpy as np
 import shutil
 import xarray as xr
 from MITgcmutils import mds
+from netCDF4 import Dataset
 import f90nml
 
 # ---- USER CONFIGURATION ------------------------------------------------
@@ -52,7 +53,40 @@ gmodel = 'ERA5'           # driving_source_id
 gmemb  = 'r1i1p1f1'       # driving_variant_label
 experiment = 'evaluation' # CORDEX experiment_id
 outpath = '.'             # root output directory
+maxx2 = 631
+maxy2 = 362
+regular_ll_grid = False
+nemo_grid = '/leonardo/home/userexternal/ggiulian/project/MITGCM/MED12-ocean-mit/grid/1_coordinates_ORCA_R12.nc'
 # ---- END CONFIGURATION -------------------------------------------------
+
+def getcoordbounds(fname,which,i1,i2,j1,j2):
+    if which == 'c':
+        with Dataset(fname) as mesh:
+            glam = mesh.variables['glamf'][0]
+            gphi =  mesh.variables['gphif'][0]
+    elif which == 'u':
+        with Dataset(fname) as mesh:
+            glam = mesh.variables['glamv'][0]
+            gphi =  mesh.variables['gphiv'][0]
+    elif which == 'v':
+        with Dataset(fname) as mesh:
+            glam = mesh.variables['glamu'][0]
+            gphi =  mesh.variables['gphiu'][0]
+    else:
+        return None
+    lon_corners = np.stack([
+          np.roll(np.roll(glam, 1, axis=0), 1, axis=1),  # SW: glam[j-1, i-1]
+          np.roll(glam, 1, axis=0),                      # SE: glam[j-1, i]
+          glam,                                          # NE: glam[j, i]
+          np.roll(glam, 1, axis=1),                      # NW: glam[j, i-1]
+        ], axis=-1)
+    lat_corners = np.stack([
+          np.roll(np.roll(gphi, 1, axis=0), 1, axis=1),
+          np.roll(gphi, 1, axis=0),
+          gphi,
+          np.roll(gphi, 1, axis=1),
+        ], axis=-1)
+    return(lon_corners[j1:j2,i1:i2,:],lat_corners[j1:j2,i1:i2,:])
 
 table_map = {'mon': 'Omon',
              'day': 'Oday'}
@@ -475,30 +509,30 @@ for binfile in sys.argv[1:]:
       lonfile = 'XC.data'
       latfile = 'YC.data'
       nnx1 = 0
-      nnx2 = 631
+      nnx2 = maxx2
       nny1 = 0
-      nny2 = 362
+      nny2 = maxy2
     elif names[vname]['stagger'] == 'u':
       lonfile = 'XG.data'
       latfile = 'YC.data'
       nnx1 = 0
-      nnx2 = 631
+      nnx2 = maxx2
       nny1 = 0
-      nny2 = 362
+      nny2 = maxy2
     elif names[vname]['stagger'] == 'v':
       lonfile = 'XC.data'
       latfile = 'YG.data'
       nnx1 = 0
-      nnx2 = 631
+      nnx2 = maxx2
       nny1 = 0
-      nny2 = 362
+      nny2 = maxy2
     elif names[vname]['stagger'] == 'z':
       lonfile = 'XC.data'
       latfile = 'YC.data'
       nnx1 = 0
-      nnx2 = 631
+      nnx2 = maxx2
       nny1 = 0
-      nny2 = 362
+      nny2 = maxy2
     else:
       lonfile = 'XC.data'
       latfile = 'YC.data'
@@ -507,22 +541,51 @@ for binfile in sys.argv[1:]:
       nny1 = 0
       nny2 = NY
 
+    cbounds = None
     lon = np.fromfile(lonfile, '>f4').reshape((NY,NX))
     lat = np.fromfile(latfile, '>f4').reshape((NY,NX))
+    if not regular_ll_grid:
+        cbounds = getcoordbounds(nemo_grid,names[vname]['stagger'],
+                                 nnx1,nnx2,nny1,nny2)
 
-    xlon = xr.DataArray(name = "lon",
-                        data = lon[nny1:nny2,nnx1:nnx2],
-                        dims = ["lat","lon"],
-                        attrs = dict(standard_name = "longitude",
-                                     units = "degrees_east"))
-    xlat = xr.DataArray(name = "lat",
-                        data = lat[nny1:nny2,nnx1:nnx2],
-                        dims = ["lat","lon"],
-                        attrs = dict(standard_name = "latitude",
-                                     units = "degrees_north"))
-    xbnds = xr.DataArray(name = "depth_bnds",
+    if cbounds:
+        xbnds = xr.DataArray(name = 'lon_bnds',
+                             data = cbounds[0],
+                             dims=['lat', 'lon', 'cbnds'],
+                             attrs=dict(units='degrees_east')
+                            )
+        ybnds = xr.DataArray(name = 'lat_bnds',
+                             data = cbounds[1],
+                             dims=['lat', 'lon', 'cbnds'],
+                             attrs=dict(units='degrees_north')
+                            )
+        xlon = xr.DataArray(name = "lon",
+                            data = lon[nny1:nny2,nnx1:nnx2],
+                            dims = ["lat","lon"],
+                            attrs = dict(standard_name = "longitude",
+                                         bounds = 'lon_bnds',
+                                         units = "degrees_east"))
+        xlat = xr.DataArray(name = "lat",
+                            data = lat[nny1:nny2,nnx1:nnx2],
+                            dims = ["lat","lon"],
+                            attrs = dict(standard_name = "latitude",
+                                         bounds = 'lat_bnds',
+                                         units = "degrees_north"))
+    else:   
+        xlon = xr.DataArray(name = "lon",
+                            data = lon[nny1:nny2,nnx1:nnx2],
+                            dims = ["lat","lon"],
+                            attrs = dict(standard_name = "longitude",
+                                         units = "degrees_east"))
+        xlat = xr.DataArray(name = "lat",
+                            data = lat[nny1:nny2,nnx1:nnx2],
+                            dims = ["lat","lon"],
+                            attrs = dict(standard_name = "latitude",
+                                         units = "degrees_north"))
+    
+    zbnds = xr.DataArray(name = "depth_bnds",
                          data = zz,
-                         dims = ["depth","bnds"],
+                         dims = ["depth","zbnds"],
                          attrs = dict(standard_name = "depth_bounds",
                                       units = "m"))
     xdepth = xr.DataArray(name = "depth",
@@ -539,7 +602,7 @@ for binfile in sys.argv[1:]:
                                        units = "1"))
     xtime_bnds = xr.DataArray(name="time_bnds",
                               data=np.array([[stime, etime]]),
-                              dims=["time", "bnds"],
+                              dims=["time", "tbnds"],
                               attrs=dict(standard_name="time")
                              )
     xtime = xr.DataArray(name = "time",
@@ -594,9 +657,12 @@ for binfile in sys.argv[1:]:
                                    coordinates = names[vname]['coordinates']),
                      )
     ds = da.to_dataset( )
-    if names[vname]['dimensions'] == 3:
-        ds["depth_bnds"] = xbnds
     ds["time_bnds"] = xtime_bnds
+    if names[vname]['dimensions'] == 3:
+        ds["depth_bnds"] = zbnds
+    if cbounds:
+        ds["lon_bnds"] = xbnds
+        ds["lat_bnds"] = ybnds
     now = datetime.datetime.now( ).isoformat( )
     ds.attrs['Conventions'] = "CF-1.11"
     ds.attrs['creation_date'] = now
@@ -608,7 +674,9 @@ for binfile in sys.argv[1:]:
     ds.attrs['experiment_id'] = experiment
     ds.attrs['domain'] = 'Mediterranean'
     ds.attrs['domain_id'] = domain
-    ds.attrs['grid'] = 'MITgcm ORCA curvilinear tripolar grid at 1/12 degree resolution (MED-12)'
+    if not regular_ll_grid:
+        ds.attrs['grid'] = 'MITgcm ORCA curvilinear tripolar grid at 1/12 degree resolution (MED-12)'
+        
     if experiment == 'evaluation':
         ds.attrs['driving_experiment'] = 'reanalysis simulation of the recent past'
     elif experiment == 'historical':
