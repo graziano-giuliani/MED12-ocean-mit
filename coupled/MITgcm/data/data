@@ -117,6 +117,7 @@
  abEps = 0.01,
  pChkptFreq = 2592000.,
  pickupStrictlyMatch = .false.,
+ writePickupAtEnd = .true.,
  monitorSelect = 2,
  monitorFreq = 86400.,
  /

@@ -28,11 +28,12 @@
 !     &     diagSt_regMaskFile, nSetRegMskFile
 !--------------------
 &diagnostics_list
-  diag_mnc=.FALSE.,
-!  diag_pickup_read=.TRUE.,
-!  diag_pickup_write=.TRUE.,
-!  diag_pickup_read_mnc=.TRUE.,
-!  diag_pickup_write_mnc=.TRUE.,
+  dumpAtLast = .true.,
+  diag_mnc = .false.,
+!  diag_pickup_read = .true.,
+!  diag_pickup_write = .true.,
+!  diag_pickup_read_mnc = .true.,
+!  diag_pickup_write_mnc = .true.,
 !---------------------------
 
 !---------------------------
