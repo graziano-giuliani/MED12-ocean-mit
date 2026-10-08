@@ -514,7 +514,7 @@ C     !ROUTINE: THE_MODEL_MAIN
 
 C     !INTERFACE:
 #ifdef ENEA_COUPLER
-      SUBROUTINE THE_MODEL_MAIN_FINALIZE(myThid)
+      SUBROUTINE THE_MODEL_MAIN_FINALIZE(myTime,myIter,myThid)
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -583,18 +583,13 @@ C     == Global variables ===
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid :: Thread number for this instance of the routine.
+C     Time :: Time counter for this thread
+C     myIter :: Iteration counter for this thread
       INTEGER myThid
+      _RL     myTime
+      INTEGER myIter
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
-C     Note: Under the multi-threaded model myIter and myTime are local
-C           variables passed around as routine arguments.
-C           Although this is fiddly it saves the need to impose
-C           additional synchronisation points when they are updated.
-C     myTime :: Time counter for this thread
-C     myIter :: Iteration counter for this thread
-      INTEGER myIter
-      _RL     myTime
       LOGICAL costFinalExist
       LOGICAL lastdiva
 CEOP

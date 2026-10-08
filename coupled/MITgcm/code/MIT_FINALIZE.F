@@ -60,7 +60,7 @@ CBOP
 C !ROUTINE: MAIN
 
 C !INTERFACE:
-      SUBROUTINE MIT_FINALIZE
+      SUBROUTINE MIT_FINALIZE(numIter,iloop,myTime,myIter,myThid)
 
 C !DESCRIPTION:
 C     *==========================================================*
@@ -114,7 +114,12 @@ C     msgBuf       :: I/O message buffer
 C     I            :: loop counter
 C     myThid       :: thread Id number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER myIter
+      INTEGER numIter
+      INTEGER iloop
+      _RL myTime
       INTEGER myThid
+
       INTEGER I
       INTEGER dummyComm
 
@@ -145,8 +150,6 @@ C           case causes a deadlock if we do not trap it here.
 #ifdef USE_OMP_THREADING
         IF ( OMP_GET_THREAD_NUM() .EQ. I-1 ) THEN
 #endif
-         myThid = I
-
 C--      Do check to see if there are nThreads threads running
          IF ( .NOT. eeBootError ) THEN
           CALL CHECK_THREADS( myThid )
@@ -159,7 +162,7 @@ C--      Invoke nThreads instances of the numerical model
 #elif (defined (ALLOW_HESSIAN_CODE))
           CALL HESSIAN_MAIN(myThid)
 #else
-          CALL THE_MODEL_MAIN_FINALIZE(myThid)
+          CALL THE_MODEL_MAIN_FINALIZE(myTime,myIter,myThid)
 #endif
          ENDIF
 

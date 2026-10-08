@@ -287,9 +287,19 @@ C     == Local variables ==
 #  endif
 # endif /* ALLOW_TAMC_CHECKPOINTING */
 #endif /* ALLOW_AUTODIFF */
+      LOGICAL modelEnd
 CEOP
 
 c     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+      modelEnd = .TRUE.
+C--   Do IO if needed.
+      CALL TIMER_START('DO_THE_MODEL_IO     [THE_MAIN_LOOP]',myThid)
+      CALL DO_THE_MODEL_IO( modelEnd, myTime, myIter, myThid )
+      CALL TIMER_STOP ('DO_THE_MODEL_IO     [THE_MAIN_LOOP]',myThid)
+C--   Save state for restarts
+      CALL TIMER_START('DO_WRITE_PICKUP     [THE_MAIN_LOOP]',myThid)
+      CALL DO_WRITE_PICKUP( modelEnd, myTime, myIter, myThid )
+      CALL TIMER_STOP ('DO_WRITE_PICKUP     [THE_MAIN_LOOP]',myThid)
 c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STOPS   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 #ifdef ALLOW_ECCO
