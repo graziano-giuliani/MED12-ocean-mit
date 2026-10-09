@@ -60,7 +60,7 @@ CBOP
 C !ROUTINE: MAIN
 
 C !INTERFACE:
-      SUBROUTINE MIT_FINALIZE(numIter,iloop,myTime,myIter,myThid)
+      SUBROUTINE MIT_FINALIZE(myTime,myIter,myThid)
 
 C !DESCRIPTION:
 C     *==========================================================*
@@ -109,19 +109,16 @@ C     necessary but doing this is the safest method.
 #include "SIGREG.h"
 #endif
 
+C     myThid       :: thread Id number
+      _RL myTime
+      INTEGER myIter
+      INTEGER myThid
+
 C     !LOCAL VARIABLES:
 C     msgBuf       :: I/O message buffer
 C     I            :: loop counter
-C     myThid       :: thread Id number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER myIter
-      INTEGER numIter
-      INTEGER iloop
-      _RL myTime
-      INTEGER myThid
-
       INTEGER I
-      INTEGER dummyComm
 
 #ifdef USE_OMP_THREADING
       INTEGER OMP_GET_THREAD_NUM

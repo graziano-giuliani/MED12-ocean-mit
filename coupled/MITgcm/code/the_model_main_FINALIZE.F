@@ -585,9 +585,9 @@ C     == Routine arguments ==
 C     myThid :: Thread number for this instance of the routine.
 C     Time :: Time counter for this thread
 C     myIter :: Iteration counter for this thread
-      INTEGER myThid
       _RL     myTime
       INTEGER myIter
+      INTEGER myThid
 
 C     !LOCAL VARIABLES:
       LOGICAL costFinalExist
