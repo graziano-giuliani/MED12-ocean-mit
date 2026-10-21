@@ -195,7 +195,7 @@ names = {
      'stagger'       : 'c',
      'coordinates'   : 'lat lon',
                           },
-          'EXFroff'     : { 'esgf_name'     : 'friver',
+          'EXFroff'     : { 'esgf_name'     : 'frivo',
      'standard_name' : 'water_flux_into_sea_water_from_rivers',
      'long_name'     : 'Forcing River freshwater flux',
      'units'         : 'm s-1',
@@ -709,7 +709,7 @@ for binfile in sys.argv[1:]:
     ds.attrs['label'] = 'RegCM-ES1-1'
     ds.attrs['label_extended'] = 'The Regional Earth System Model RegCM-ES version 1.1 based on RegCM v5.0, MITgcm v6.9d and CHyM (2025)'
     ds.attrs['release_year'] = '2025'
-    ds.attrs['title'] = 'ICTP Regional Climatic Coupled model V1.1'
+    ds.attrs['title'] = 'ICTP Regional Climate Coupled Model V1.1'
     ds.attrs['references'] = 'https://github.com/graziano-giuliani/MED12-ocean-mit'
     ds.attrs['model_revision'] = '1.1'
     ds.attrs['history'] = now+': Created by RegCM-ES model run'

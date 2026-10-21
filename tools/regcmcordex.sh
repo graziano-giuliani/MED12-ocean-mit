@@ -22,7 +22,7 @@ echo 'Input directory : '$datadir
 echo 'Output directory : '$output
 echo 'Processing date(s): '$idate
 
-pycordex=/leonardo/home/userexternal/ggiulian/RegCM-CORDEX5/Tools/Scripts/pycordexer
+pycordex=/leonardo/home/userexternal/ggiulian/RegCM/Tools/Scripts/pycordexer
 mail=ggiulian@ictp.it
 domain=MED-12
 global=ERA5

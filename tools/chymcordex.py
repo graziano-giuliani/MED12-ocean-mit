@@ -20,12 +20,20 @@ start_simulation = '1979-08-01 00:00:00'
 outpath = '.'
 # End Setup
 
-names = { 'dis'        : { 'esgf_name'     : 'rivo',
-                           'standard_name' : 'water_flux_to_downstream ',
-                           'long_name'     : 'River Discharge',
-                           'units'         : 'm3 s-1',
-                           'coordinates'   : 'lat lon',
-                          },
+names = { 'dis' : { 'esgf_name'     : 'friver',
+                    'standard_name' : 'water_flux_to_downstream',
+                    'long_name'     : 'River Discharge',
+                    'units'         : 'm3 s-1',
+                    'cell_methods'  : 'area: mean time: mean',
+                    'coordinates'   : 'lat lon',
+                  },
+          'ro'  : { 'esgf_name'     : 'iroff',
+                    'standard_name' : 'runoff_flux',
+                    'long_name'     : 'Total runoff routed into river',
+                    'units'         : 'kg m-2 s-1',
+                    'cell_methods'  : 'area: mean time: mean',
+                    'coordinates'   : 'lat lon',
+                  },
         }
 
 for ncfile in sys.argv[1:]:
@@ -81,10 +89,12 @@ for ncfile in sys.argv[1:]:
         now = datetime.datetime.now( ).isoformat( )
         dsout.Conventions = "CF-1.11"
         dsout.creation_date = now
-        dsout.tracking_id = 'hdl:21.14103/'+str(uuid.uuid1( ))
+        dsout.tracking_id = 'hdl:21.14103/'+str(uuid.uuid4( ))
         dsout.description = domain+' simulation'
-        dsout.title = 'Coupled RegCM-ES1-1 simulation. Ocean Component is MITgcm checkpoint69. Output prepared for CORDEX experiment'
+        dsout.title = 'ICTP Regional Climate Coupled Model V1.1'
+        dsout.references = 'https://github.com/graziano-giuliani/MED12-ocean-mit'
         dsout.activity_id = 'CORDEX'
+        dsout.model_revision = '1.1'
         dsout.contact = 'ggiulian@ictp.it'
         dsout.experiment_id = experiment
         dsout.domain = 'Mediterranean'
