@@ -41,6 +41,23 @@ from MITgcmutils import mds
 from netCDF4 import Dataset
 import f90nml
 
+EPOCH_DAYS = "days since 1950-01-01 00:00:00"
+
+def seconds_to_days(values, time_units_hours):
+    """
+    Convert a time array in 'seconds since <epoch>' to
+    'days since 1950-01-01 00:00:00'.
+    Returns the day-valued array and the matching bounds array.
+    """
+    import netCDF4 as nc
+    # Decode to datetime objects
+    dts = nc.num2date(values, time_units_hours,
+                      calendar="proleptic_gregorian")
+    # Re-encode as days since 1950-01-01
+    days = nc.date2num(dts, EPOCH_DAYS, calendar="proleptic_gregorian")
+    return np.array(days, dtype=np.float64)
+
+
 # ---- USER CONFIGURATION ------------------------------------------------
 timestep = 150            # MITgcm timestep in seconds (deltaT in data namelist)
 start_simulation = "1979-08-01 00:00:00"  # simulation t=0 (ISO 8601)
@@ -503,6 +520,10 @@ for binfile in sys.argv[1:]:
     absolute_difference = e_ym - s_ym
     stime = etime - absolute_difference.total_seconds( )
 
+    units = "seconds since "+start_simulation+' UTC'
+    etime = seconds_to_days((etime,), units)
+    stime = seconds_to_days((stime,), units)
+
     print(vname,s_ym)
 
     if names[vname]['stagger'] == 'c':
@@ -601,18 +622,17 @@ for binfile in sys.argv[1:]:
                           attrs = dict(standard_name = "field",
                                        units = "1"))
     xtime_bnds = xr.DataArray(name="time_bnds",
-                              data=np.array([[stime, etime]]),
+                              data=np.vstack((stime,etime)).T,
                               dims=["time", "tbnds"],
                               attrs=dict(standard_name="time")
                              )
     xtime = xr.DataArray(name = "time",
-                         data = np.array((etime,)),
+                         data = etime,
                          dims = ["time"],
                          attrs = dict(standard_name = "time",
                                       calendar = calendar,
                                       bounds = "time_bnds",
-                                      units = "seconds since "+
-                                      start_simulation+' UTC'))
+                                      units = EPOCH_DAYS))
     if names[vname]['dimensions'] == 2:
         dims = ["time","lat","lon"]
         coords = dict(lon = xlon, lat = xlat, time = xtime)
