@@ -324,7 +324,12 @@ with Dataset("mask.nc", "w", format="NETCDF4") as m:
     for name, data, dt in (("lon", lon, "f4"), ("lat", lat, "f4"), ("mask", mask, "u1")):
         v = m.createVariable(name, dt, ("y", "x"))
         v[:] = data
+    m["lon"].setncatts({"standard_name": "longitude", "long_name": "longitude",
+                        "units": "degrees_east"})
+    m["lat"].setncatts({"standard_name": "latitude", "long_name": "latitude",
+                        "units": "degrees_north"})
     m["mask"].standard_name = "sea_binary_mask"
+    m["mask"].units = "1"
     m["mask"].coordinates = "lat lon"
 
 os.makedirs(INPUT_DIR, exist_ok=True)
