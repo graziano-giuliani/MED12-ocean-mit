@@ -8,10 +8,6 @@
  idynamic = 3,
  /
 
- &molochparam
- mo_top_nudge = .true.,
- /
-
  &geoparam
  iproj = 'ROTLLR',
  ds = -0.11,
@@ -62,12 +58,12 @@
  /
 
  &timeparam
- dt = 100,
+ dt = 120,
  /
 
  &outparam
  ifcordex = .true.,
- dirout  = '/leonardo_work/ICT26_ESP/COUPLED/coupled_new/output',
+ dirout  = '/leonardo/home/userexternal/ggiulian/scratch/run/output',
  do_parallel_netcdf_in  = .true.,
  do_parallel_netcdf_out = .false.,
  /
@@ -81,7 +77,7 @@
  iocnflx     = 2,
  iocnrough   = 5,
  iocnzoq     = 4,
- scenario    = 'SSP370',
+ scenario    = 'SCEN7-ML',
  iocncpl     = 1,
  idcsst      = 0,
  iseaice     = 1,
@@ -107,10 +103,10 @@
  /
 
  &clm_inparm
+ DoForceRestart = .true.,
  fpftcon = 'pft-physiology.c130503.nc',
  fsnowoptics = 'snicar_optics_5bnd_c090915.nc',
  fsnowaging = 'snicar_drdt_bst_fit_60_c070416.nc',
- DoForceRestart = .true.
  urban_hac = 'ON_WASTEHEAT',
  hist_nhtfrq = 0, 24,
  hist_fincl2(1:4)   = 'EFLX_LH_TOT_U','EFLX_LH_TOT_R','FGR_U','FGR_R',
@@ -124,6 +120,7 @@
  &clm_soilhydrology_inparm
  h2osfcflag = 1,
  origflag = 0,
+ e_ice = 3.0,
  /
 
  &clm_hydrology1_inparm

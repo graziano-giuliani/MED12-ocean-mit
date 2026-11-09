@@ -5,7 +5,7 @@
 !
 &GGL90_PARM01
  ! -- Background and surface lower values for TKE in case of weak winds
- GGL90TKEmin          = 1.0e-6,
+ GGL90TKEmin          = 5.0e-8,
  GGL90TKEsurfMin      = 1.0e-4,
  ! -- Low value of TKE at bottom (use same as GGL90TKEmin)
  GGL90TKEbottom       = 1.0e-6

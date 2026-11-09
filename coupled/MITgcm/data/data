@@ -28,13 +28,12 @@
  implicitDiffusion   = .true.,
  implicitViscosity   = .true.,
  ! The setting to 10 is EVD recommended for GGL90 to work to handle
- ! static instability.
- ivdc_kappa          = 10.0,
+ ! static instability. Lowered for Black Sea
+ ivdc_kappa          =  5.0,
  ! Background vertical eddy viscosity coefficient. Avoid stagnating
  ! deep waters to avoid numerical oscillations. Surface is handled
  ! by GGL90 scheme.
  viscAz              = 1.0E-5,
- ! Use Leith so set these terms to zero.
  diffKhT             = 0.0D0,
  diffKhS             = 0.0D0,
  ! -- Leith Biharmonic Horizontal Viscosity --
@@ -45,11 +44,11 @@
  ! -- Leith, Cecil E. (1996)
  ! -- Fox-Rabinovitz, Michael S. (1996)
  ! -- Griffies, S. M., & Hallberg, R. W. (2000)
+ viscC4leith         = 1.0,
+ viscC4leithD        = 1.0,
  viscA4              = 0.0D0,
  viscA4Grid          = 0.0D0,
  useStrainTensionVisc= .false.,
- viscC4leith         = 1.0,
- viscC4leithD        = 1.0,
  ! --- Momentum & Friction ---
  vectorInvariantMomentum = .true.,
  no_slip_sides       = .true.,
@@ -62,7 +61,7 @@
  ! Equation of State (EOS) used to calculate fluid density from temperature,
  ! salinity, and pressure/depth
  ! McDougall et al. (2003) formulation
- ! Rational-function fit to TEOS-10 / UNESCO data using hydrostatic pressure
+ ! Rational-function fit to Feistel/UNESCO-era data using hydrostatic pressure
  ! Best for Mediterranean deep waters with high salinity and warm temperature.
  eosType             = 'MDJWF',
  ! --- Free Surface & r* Coordinates ---
