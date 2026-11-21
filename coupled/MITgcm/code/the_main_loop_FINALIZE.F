@@ -271,7 +271,6 @@ C     == Functions ==
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      INTEGER iterlast
 #ifdef STORE_LOADEDREC_TEST
       INTEGER bi,bj
 #endif /* STORE_LOADEDREC_TEST */
@@ -287,21 +286,7 @@ C     == Local variables ==
 #  endif
 # endif /* ALLOW_TAMC_CHECKPOINTING */
 #endif /* ALLOW_AUTODIFF */
-      LOGICAL modelEnd
 CEOP
-
-c     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-      modelEnd = .FALSE.
-      iterlast = myIter + 1
-C--   Do IO if needed.
-      CALL TIMER_START('DO_THE_MODEL_IO     [THE_MAIN_LOOP]',myThid)
-      CALL DO_THE_MODEL_IO( modelEnd, endtime, iterlast, myThid )
-      CALL TIMER_STOP ('DO_THE_MODEL_IO     [THE_MAIN_LOOP]',myThid)
-C--   Save state for restarts
-      CALL TIMER_START('DO_WRITE_PICKUP     [THE_MAIN_LOOP]',myThid)
-      CALL DO_WRITE_PICKUP( modelEnd, endtime, iterlast, myThid )
-      CALL TIMER_STOP ('DO_WRITE_PICKUP     [THE_MAIN_LOOP]',myThid)
-c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STOPS   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 #ifdef ALLOW_ECCO
 c--     Accumulate time averages of temperature, salinity
