@@ -112,10 +112,14 @@ metainfo = mds.parsemeta('hFacC.meta')
 NX = metainfo['dimList'][0]
 NY = metainfo['dimList'][3]
 NZ = metainfo['dimList'][6]
-avpickup = glob.glob('pickup.*.meta')[0]
-metainfo = mds.parsemeta(avpickup)
-NFPICKUP = metainfo['nrecords'][0]
-pickup_flds = metainfo['fldList']
+try:
+    avpickup = glob.glob('pickup.*.meta')[0]
+    metainfo = mds.parsemeta(avpickup)
+    NFPICKUP = metainfo['nrecords'][0]
+    pickup_flds = metainfo['fldList']
+except:
+    NFPICKUP = 0
+    pass
 
 zc = - np.fromfile('RC.data', '>f4')
 zf = - np.fromfile('RF.data', '>f4')
@@ -616,11 +620,12 @@ for binfile in sys.argv[1:]:
                                        positive = "down",
                                        bounds = "depth_bnds",
                                        units = "m"))
-    xfield = xr.DataArray(name = "field",
-                          data = np.linspace(1,NFPICKUP,NFPICKUP), 
-                          dims = ["field"],
-                          attrs = dict(standard_name = "field",
-                                       units = "1"))
+    if NFPICKUP > 1:
+        xfield = xr.DataArray(name = "field",
+                              data = np.linspace(1,NFPICKUP,NFPICKUP), 
+                              dims = ["field"],
+                              attrs = dict(standard_name = "field",
+                                           units = "1"))
     xtime_bnds = xr.DataArray(name="time_bnds",
                               data=np.vstack((stime,etime)).T,
                               dims=["time", "tbnds"],
